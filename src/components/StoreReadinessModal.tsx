@@ -181,25 +181,39 @@ npx cap open ios
                   <Smartphone className="w-4 h-4 text-[#c59b27]" />
                   <span>الأصول البصرية والهوية الجاهزة (Visual Assets)</span>
                 </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                   <div className="bg-white p-3 rounded-xl border border-gray-200 flex flex-col items-center text-center">
-                    <img src="/icon.svg" alt="App Icon" className="w-16 h-16 rounded-2xl shadow-md mb-2" />
-                    <span className="font-bold text-gray-800 text-xs">أيقونة التطبيق الرسمية</span>
-                    <span className="text-[10px] text-gray-500">512×512 & 1024×1024 (SVG/PNG)</span>
+                    <img src="/pwa-192x192.png" alt="192 Icon" className="w-14 h-14 rounded-xl shadow-sm mb-2" />
+                    <span className="font-bold text-gray-800 text-xs">أيقونة 192×192</span>
+                    <span className="text-[10px] text-gray-500">PNG مخصصة لـ PWA</span>
                     <a
-                      href="/icon.svg"
-                      download="app-icon.svg"
+                      href="/pwa-192x192.png"
+                      download="pwa-192x192.png"
                       className="mt-2 text-[10px] bg-green-50 text-[#1b4332] font-bold px-2 py-1 rounded-lg border border-green-200 flex items-center gap-1 hover:bg-green-100"
                     >
                       <Download className="w-3 h-3" />
-                      <span>تحميل الأيقونة</span>
+                      <span>تحميل PNG</span>
                     </a>
                   </div>
 
                   <div className="bg-white p-3 rounded-xl border border-gray-200 flex flex-col items-center text-center">
-                    <img src="/feature-graphic.svg" alt="Feature Graphic" className="w-full h-16 object-cover rounded-xl shadow-xs mb-2" />
+                    <img src="/pwa-512x512.png" alt="512 Icon" className="w-14 h-14 rounded-xl shadow-sm mb-2" />
+                    <span className="font-bold text-gray-800 text-xs">أيقونة 512×512</span>
+                    <span className="text-[10px] text-gray-500">PNG أساسية ومقنعة (Maskable)</span>
+                    <a
+                      href="/pwa-512x512.png"
+                      download="pwa-512x512.png"
+                      className="mt-2 text-[10px] bg-green-50 text-[#1b4332] font-bold px-2 py-1 rounded-lg border border-green-200 flex items-center gap-1 hover:bg-green-100"
+                    >
+                      <Download className="w-3 h-3" />
+                      <span>تحميل PNG</span>
+                    </a>
+                  </div>
+
+                  <div className="bg-white p-3 rounded-xl border border-gray-200 flex flex-col items-center text-center">
+                    <img src="/feature-graphic.svg" alt="Feature Graphic" className="w-full h-14 object-cover rounded-xl shadow-xs mb-2" />
                     <span className="font-bold text-gray-800 text-xs">بانر Google Play</span>
-                    <span className="text-[10px] text-gray-500">1024×500 px (Feature Graphic)</span>
+                    <span className="text-[10px] text-gray-500">1024×500 px (SVG)</span>
                     <a
                       href="/feature-graphic.svg"
                       download="feature-graphic.svg"
@@ -210,13 +224,28 @@ npx cap open ios
                     </a>
                   </div>
 
-                  <div className="bg-white p-3 rounded-xl border border-gray-200 flex flex-col items-center text-center justify-center">
-                    <div className="w-12 h-16 bg-gray-100 border border-dashed border-gray-300 rounded-xl flex items-center justify-center text-gray-400 mb-2">
-                      <Smartphone className="w-6 h-6" />
+                  <div className="bg-white p-3 rounded-xl border border-gray-200 flex flex-col items-center text-center justify-between">
+                    <div className="flex flex-col items-center">
+                      <img src="/screenshot-mobile.png" alt="Screenshot" className="w-10 h-14 object-cover rounded-lg shadow-xs mb-1 border border-gray-200" />
+                      <span className="font-bold text-gray-800 text-xs">لقطات الشاشة</span>
+                      <span className="text-[10px] text-gray-500">جوال وحاسوب (Screenshots)</span>
                     </div>
-                    <span className="font-bold text-gray-800 text-xs">لقطات الشاشة (Screenshots)</span>
-                    <span className="text-[10px] text-gray-500">iPhone 6.7" (1290×2796) & Android</span>
-                    <span className="mt-2 text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full font-bold">جاهزة من الإطار الجوال</span>
+                    <div className="flex items-center gap-1 mt-2">
+                      <a
+                        href="/screenshot-mobile.png"
+                        download="screenshot-mobile.png"
+                        className="text-[10px] bg-green-50 text-[#1b4332] font-bold px-1.5 py-1 rounded-lg border border-green-200 hover:bg-green-100"
+                      >
+                        جوال
+                      </a>
+                      <a
+                        href="/screenshot-desktop.png"
+                        download="screenshot-desktop.png"
+                        className="text-[10px] bg-green-50 text-[#1b4332] font-bold px-1.5 py-1 rounded-lg border border-green-200 hover:bg-green-100"
+                      >
+                        حاسوب
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>
