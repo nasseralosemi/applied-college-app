@@ -1,14 +1,20 @@
 import React from 'react';
-import { GraduationCap, LogOut } from 'lucide-react';
+import { GraduationCap, LogOut, Smartphone } from 'lucide-react';
 import { UserProfile, ActivityRequest } from '../types';
 
 interface Props {
   profile: UserProfile;
   onLogout: () => void;
   requests: ActivityRequest[];
+  onOpenAndroidInstall?: () => void;
 }
 
-export const AppHeader: React.FC<Props> = ({ profile, onLogout, requests }) => {
+export const AppHeader: React.FC<Props> = ({
+  profile,
+  onLogout,
+  requests,
+  onOpenAndroidInstall,
+}) => {
   const totalCount = requests.length;
   const inProgressCount = requests.filter(
     (r) => r.status === 'pending_manager' || r.status === 'pending_auditor' || r.status === 'returned_emp' || r.status === 'returned_manager'
@@ -38,13 +44,24 @@ export const AppHeader: React.FC<Props> = ({ profile, onLogout, requests }) => {
           </div>
         </div>
 
-        <button
-          onClick={onLogout}
-          title="تسجيل الخروج"
-          className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition border border-white/15 shadow-inner cursor-pointer"
-        >
-          <LogOut className="w-4 h-4 text-white" />
-        </button>
+        <div className="flex items-center gap-1.5">
+          {onOpenAndroidInstall && (
+            <button
+              onClick={onOpenAndroidInstall}
+              title="تثبيت التطبيق على الجوال"
+              className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-[#e6c566] flex items-center justify-center transition border border-white/15 shadow-inner cursor-pointer"
+            >
+              <Smartphone className="w-3.5 h-3.5" />
+            </button>
+          )}
+          <button
+            onClick={onLogout}
+            title="تسجيل الخروج"
+            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition border border-white/15 shadow-inner cursor-pointer"
+          >
+            <LogOut className="w-3.5 h-3.5 text-white" />
+          </button>
+        </div>
       </div>
 
       {/* Sleek Frosted Stats Banner */}
