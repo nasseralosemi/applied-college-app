@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+:root {
+  --primary-green: #1b4332;
+  --dark-green: #081c15;
+  --accent-gold: #c59b27;
+  --gold-light: #e6c566;
+  --bg-light: #f4f7f6;
+  --card-bg: #ffffff;
+  --text-main: #2d3748;
+  --text-muted: #718096;
+}
+
+body {
+  font-family: 'Tajawal', system-ui, -apple-system, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Custom subtle scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.03);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(27, 67, 50, 0.25);
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(27, 67, 50, 0.45);
+}
+
