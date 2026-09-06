@@ -195,27 +195,10 @@ export default function App() {
   return (
     <div
       dir="rtl"
-      className="min-h-screen bg-[#f0f4f2] flex items-center justify-center p-2 sm:p-4 text-slate-800 antialiased font-['Tajawal',sans-serif]"
+      className="min-h-screen w-full bg-[#f8fafc] flex flex-col text-slate-800 antialiased font-['Tajawal',sans-serif]"
     >
-      {/* Centered Mobile Phone Frame - Single Main Element */}
-      <div className="w-[360px] sm:w-[380px] h-[760px] max-h-[96vh] bg-[#f8fafc] relative flex flex-col rounded-[48px] border-[10px] border-[#1e1e1e] shadow-2xl overflow-hidden shrink-0">
-        {/* Top Status Bar & Notch */}
-        <div className="h-8 w-full flex justify-between px-8 items-center pt-2 select-none shrink-0 z-30 bg-transparent">
-          <div className="text-[10px] font-extrabold text-gray-800 tracking-tight">9:41</div>
-          {/* Center Speaker / Notch */}
-          <div className="w-20 h-4 bg-[#1e1e1e] rounded-full flex items-center justify-center">
-            <div className="w-8 h-1 bg-gray-800 rounded-full" />
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-3.5 h-2 bg-gray-900 rounded-[1.5px] border border-gray-900 flex p-[1px]">
-              <div className="h-full w-2.5 bg-gray-900 rounded-[0.5px]"></div>
-            </div>
-            <div className="w-2.5 h-2.5 rounded-full border border-gray-900 flex items-center justify-center">
-              <div className="w-1 h-1 bg-gray-900 rounded-full"></div>
-            </div>
-          </div>
-        </div>
-
+      {/* App Container - Full Screen Mobile Layout */}
+      <div className="w-full max-w-xl mx-auto min-h-screen flex flex-col bg-[#f8fafc] relative shadow-none">
         {/* In-app Toast */}
         <Toast toast={toast} onClose={() => setToast(null)} />
 
@@ -271,9 +254,6 @@ export default function App() {
           onChangeRole={handleSwitchRole}
           requests={requests}
         />
-
-        {/* Bottom Home Indicator */}
-        <div className="h-1.5 w-32 bg-black/15 rounded-full mx-auto my-1.5 shrink-0 z-20" />
       </div>
 
       {/* Return Note Modal Dialog */}

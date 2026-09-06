@@ -40,7 +40,7 @@ export const BottomNav: React.FC<Props> = ({
   ];
 
   return (
-    <nav className="bg-white border-t border-gray-100 px-3 py-2 flex items-center justify-around shrink-0 relative z-10 shadow-md">
+    <nav className="bg-white border-t border-gray-200/80 px-3 py-2 pb-3 sm:pb-2.5 flex items-center justify-around shrink-0 sticky bottom-0 z-20 shadow-[0_-4px_12px_rgba(0,0,0,0.04)]">
       {navItems.map((item) => {
         const Icon = item.icon;
         const isActive = currentRole === item.key;
