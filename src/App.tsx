@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Download } from 'lucide-react';
+import { Download, Rocket, Smartphone, Monitor, RotateCcw } from 'lucide-react';
 import { ActivityRequest, UserRole } from './types';
 import { INITIAL_REQUESTS, ROLE_PROFILES } from './data';
-import { DemoSwitcher } from './components/DemoSwitcher';
 import { AppHeader } from './components/AppHeader';
 import { LoginView } from './components/LoginView';
 import { EmployeeView } from './components/EmployeeView';
@@ -205,17 +204,56 @@ export default function App() {
       dir="rtl"
       className="min-h-screen bg-[#f0f4f2] flex flex-col items-center justify-start lg:justify-center p-2 sm:p-4 lg:p-6 text-slate-800 antialiased font-['Tajawal',sans-serif]"
     >
-      {/* Presentation Demo Mode Switcher Bar */}
-      <DemoSwitcher
-        currentRole={currentRole}
-        onSelectRole={handleSwitchRole}
-        isPhoneFrame={isPhoneFrame}
-        onToggleFrame={() => setIsPhoneFrame((prev) => !prev)}
-        onResetData={handleResetData}
-        totalRequests={requests.length}
-        onOpenStoreReadiness={() => setIsStoreModalOpen(true)}
-        onOpenAndroidInstall={() => setIsAndroidModalOpen(true)}
-      />
+      {/* Quick Utilities (Discreet top-left pill without any role simulation) */}
+      <div className="fixed top-3 left-3 z-40 flex items-center gap-1.5 bg-white/90 backdrop-blur-md p-1.5 rounded-2xl shadow-sm border border-gray-200/80 select-none">
+        <button
+          type="button"
+          onClick={() => setIsAndroidModalOpen(true)}
+          title="تثبيت التطبيق على الجوال"
+          className="px-2 py-1 text-[#1b4332] hover:bg-emerald-50 rounded-xl transition cursor-pointer flex items-center gap-1.5 text-xs font-bold"
+        >
+          <Download className="w-3.5 h-3.5 text-[#c59b27]" />
+          <span className="hidden sm:inline text-[11px]">تثبيت الجوال</span>
+        </button>
+        <div className="w-px h-4 bg-gray-200 my-auto" />
+        <button
+          type="button"
+          onClick={() => setIsStoreModalOpen(true)}
+          title="تجهيز النشر على المتاجر"
+          className="px-2 py-1 text-gray-700 hover:text-[#1b4332] hover:bg-emerald-50 rounded-xl transition cursor-pointer flex items-center gap-1.5 text-xs font-bold"
+        >
+          <Rocket className="w-3.5 h-3.5 text-[#c59b27]" />
+          <span className="hidden sm:inline text-[11px]">المتاجر</span>
+        </button>
+        <div className="w-px h-4 bg-gray-200 my-auto" />
+        <button
+          type="button"
+          onClick={() => setIsPhoneFrame((prev) => !prev)}
+          title={isPhoneFrame ? 'التبديل إلى العرض الموسع' : 'التبديل إلى إطار هاتف'}
+          className="px-2 py-1 text-gray-700 hover:text-[#1b4332] hover:bg-gray-100 rounded-xl transition cursor-pointer flex items-center gap-1.5 text-xs font-bold"
+        >
+          {isPhoneFrame ? (
+            <>
+              <Monitor className="w-3.5 h-3.5 text-[#c59b27]" />
+              <span className="hidden sm:inline text-[11px]">موسع</span>
+            </>
+          ) : (
+            <>
+              <Smartphone className="w-3.5 h-3.5 text-[#c59b27]" />
+              <span className="hidden sm:inline text-[11px]">هاتف</span>
+            </>
+          )}
+        </button>
+        <div className="w-px h-4 bg-gray-200 my-auto" />
+        <button
+          type="button"
+          onClick={handleResetData}
+          title="استعادة البيانات الافتراضية"
+          className="p-1.5 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition cursor-pointer"
+        >
+          <RotateCcw className="w-3.5 h-3.5" />
+        </button>
+      </div>
 
       {/* Main Presentation Stage */}
       <div className="flex flex-col lg:flex-row items-center justify-center gap-6 xl:gap-12 w-full max-w-6xl my-auto">
@@ -368,6 +406,35 @@ export default function App() {
                 >
                   <Download className="w-3.5 h-3.5" />
                   <span>تثبيت الآن على الأندرويد (رمز QR)</span>
+                </button>
+              </div>
+
+              {/* Utility Quick Buttons in Sidebar */}
+              <div className="flex items-center gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setIsStoreModalOpen(true)}
+                  className="flex-1 text-xs bg-emerald-50 hover:bg-emerald-100 text-[#1b4332] border border-emerald-200 font-extrabold py-2 px-3 rounded-xl flex items-center justify-center gap-1.5 transition cursor-pointer shadow-xs"
+                >
+                  <Rocket className="w-3.5 h-3.5 text-[#c59b27]" />
+                  <span>تجهيز المتاجر</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsPhoneFrame((prev) => !prev)}
+                  className="text-xs bg-white hover:bg-gray-100 text-gray-700 font-bold py-2 px-3 rounded-xl border border-gray-200 flex items-center gap-1.5 transition cursor-pointer shadow-xs"
+                >
+                  {isPhoneFrame ? <Monitor className="w-3.5 h-3.5 text-[#c59b27]" /> : <Smartphone className="w-3.5 h-3.5 text-[#c59b27]" />}
+                  <span>{isPhoneFrame ? 'موسع' : 'هاتف'}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleResetData}
+                  title="استعادة البيانات الافتراضية"
+                  className="text-xs bg-white hover:bg-rose-50 text-gray-600 hover:text-rose-700 font-medium py-2 px-2.5 rounded-xl border border-gray-200 flex items-center gap-1 transition cursor-pointer shadow-xs"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>استعادة</span>
                 </button>
               </div>
             </div>
