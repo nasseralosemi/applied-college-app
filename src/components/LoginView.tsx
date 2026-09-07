@@ -149,9 +149,6 @@ export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
               <span className="text-xs font-extrabold text-[#1b4332] block">
                 دخول الكوادر الأكاديمية والإدارية
               </span>
-              <span className="text-[11px] text-slate-400">
-                تسجيل الدخول بالرقم الوظيفي المعتمد في الكلية
-              </span>
             </div>
 
             {staffError && (
