@@ -1,115 +1,316 @@
 import React, { useState } from 'react';
-import { UserRole } from '../types';
-import { Landmark, ArrowLeft, Lock, User, ShieldCheck } from 'lucide-react';
+import { SystemUser } from '../types';
+import { Lock, User, ShieldAlert, ArrowLeft, Shield, Building2, KeyRound } from 'lucide-react';
 
 interface Props {
-  onLogin: (role: Exclude<UserRole, 'login'>) => void;
+  users: SystemUser[];
+  onLoginSuccess: (user: SystemUser) => void;
 }
 
-export const LoginView: React.FC<Props> = ({ onLogin }) => {
-  const [username, setUsername] = useState('4412098');
-  const [password, setPassword] = useState('123456');
-  const [selectedRole, setSelectedRole] = useState<Exclude<UserRole, 'login'>>('emp');
+export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
+  const [activeTab, setActiveTab] = useState<'staff' | 'admin'>('staff');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Staff login fields
+  const [staffEmpNum, setStaffEmpNum] = useState('4412098');
+  const [staffPassword, setStaffPassword] = useState('123');
+  const [staffError, setStaffError] = useState<string | null>(null);
+
+  // Admin login fields
+  const [adminUsername, setAdminUsername] = useState('admin');
+  const [adminPassword, setAdminPassword] = useState('admin');
+  const [adminError, setAdminError] = useState<string | null>(null);
+
+  const handleStaffSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onLogin(selectedRole);
+    setStaffError(null);
+
+    const cleanEmpNum = staffEmpNum.trim();
+    const user = users.find(
+      (u) =>
+        (u.employeeNumber.toLowerCase() === cleanEmpNum.toLowerCase() ||
+          u.id.toLowerCase() === cleanEmpNum.toLowerCase()) &&
+        u.role !== 'admin'
+    );
+
+    if (!user) {
+      // Check if they accidentally entered admin
+      if (cleanEmpNum.toLowerCase() === 'admin') {
+        setStaffError('حساب مدير النظام مخصص للتبويب الآخر. يرجى التبديل لتبويب "دخول مدير النظام".');
+        return;
+      }
+      setStaffError('الرقم الوظيفي غير مسجل في النظام. تأكد من الرقم أو راجع مدير النظام.');
+      return;
+    }
+
+    if (!user.isActive) {
+      setStaffError('عذراً، هذا الحساب معطل حالياً من قبل مدير النظام. يرجى التواصل مع الإدارة.');
+      return;
+    }
+
+    if (user.password && user.password !== staffPassword.trim()) {
+      setStaffError('كلمة المرور غير صحيحة. يرجى المحاولة مرة أخرى.');
+      return;
+    }
+
+    onLoginSuccess(user);
   };
 
-  const roleOptions: { key: Exclude<UserRole, 'login'>; label: string; desc: string }[] = [
-    { key: 'emp', label: '1️⃣ موظف (مقدم الطلب)', desc: 'رفع استمارة نشاط ومتابعة حالة الطلب' },
-    { key: 'manager', label: '2️⃣ المدير المباشر', desc: 'مراجعة أولية واعتماد أو إرجاع بملاحظة' },
-    { key: 'auditor', label: '3️⃣ موظف التدقيق والاعتماد', desc: 'مراجعة الضوابط واعتماد عميد الكلية' },
-    { key: 'uploader', label: '4️⃣ موظف الرفع لمنصة ارتقاء', desc: 'استيفاء البيانات وتأكيد الرفع النهائي' },
-  ];
+  const handleAdminSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setAdminError(null);
+
+    const cleanUsername = adminUsername.trim().toLowerCase();
+    const adminUser = users.find(
+      (u) =>
+        u.role === 'admin' &&
+        (u.employeeNumber.toLowerCase() === cleanUsername ||
+          u.id.toLowerCase() === cleanUsername ||
+          cleanUsername === 'admin')
+    );
+
+    if (!adminUser) {
+      setAdminError('بيانات مدير النظام غير مطابقة.');
+      return;
+    }
+
+    if (!adminUser.isActive) {
+      setAdminError('حساب مدير النظام غير مفعّل.');
+      return;
+    }
+
+    if (adminUser.password && adminUser.password !== adminPassword.trim()) {
+      setAdminError('كلمة مرور مدير النظام غير صحيحة.');
+      return;
+    }
+
+    onLoginSuccess(adminUser);
+  };
+
+  const fillStaffCreds = (empNum: string, pass: string) => {
+    setStaffEmpNum(empNum);
+    setStaffPassword(pass);
+    setStaffError(null);
+  };
 
   return (
-    <div className="py-6 px-3 flex flex-col items-center justify-center text-center">
-      <div className="w-16 h-16 bg-[#1b4332] rounded-2xl flex items-center justify-center shadow-lg shadow-[#1b4332]/20 mb-3 border border-[#1b4332]">
+    <div className="py-4 px-2 sm:px-4 flex flex-col items-center justify-center text-center">
+      {/* Brand Crest */}
+      <div className="w-16 h-16 bg-[#1b4332] rounded-2xl flex items-center justify-center shadow-lg shadow-[#1b4332]/25 mb-3 border border-[#1b4332]">
         <div className="w-8 h-8 border-4 border-[#c59b27] rounded-full"></div>
       </div>
 
       <h2 className="text-xl font-extrabold text-[#1b4332] tracking-tight mb-1">
         الكلية التطبيقية
       </h2>
-      <p className="text-xs text-gray-500 font-medium mb-6">
-        منظومة إدارة واعتماد الأنشطة والدورات ومواءمة منصة ارتقاء
+      <p className="text-xs text-gray-500 font-medium mb-5">
+        بوابة اعتماد وتوثيق الأنشطة والدورات ومواءمة منصة ارتقاء
       </p>
 
-      <div className="w-full bg-white rounded-2xl p-5 shadow-sm border border-gray-100 text-right">
-        <form onSubmit={handleSubmit} className="space-y-3.5">
-          <div>
-            <label className="block text-xs font-bold text-gray-700 mb-1.5 flex items-center justify-between">
-              <span>الرقم الوظيفي / اسم المستخدم</span>
-              <User className="w-3.5 h-3.5 text-gray-400" />
-            </label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="أدخل الرقم الوظيفي..."
-              required
-              className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs bg-gray-50 focus:bg-white focus:border-[#c59b27] outline-none transition"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold text-gray-700 mb-1.5 flex items-center justify-between">
-              <span>كلمة المرور</span>
-              <Lock className="w-3.5 h-3.5 text-gray-400" />
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••"
-              required
-              className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs bg-gray-50 focus:bg-white focus:border-[#c59b27] outline-none transition"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold text-gray-700 mb-1.5 flex items-center justify-between">
-              <span>الصفة / الدور الوظيفي للمحاكاة</span>
-              <ShieldCheck className="w-3.5 h-3.5 text-gray-400" />
-            </label>
-            <select
-              value={selectedRole}
-              onChange={(e) => setSelectedRole(e.target.value as Exclude<UserRole, 'login'>)}
-              className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-xs bg-gray-50 focus:bg-white focus:border-[#c59b27] outline-none transition font-bold text-gray-800"
-            >
-              {roleOptions.map((opt) => (
-                <option key={opt.key} value={opt.key}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </div>
+      {/* Login Main Container */}
+      <div className="w-full bg-white rounded-3xl p-5 sm:p-6 shadow-md border border-gray-100 text-right">
+        {/* Two Clear Tabs */}
+        <div className="grid grid-cols-2 p-1 bg-gray-100/90 rounded-2xl mb-5 text-xs font-bold">
+          <button
+            type="button"
+            onClick={() => {
+              setActiveTab('staff');
+              setStaffError(null);
+            }}
+            className={`py-2.5 px-2 rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer ${
+              activeTab === 'staff'
+                ? 'bg-white text-[#1b4332] shadow-xs'
+                : 'text-gray-500 hover:text-gray-800'
+            }`}
+          >
+            <Building2 className="w-3.5 h-3.5 text-[#c59b27]" />
+            <span>الموظفون والمسؤولون</span>
+          </button>
 
           <button
-            type="submit"
-            className="w-full bg-[#1b4332] hover:bg-[#143728] text-[#e6c566] font-bold py-3.5 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#1b4332]/20 transition cursor-pointer mt-2"
+            type="button"
+            onClick={() => {
+              setActiveTab('admin');
+              setAdminError(null);
+            }}
+            className={`py-2.5 px-2 rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer ${
+              activeTab === 'admin'
+                ? 'bg-[#1b4332] text-[#e6c566] shadow-xs'
+                : 'text-gray-500 hover:text-gray-800'
+            }`}
           >
-            <span>تسجيل الدخول للنظام</span>
-            <ArrowLeft className="w-4 h-4 text-[#e6c566]" />
+            <Shield className="w-3.5 h-3.5" />
+            <span>مدير النظام (Admin)</span>
           </button>
-        </form>
-
-        <div className="mt-4 pt-3 border-t border-gray-100">
-          <p className="text-[10px] text-gray-400 text-center mb-2">الدخول السريع بحسب الصلاحية:</p>
-          <div className="grid grid-cols-2 gap-1.5">
-            {roleOptions.map((opt) => (
-              <button
-                key={opt.key}
-                type="button"
-                onClick={() => onLogin(opt.key)}
-                className="text-[11px] p-2 rounded-xl border border-gray-200 bg-gray-50 hover:bg-green-50 hover:text-[#1b4332] hover:border-[#1b4332]/30 transition text-center font-bold text-gray-700 cursor-pointer"
-              >
-                {opt.label.split(' ')[1]} {opt.label.split(' ')[2] || ''}
-              </button>
-            ))}
-          </div>
         </div>
+
+        {/* Tab 1: Staff & Officers Login */}
+        {activeTab === 'staff' && (
+          <form onSubmit={handleStaffSubmit} className="space-y-4">
+            <div className="text-right pb-1">
+              <span className="text-xs font-extrabold text-[#1b4332] block">
+                دخول الكوادر الأكاديمية والإدارية
+              </span>
+              <span className="text-[11px] text-gray-400">
+                تسجيل الدخول بالرقم الوظيفي المعتمد في الكلية
+              </span>
+            </div>
+
+            {staffError && (
+              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs flex items-center gap-2">
+                <ShieldAlert className="w-4 h-4 shrink-0 text-rose-600" />
+                <span>{staffError}</span>
+              </div>
+            )}
+
+            <div>
+              <label className="block text-xs font-bold text-gray-700 mb-1.5 flex items-center justify-between">
+                <span>الرقم الوظيفي</span>
+                <User className="w-3.5 h-3.5 text-gray-400" />
+              </label>
+              <input
+                type="text"
+                value={staffEmpNum}
+                onChange={(e) => setStaffEmpNum(e.target.value)}
+                placeholder="أدخل الرقم الوظيفي..."
+                required
+                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs bg-gray-50 focus:bg-white focus:border-[#c59b27] outline-none transition"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-gray-700 mb-1.5 flex items-center justify-between">
+                <span>كلمة المرور</span>
+                <Lock className="w-3.5 h-3.5 text-gray-400" />
+              </label>
+              <input
+                type="password"
+                value={staffPassword}
+                onChange={(e) => setStaffPassword(e.target.value)}
+                placeholder="••••••"
+                required
+                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs bg-gray-50 focus:bg-white focus:border-[#c59b27] outline-none transition"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-[#1b4332] hover:bg-[#143728] text-[#e6c566] font-bold py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 shadow-md shadow-[#1b4332]/20 transition cursor-pointer"
+            >
+              <span>تسجيل الدخول إلى النظام</span>
+              <ArrowLeft className="w-4 h-4 text-[#e6c566]" />
+            </button>
+
+            {/* Discreet Helper for Easy Evaluation/Testing */}
+            <div className="pt-3 border-t border-gray-100 text-right">
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[10px] font-bold text-gray-400">
+                  حسابات تجريبية مفعلة (انقر للتعبئة السريعة):
+                </span>
+                <span className="text-[10px] text-gray-400 font-mono">كلمة المرور: 123</span>
+              </div>
+              <div className="grid grid-cols-2 gap-1.5 text-[10px]">
+                <button
+                  type="button"
+                  onClick={() => fillStaffCreds('4412098', '123')}
+                  className="p-1.5 rounded-lg border border-gray-200 bg-gray-50 hover:bg-emerald-50 hover:border-emerald-300 text-gray-700 text-right font-medium transition cursor-pointer"
+                >
+                  <span className="font-bold text-[#1b4332]">4412098</span>: موظف مقدم الطلب
+                </button>
+                <button
+                  type="button"
+                  onClick={() => fillStaffCreds('4412001', '123')}
+                  className="p-1.5 rounded-lg border border-gray-200 bg-gray-50 hover:bg-emerald-50 hover:border-emerald-300 text-gray-700 text-right font-medium transition cursor-pointer"
+                >
+                  <span className="font-bold text-[#1b4332]">4412001</span>: المدير المباشر
+                </button>
+                <button
+                  type="button"
+                  onClick={() => fillStaffCreds('4412002', '123')}
+                  className="p-1.5 rounded-lg border border-gray-200 bg-gray-50 hover:bg-emerald-50 hover:border-emerald-300 text-gray-700 text-right font-medium transition cursor-pointer"
+                >
+                  <span className="font-bold text-[#1b4332]">4412002</span>: مدقق الاعتماد
+                </button>
+                <button
+                  type="button"
+                  onClick={() => fillStaffCreds('4412003', '123')}
+                  className="p-1.5 rounded-lg border border-gray-200 bg-gray-50 hover:bg-emerald-50 hover:border-emerald-300 text-gray-700 text-right font-medium transition cursor-pointer"
+                >
+                  <span className="font-bold text-[#1b4332]">4412003</span>: رافع منصة ارتقاء
+                </button>
+              </div>
+            </div>
+          </form>
+        )}
+
+        {/* Tab 2: System Admin Login */}
+        {activeTab === 'admin' && (
+          <form onSubmit={handleAdminSubmit} className="space-y-4">
+            <div className="bg-[#1b4332]/5 p-3 rounded-2xl border border-[#1b4332]/10 text-right">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="w-2 h-2 rounded-full bg-[#c59b27]"></span>
+                <span className="text-xs font-bold text-[#1b4332]">
+                  بوابة إدارة وتكوين النظام المركزية
+                </span>
+              </div>
+              <p className="text-[11px] text-gray-600 leading-relaxed">
+                مخصصة لمدير النظام لإدارة المستخدمين، منح وتعديل الصلاحيات، ومتابعة سير عمل منظومة ارتقاء.
+              </p>
+            </div>
+
+            {adminError && (
+              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs flex items-center gap-2">
+                <ShieldAlert className="w-4 h-4 shrink-0 text-rose-600" />
+                <span>{adminError}</span>
+              </div>
+            )}
+
+            <div>
+              <label className="block text-xs font-bold text-gray-700 mb-1.5 flex items-center justify-between">
+                <span>اسم مستخدم مدير النظام</span>
+                <KeyRound className="w-3.5 h-3.5 text-[#c59b27]" />
+              </label>
+              <input
+                type="text"
+                value={adminUsername}
+                onChange={(e) => setAdminUsername(e.target.value)}
+                placeholder="أدخل اسم المستخدم (مثل: admin)..."
+                required
+                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs bg-gray-50 focus:bg-white focus:border-[#c59b27] outline-none transition"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-gray-700 mb-1.5 flex items-center justify-between">
+                <span>كلمة مرور المسؤول</span>
+                <Lock className="w-3.5 h-3.5 text-gray-400" />
+              </label>
+              <input
+                type="password"
+                value={adminPassword}
+                onChange={(e) => setAdminPassword(e.target.value)}
+                placeholder="••••••"
+                required
+                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs bg-gray-50 focus:bg-white focus:border-[#c59b27] outline-none transition"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-[#1b4332] hover:bg-[#143728] text-[#e6c566] font-extrabold py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 shadow-md shadow-[#1b4332]/25 transition cursor-pointer"
+            >
+              <Shield className="w-4 h-4 text-[#e6c566]" />
+              <span>دخول لوحة تحكم مدير النظام</span>
+            </button>
+
+            <div className="pt-2 text-center">
+              <span className="text-[10px] text-gray-400 inline-flex items-center gap-1">
+                <span>بيانات مدير النظام الافتراضية:</span>
+                <span className="font-mono font-bold text-gray-600">admin</span> /{' '}
+                <span className="font-mono font-bold text-gray-600">admin</span>
+              </span>
+            </div>
+          </form>
+        )}
       </div>
     </div>
   );
