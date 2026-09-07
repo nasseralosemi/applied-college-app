@@ -5,30 +5,61 @@
   --dark-green: #081c15;
   --accent-gold: #c59b27;
   --gold-light: #e6c566;
-  --bg-light: #f4f7f6;
+  --bg-light: #f8fafc;
   --card-bg: #ffffff;
-  --text-main: #2d3748;
-  --text-muted: #718096;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
 }
 
 body {
   font-family: 'Tajawal', system-ui, -apple-system, sans-serif;
   -webkit-tap-highlight-color: transparent;
+  background-color: #f8fafc;
 }
 
 /* Custom subtle scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.03);
+  background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(27, 67, 50, 0.25);
+  background: rgba(27, 67, 50, 0.2);
   border-radius: 9999px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(27, 67, 50, 0.45);
+  background: rgba(27, 67, 50, 0.4);
 }
 
+/* Smooth micro-interaction animations */
+@keyframes fadeSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-slide-up {
+  animation: fadeSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite;
+}

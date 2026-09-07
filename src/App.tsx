@@ -280,8 +280,12 @@ export default function App() {
       dir="rtl"
       className="min-h-screen w-full bg-[#f8fafc] flex flex-col text-slate-800 antialiased font-['Tajawal',sans-serif]"
     >
-      {/* App Container - Full Screen Mobile Layout */}
-      <div className="w-full max-w-xl mx-auto min-h-screen flex flex-col bg-[#f8fafc] relative shadow-none">
+      {/* App Container - Full Screen Mobile Layout with Independent Scroll */}
+      <div
+        className={`w-full max-w-xl mx-auto flex flex-col bg-[#f8fafc] relative shadow-none ${
+          currentRole !== 'login' ? 'h-screen max-h-screen overflow-hidden' : 'min-h-screen'
+        }`}
+      >
         {/* In-app Toast */}
         <Toast toast={toast} onClose={() => setToast(null)} />
 

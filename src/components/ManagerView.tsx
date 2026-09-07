@@ -243,15 +243,15 @@ export const ManagerView: React.FC<Props> = ({
       </div>
 
       {/* 1. Interactive Status Tabs (نظام التبويبات التفاعلي) */}
-      <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-100/90 rounded-2xl border border-slate-200/80">
+      <div className="grid grid-cols-3 gap-1.5 p-1.5 bg-slate-200/70 rounded-2xl border border-slate-200 shadow-inner">
         {/* Tab 1: بانتظار موافقتي */}
         <button
           type="button"
           onClick={() => setActiveTab('pending')}
-          className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+          className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-bold active:scale-95 transition-all duration-150 cursor-pointer ${
             activeTab === 'pending'
-              ? 'bg-[#1b4332] text-white shadow-sm'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+              ? 'bg-[#1b4332] text-[#e6c566] shadow-md'
+              : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
           }`}
         >
           <div className="flex items-center gap-1">
@@ -261,10 +261,10 @@ export const ManagerView: React.FC<Props> = ({
           <span
             className={`text-[10px] px-2 py-0.5 rounded-full font-bold leading-none ${
               activeTab === 'pending'
-                ? 'bg-amber-400 text-slate-900'
+                ? 'bg-[#c59b27] text-slate-950'
                 : pendingRequests.length > 0
                 ? 'bg-amber-100 text-amber-900 font-bold'
-                : 'bg-slate-200 text-slate-600'
+                : 'bg-slate-300 text-slate-700'
             }`}
           >
             {pendingRequests.length}
@@ -275,10 +275,10 @@ export const ManagerView: React.FC<Props> = ({
         <button
           type="button"
           onClick={() => setActiveTab('referred')}
-          className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+          className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-bold active:scale-95 transition-all duration-150 cursor-pointer ${
             activeTab === 'referred'
-              ? 'bg-[#1b4332] text-white shadow-sm'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+              ? 'bg-[#1b4332] text-[#e6c566] shadow-md'
+              : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
           }`}
         >
           <div className="flex items-center gap-1">
@@ -288,7 +288,7 @@ export const ManagerView: React.FC<Props> = ({
           <span
             className={`text-[10px] px-2 py-0.5 rounded-full font-bold leading-none ${
               activeTab === 'referred'
-                ? 'bg-[#c59b27] text-slate-900'
+                ? 'bg-[#c59b27] text-slate-950'
                 : 'bg-emerald-100 text-emerald-900'
             }`}
           >
@@ -300,23 +300,23 @@ export const ManagerView: React.FC<Props> = ({
         <button
           type="button"
           onClick={() => setActiveTab('returned')}
-          className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+          className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-bold active:scale-95 transition-all duration-150 cursor-pointer ${
             activeTab === 'returned'
-              ? 'bg-[#1b4332] text-white shadow-sm'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+              ? 'bg-[#1b4332] text-[#e6c566] shadow-md'
+              : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
           }`}
         >
           <div className="flex items-center gap-1">
             <RotateCcw className="w-3.5 h-3.5 text-rose-400" />
-            <span className="whitespace-nowrap">مسترجعة / مرفوضة</span>
+            <span className="whitespace-nowrap">مسترجعة</span>
           </div>
           <span
             className={`text-[10px] px-2 py-0.5 rounded-full font-bold leading-none ${
               activeTab === 'returned'
-                ? 'bg-rose-400 text-slate-900'
+                ? 'bg-rose-400 text-slate-950'
                 : returnedRequests.length > 0
                 ? 'bg-rose-100 text-rose-900'
-                : 'bg-slate-200 text-slate-600'
+                : 'bg-slate-300 text-slate-700'
             }`}
           >
             {returnedRequests.length}
@@ -326,9 +326,9 @@ export const ManagerView: React.FC<Props> = ({
 
       {/* TAB CONTENT 1: بانتظار موافقتي */}
       {activeTab === 'pending' && (
-        <div className="space-y-3">
+        <div className="space-y-3 animate-fade-slide-up">
           {pendingRequests.length === 0 ? (
-            <div className="bg-white rounded-2xl p-8 text-center border border-slate-100 shadow-sm">
+            <div className="bg-white rounded-3xl p-8 text-center border border-slate-100 shadow-sm">
               <div className="w-12 h-12 bg-emerald-50 text-[#1b4332] rounded-2xl flex items-center justify-center mx-auto mb-2 shadow-xs">
                 <UserCheck className="w-6 h-6" />
               </div>
@@ -345,7 +345,7 @@ export const ManagerView: React.FC<Props> = ({
               return (
                 <div
                   key={r.id}
-                  className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 border-r-4 border-r-[#c59b27] hover:shadow-md transition"
+                  className="bg-white rounded-3xl p-4 sm:p-5 shadow-md hover:shadow-xl transition-all duration-200 border border-slate-100 border-r-4 border-r-[#c59b27]"
                 >
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <div>
@@ -384,7 +384,7 @@ export const ManagerView: React.FC<Props> = ({
                   )}
 
                   {/* Key Metadata Badges */}
-                  <div className="flex flex-wrap gap-2 text-[11px] text-slate-600 bg-slate-50 p-2.5 rounded-xl mb-2.5">
+                  <div className="flex flex-wrap gap-2 text-[11px] text-slate-600 bg-slate-50/90 p-2.5 rounded-2xl mb-2.5 border border-slate-100">
                     <span className="flex items-center gap-1">
                       <Calendar className="w-3.5 h-3.5 text-slate-400" />
                       <span>{r.startDate || r.date}</span>
@@ -413,7 +413,7 @@ export const ManagerView: React.FC<Props> = ({
                     )}
                   </div>
 
-                  <div className="bg-slate-50/70 p-2 rounded-lg text-[11px] text-slate-600 mb-3 italic">
+                  <div className="bg-slate-50/80 p-2 rounded-xl text-[11px] text-slate-600 mb-3 italic border border-slate-100">
                     <span className="font-bold not-italic text-slate-700">الملخص: </span>
                     {r.summary || 'لا يوجد ملخص إضافي'}
                   </div>
@@ -423,7 +423,7 @@ export const ManagerView: React.FC<Props> = ({
                     <button
                       type="button"
                       onClick={() => setSelectedRequest(r)}
-                      className="text-[11px] text-[#1b4332] hover:text-[#c59b27] font-bold flex items-center gap-1.5 transition cursor-pointer bg-slate-50 hover:bg-amber-50/60 px-2.5 py-1.5 rounded-lg border border-slate-200"
+                      className="text-[11px] text-[#1b4332] hover:text-[#c59b27] font-bold flex items-center gap-1.5 active:scale-95 transition-all duration-150 cursor-pointer bg-slate-50 hover:bg-amber-50/60 px-3 py-1.5 rounded-xl border border-slate-200"
                     >
                       <FileSearch className="w-3.5 h-3.5 text-[#c59b27]" />
                       <span>عرض تفاصيل الطلب والتاريخ الإداري</span>
@@ -440,7 +440,7 @@ export const ManagerView: React.FC<Props> = ({
                     <button
                       type="button"
                       onClick={() => onApprove(r.id)}
-                      className="flex-1 bg-[#1b4332] hover:bg-[#143728] text-[#e6c566] font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm transition cursor-pointer"
+                      className="flex-1 bg-[#1b4332] hover:bg-[#143728] text-[#e6c566] font-bold py-2.5 px-3 rounded-2xl text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all duration-150 cursor-pointer"
                     >
                       <Check className="w-3.5 h-3.5 text-[#e6c566]" />
                       <span>اعتماد وتمرير للتدقيق</span>
@@ -449,7 +449,7 @@ export const ManagerView: React.FC<Props> = ({
                     <button
                       type="button"
                       onClick={() => onReturnClick(r.id)}
-                      className="flex-1 bg-slate-100 hover:bg-amber-50 text-slate-700 hover:text-amber-900 font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 border border-slate-200 hover:border-amber-300 transition cursor-pointer"
+                      className="flex-1 bg-slate-100 hover:bg-amber-50 text-slate-700 hover:text-amber-900 font-bold py-2.5 px-3 rounded-2xl text-xs flex items-center justify-center gap-1.5 border border-slate-200 hover:border-amber-300 active:scale-95 transition-all duration-150 cursor-pointer shadow-xs"
                     >
                       <CornerUpLeft className="w-3.5 h-3.5" />
                       <span>إرجاع بملاحظة</span>
@@ -464,9 +464,9 @@ export const ManagerView: React.FC<Props> = ({
 
       {/* TAB CONTENT 2: تمت إحالتها (Referred / Previously Approved) */}
       {activeTab === 'referred' && (
-        <div className="space-y-3">
+        <div className="space-y-3 animate-fade-slide-up">
           {referredRequests.length === 0 ? (
-            <div className="bg-white rounded-2xl p-8 text-center border border-slate-100 shadow-sm">
+            <div className="bg-white rounded-3xl p-8 text-center border border-slate-100 shadow-sm">
               <div className="w-12 h-12 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center mx-auto mb-2">
                 <Send className="w-6 h-6" />
               </div>
@@ -563,7 +563,7 @@ export const ManagerView: React.FC<Props> = ({
                     <button
                       type="button"
                       onClick={() => setSelectedRequest(r)}
-                      className="w-full bg-[#1b4332] hover:bg-[#143728] text-[#e6c566] font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-sm transition cursor-pointer"
+                      className="w-full bg-[#1b4332] hover:bg-[#143728] text-[#e6c566] font-bold py-2.5 px-3 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md active:scale-95 transition-all duration-150 cursor-pointer"
                     >
                       <FileSearch className="w-4 h-4 text-[#e6c566]" />
                       <span>عرض تفاصيل الطلب والتاريخ الإداري</span>
@@ -578,9 +578,9 @@ export const ManagerView: React.FC<Props> = ({
 
       {/* TAB CONTENT 3: مسترجعة / مرفوضة */}
       {activeTab === 'returned' && (
-        <div className="space-y-3">
+        <div className="space-y-3 animate-fade-slide-up">
           {returnedRequests.length === 0 ? (
-            <div className="bg-white rounded-2xl p-8 text-center border border-slate-100 shadow-sm">
+            <div className="bg-white rounded-3xl p-8 text-center border border-slate-100 shadow-sm">
               <div className="w-12 h-12 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center mx-auto mb-2">
                 <RotateCcw className="w-6 h-6" />
               </div>
@@ -595,7 +595,7 @@ export const ManagerView: React.FC<Props> = ({
             returnedRequests.map((r) => (
               <div
                 key={r.id}
-                className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 border-r-4 border-r-rose-500 hover:shadow-md transition"
+                className="bg-white rounded-3xl p-4 sm:p-5 shadow-md hover:shadow-xl transition-all duration-200 border border-slate-100 border-r-4 border-r-rose-500"
               >
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <div>
@@ -616,7 +616,7 @@ export const ManagerView: React.FC<Props> = ({
                 </div>
 
                 {/* Reason / Return Note */}
-                <div className="mb-3 p-2.5 bg-rose-50 border border-rose-200 rounded-xl text-[11px] text-rose-900">
+                <div className="mb-3 p-2.5 bg-rose-50 border border-rose-200 rounded-2xl text-[11px] text-rose-900">
                   <span className="font-bold block mb-0.5">سبب الإرجاع / الملاحظة:</span>
                   <p className="leading-relaxed">
                     {r.note || 'يرجى مراجعة وتحديث بعض بيانات النشاط قبل الاعتماد.'}
@@ -624,7 +624,7 @@ export const ManagerView: React.FC<Props> = ({
                 </div>
 
                 {/* Badges */}
-                <div className="flex flex-wrap gap-2 text-[11px] text-slate-600 bg-slate-50 p-2.5 rounded-xl mb-3">
+                <div className="flex flex-wrap gap-2 text-[11px] text-slate-600 bg-slate-50/90 p-2.5 rounded-2xl mb-3 border border-slate-100">
                   <span className="flex items-center gap-1">
                     <Calendar className="w-3.5 h-3.5 text-slate-400" />
                     <span>{r.startDate || r.date}</span>
@@ -646,7 +646,7 @@ export const ManagerView: React.FC<Props> = ({
                   <button
                     type="button"
                     onClick={() => setSelectedRequest(r)}
-                    className="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 transition cursor-pointer"
+                    className="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 px-3 rounded-2xl text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all duration-150 cursor-pointer shadow-xs"
                   >
                     <FileSearch className="w-4 h-4 text-slate-600" />
                     <span>عرض تفاصيل الطلب والتاريخ الإداري</span>

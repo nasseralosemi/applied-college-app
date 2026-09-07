@@ -38,18 +38,18 @@ export const RequestDetailsModal: React.FC<Props> = ({
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/65 backdrop-blur-md animate-in fade-in duration-200"
     >
-      <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl border border-slate-200 max-h-[90vh] flex flex-col overflow-hidden text-right font-['Tajawal',sans-serif]">
+      <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-200/90 max-h-[92vh] flex flex-col overflow-hidden text-right font-['Tajawal',sans-serif] animate-fade-slide-up">
         {/* Modal Header */}
-        <div className="bg-[#1b4332] text-white p-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-[#c59b27]/20 border border-[#c59b27]/40 flex items-center justify-center text-[#e6c566]">
+        <div className="bg-gradient-to-r from-[#1b4332] via-[#143728] to-[#081c15] text-white p-4 sm:p-5 flex items-center justify-between border-b border-[#c59b27]/30">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-2xl bg-[#c59b27]/25 border border-[#c59b27]/50 flex items-center justify-center text-[#e6c566] shadow-sm">
               <FileText className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-xs font-bold leading-tight">تفاصيل استمارة النشاط المعتمدة</h3>
-              <p className="text-[10px] text-emerald-200/80">
+              <h3 className="text-xs sm:text-sm font-bold leading-tight">تفاصيل استمارة النشاط المعتمدة</h3>
+              <p className="text-[10px] text-emerald-200/90">
                 طلب رقم: #{request.id} • منصة ارتقاء
               </p>
             </div>
@@ -58,7 +58,7 @@ export const RequestDetailsModal: React.FC<Props> = ({
             type="button"
             onClick={onClose}
             aria-label="إغلاق"
-            className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer"
+            className="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 text-white flex items-center justify-center transition-all cursor-pointer border border-white/15"
           >
             <X className="w-4 h-4" />
           </button>
@@ -343,11 +343,11 @@ export const RequestDetailsModal: React.FC<Props> = ({
         </div>
 
         {/* Modal Footer */}
-        <div className="bg-slate-100 p-3 border-t border-slate-200 flex items-center justify-end">
+        <div className="bg-slate-50 p-3.5 border-t border-slate-200/80 flex items-center justify-end">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition cursor-pointer"
+            className="px-5 py-2.5 bg-slate-900 hover:bg-black active:scale-95 text-white rounded-2xl text-xs font-bold transition-all shadow-md cursor-pointer"
           >
             إغلاق النافذة
           </button>

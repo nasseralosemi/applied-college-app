@@ -35,13 +35,13 @@ export const ReturnNoteModal: React.FC<Props> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in">
-      <div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-5 border border-gray-100 text-right animate-in zoom-in-95">
-        <div className="flex items-center justify-between border-b border-gray-100 pb-3 mb-3">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-slide-up font-['Tajawal',sans-serif]">
+      <div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-5 sm:p-6 border border-slate-100 text-right">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
           <button
             type="button"
             onClick={onCancel}
-            className="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 cursor-pointer transition"
+            className="p-1.5 text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-100 cursor-pointer active:scale-95 transition-all duration-150"
           >
             <X className="w-5 h-5" />
           </button>
@@ -51,8 +51,8 @@ export const ReturnNoteModal: React.FC<Props> = ({
           </div>
         </div>
 
-        <p className="text-xs text-gray-600 mb-3 leading-relaxed">
-          يرجى تدوين سبب الإرجاع والملاحظة التوجيهية إلى <span className="font-bold text-gray-900">({targetRoleLabel})</span>:
+        <p className="text-xs text-slate-600 mb-3 leading-relaxed">
+          يرجى تدوين سبب الإرجاع والملاحظة التوجيهية إلى <span className="font-bold text-slate-900">({targetRoleLabel})</span>:
         </p>
 
         <form onSubmit={handleSubmit}>
@@ -62,19 +62,19 @@ export const ReturnNoteModal: React.FC<Props> = ({
             rows={3}
             required
             placeholder="اكتب سبب الإرجاع هنا بالتفصيل..."
-            className="w-full text-xs p-3 rounded-2xl border border-gray-200 focus:border-[#c59b27] outline-none transition bg-gray-50/70"
+            className="w-full text-xs p-3 rounded-2xl border border-slate-200 focus:border-[#c59b27] outline-none transition bg-slate-50/70"
             autoFocus
           />
 
           <div className="mt-2 mb-4">
-            <p className="text-[10px] text-gray-400 mb-1.5 font-bold">ملاحظات شائعة سريعة:</p>
+            <p className="text-[10px] text-slate-400 mb-1.5 font-bold">ملاحظات شائعة سريعة:</p>
             <div className="flex flex-wrap gap-1.5">
               {presets.map((p, idx) => (
                 <button
                   key={idx}
                   type="button"
                   onClick={() => setNote(p)}
-                  className="text-[10px] bg-gray-50 hover:bg-amber-50 hover:text-amber-900 border border-gray-200 hover:border-amber-300 rounded-xl px-2.5 py-1 transition text-right cursor-pointer"
+                  className="text-[10px] bg-slate-50 hover:bg-amber-50 hover:text-amber-900 border border-slate-200 hover:border-amber-300 rounded-xl px-2.5 py-1 text-right active:scale-95 transition-all duration-150 cursor-pointer"
                 >
                   {p}
                 </button>
@@ -86,7 +86,7 @@ export const ReturnNoteModal: React.FC<Props> = ({
             <button
               type="submit"
               disabled={!note.trim()}
-              className="flex-1 bg-[#1b4332] hover:bg-[#143728] disabled:opacity-50 text-[#e6c566] font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 transition shadow-sm cursor-pointer"
+              className="flex-1 bg-gradient-to-r from-[#1b4332] via-[#143728] to-[#081c15] hover:opacity-95 disabled:opacity-50 text-[#e6c566] font-bold py-3 px-3 rounded-2xl text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all duration-150 cursor-pointer border border-[#c59b27]/30"
             >
               <Send className="w-3.5 h-3.5 text-[#e6c566]" />
               <span>إرسال الملاحظة والإرجاع</span>
@@ -94,7 +94,7 @@ export const ReturnNoteModal: React.FC<Props> = ({
             <button
               type="button"
               onClick={onCancel}
-              className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-xs transition cursor-pointer"
+              className="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-2xl text-xs active:scale-95 transition-all duration-150 cursor-pointer"
             >
               إلغاء
             </button>

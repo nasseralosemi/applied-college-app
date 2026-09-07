@@ -33,7 +33,6 @@ export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
     );
 
     if (!user) {
-      // Check if they accidentally entered admin
       if (cleanEmpNum.toLowerCase() === 'admin') {
         setStaffError('حساب مدير النظام مخصص للتبويب الآخر. يرجى التبديل لتبويب "دخول مدير النظام".');
         return;
@@ -93,33 +92,33 @@ export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
   };
 
   return (
-    <div className="py-4 px-2 sm:px-4 flex flex-col items-center justify-center text-center">
+    <div className="py-6 px-2 sm:px-4 flex flex-col items-center justify-center text-center font-['Tajawal',sans-serif]">
       {/* Brand Crest */}
-      <div className="w-16 h-16 bg-[#1b4332] rounded-2xl flex items-center justify-center shadow-lg shadow-[#1b4332]/25 mb-3 border border-[#1b4332]">
-        <div className="w-8 h-8 border-4 border-[#c59b27] rounded-full"></div>
+      <div className="w-16 h-16 bg-[#1b4332] rounded-3xl flex items-center justify-center shadow-xl shadow-[#1b4332]/25 mb-3 border-2 border-[#c59b27]/40 ring-4 ring-[#1b4332]/10">
+        <div className="w-8 h-8 border-4 border-[#e6c566] rounded-full"></div>
       </div>
 
       <h2 className="text-xl font-extrabold text-[#1b4332] tracking-tight mb-1">
         الكلية التطبيقية
       </h2>
-      <p className="text-xs text-gray-500 font-medium mb-5">
+      <p className="text-xs text-slate-500 font-medium mb-5 max-w-sm">
         بوابة اعتماد وتوثيق الأنشطة والدورات ومواءمة منصة ارتقاء
       </p>
 
       {/* Login Main Container */}
-      <div className="w-full bg-white rounded-3xl p-5 sm:p-6 shadow-md border border-gray-100 text-right">
+      <div className="w-full max-w-md bg-white rounded-3xl p-6 sm:p-7 shadow-xl border border-slate-100 text-right animate-fade-slide-up">
         {/* Two Clear Tabs */}
-        <div className="grid grid-cols-2 p-1 bg-gray-100/90 rounded-2xl mb-5 text-xs font-bold">
+        <div className="grid grid-cols-2 p-1.5 bg-slate-100/90 rounded-2xl mb-5 text-xs font-bold border border-slate-200/80 shadow-inner">
           <button
             type="button"
             onClick={() => {
               setActiveTab('staff');
               setStaffError(null);
             }}
-            className={`py-2.5 px-2 rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer ${
+            className={`py-2.5 px-2 rounded-xl active:scale-95 transition-all duration-150 flex items-center justify-center gap-1.5 cursor-pointer ${
               activeTab === 'staff'
-                ? 'bg-white text-[#1b4332] shadow-xs'
-                : 'text-gray-500 hover:text-gray-800'
+                ? 'bg-white text-[#1b4332] shadow-sm font-extrabold'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <Building2 className="w-3.5 h-3.5 text-[#c59b27]" />
@@ -132,10 +131,10 @@ export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
               setActiveTab('admin');
               setAdminError(null);
             }}
-            className={`py-2.5 px-2 rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer ${
+            className={`py-2.5 px-2 rounded-xl active:scale-95 transition-all duration-150 flex items-center justify-center gap-1.5 cursor-pointer ${
               activeTab === 'admin'
-                ? 'bg-[#1b4332] text-[#e6c566] shadow-xs'
-                : 'text-gray-500 hover:text-gray-800'
+                ? 'bg-[#1b4332] text-[#e6c566] shadow-sm font-extrabold'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <Shield className="w-3.5 h-3.5" />
@@ -150,22 +149,22 @@ export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
               <span className="text-xs font-extrabold text-[#1b4332] block">
                 دخول الكوادر الأكاديمية والإدارية
               </span>
-              <span className="text-[11px] text-gray-400">
+              <span className="text-[11px] text-slate-400">
                 تسجيل الدخول بالرقم الوظيفي المعتمد في الكلية
               </span>
             </div>
 
             {staffError && (
-              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs flex items-center gap-2">
+              <div className="p-3 bg-rose-50 border border-rose-200 rounded-2xl text-rose-800 text-xs flex items-center gap-2 animate-fade-slide-up">
                 <ShieldAlert className="w-4 h-4 shrink-0 text-rose-600" />
                 <span>{staffError}</span>
               </div>
             )}
 
             <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1.5 flex items-center justify-between">
+              <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center justify-between">
                 <span>الرقم الوظيفي</span>
-                <User className="w-3.5 h-3.5 text-gray-400" />
+                <User className="w-3.5 h-3.5 text-slate-400" />
               </label>
               <input
                 type="text"
@@ -173,14 +172,14 @@ export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
                 onChange={(e) => setStaffEmpNum(e.target.value)}
                 placeholder="أدخل الرقم الوظيفي..."
                 required
-                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs bg-gray-50 focus:bg-white focus:border-[#c59b27] outline-none transition"
+                className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 text-xs bg-slate-50 focus:bg-white focus:border-[#c59b27] outline-none transition"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1.5 flex items-center justify-between">
+              <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center justify-between">
                 <span>كلمة المرور</span>
-                <Lock className="w-3.5 h-3.5 text-gray-400" />
+                <Lock className="w-3.5 h-3.5 text-slate-400" />
               </label>
               <input
                 type="password"
@@ -188,52 +187,52 @@ export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
                 onChange={(e) => setStaffPassword(e.target.value)}
                 placeholder="••••••"
                 required
-                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs bg-gray-50 focus:bg-white focus:border-[#c59b27] outline-none transition"
+                className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 text-xs bg-slate-50 focus:bg-white focus:border-[#c59b27] outline-none transition"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full bg-[#1b4332] hover:bg-[#143728] text-[#e6c566] font-bold py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 shadow-md shadow-[#1b4332]/20 transition cursor-pointer"
+              className="w-full bg-gradient-to-r from-[#1b4332] via-[#143728] to-[#081c15] hover:opacity-95 text-[#e6c566] font-bold py-3.5 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#1b4332]/25 active:scale-95 transition-all duration-150 cursor-pointer border border-[#c59b27]/30"
             >
               <span>تسجيل الدخول إلى النظام</span>
               <ArrowLeft className="w-4 h-4 text-[#e6c566]" />
             </button>
 
             {/* Discreet Helper for Easy Evaluation/Testing */}
-            <div className="pt-3 border-t border-gray-100 text-right">
+            <div className="pt-3 border-t border-slate-100 text-right">
               <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[10px] font-bold text-gray-400">
+                <span className="text-[10px] font-bold text-slate-400">
                   حسابات تجريبية مفعلة (انقر للتعبئة السريعة):
                 </span>
-                <span className="text-[10px] text-gray-400 font-mono">كلمة المرور: 123</span>
+                <span className="text-[10px] text-slate-400 font-mono">كلمة المرور: 123</span>
               </div>
               <div className="grid grid-cols-2 gap-1.5 text-[10px]">
                 <button
                   type="button"
                   onClick={() => fillStaffCreds('4412098', '123')}
-                  className="p-1.5 rounded-lg border border-gray-200 bg-gray-50 hover:bg-emerald-50 hover:border-emerald-300 text-gray-700 text-right font-medium transition cursor-pointer"
+                  className="p-2 rounded-xl border border-slate-200 bg-slate-50/80 hover:bg-emerald-50 hover:border-emerald-300 text-slate-700 text-right font-medium active:scale-95 transition-all duration-150 cursor-pointer shadow-xs"
                 >
-                  <span className="font-bold text-[#1b4332]">4412098</span>: موظف مقدم الطلب
+                  <span className="font-bold text-[#1b4332]">4412098</span>: مقدم الطلب
                 </button>
                 <button
                   type="button"
                   onClick={() => fillStaffCreds('4412001', '123')}
-                  className="p-1.5 rounded-lg border border-gray-200 bg-gray-50 hover:bg-emerald-50 hover:border-emerald-300 text-gray-700 text-right font-medium transition cursor-pointer"
+                  className="p-2 rounded-xl border border-slate-200 bg-slate-50/80 hover:bg-emerald-50 hover:border-emerald-300 text-slate-700 text-right font-medium active:scale-95 transition-all duration-150 cursor-pointer shadow-xs"
                 >
                   <span className="font-bold text-[#1b4332]">4412001</span>: المدير المباشر
                 </button>
                 <button
                   type="button"
                   onClick={() => fillStaffCreds('4412002', '123')}
-                  className="p-1.5 rounded-lg border border-gray-200 bg-gray-50 hover:bg-emerald-50 hover:border-emerald-300 text-gray-700 text-right font-medium transition cursor-pointer"
+                  className="p-2 rounded-xl border border-slate-200 bg-slate-50/80 hover:bg-emerald-50 hover:border-emerald-300 text-slate-700 text-right font-medium active:scale-95 transition-all duration-150 cursor-pointer shadow-xs"
                 >
                   <span className="font-bold text-[#1b4332]">4412002</span>: مدقق الاعتماد
                 </button>
                 <button
                   type="button"
                   onClick={() => fillStaffCreds('4412003', '123')}
-                  className="p-1.5 rounded-lg border border-gray-200 bg-gray-50 hover:bg-emerald-50 hover:border-emerald-300 text-gray-700 text-right font-medium transition cursor-pointer"
+                  className="p-2 rounded-xl border border-slate-200 bg-slate-50/80 hover:bg-emerald-50 hover:border-emerald-300 text-slate-700 text-right font-medium active:scale-95 transition-all duration-150 cursor-pointer shadow-xs"
                 >
                   <span className="font-bold text-[#1b4332]">4412003</span>: رافع منصة ارتقاء
                 </button>
@@ -252,20 +251,20 @@ export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
                   بوابة إدارة وتكوين النظام المركزية
                 </span>
               </div>
-              <p className="text-[11px] text-gray-600 leading-relaxed">
+              <p className="text-[11px] text-slate-600 leading-relaxed">
                 مخصصة لمدير النظام لإدارة المستخدمين، منح وتعديل الصلاحيات، ومتابعة سير عمل منظومة ارتقاء.
               </p>
             </div>
 
             {adminError && (
-              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs flex items-center gap-2">
+              <div className="p-3 bg-rose-50 border border-rose-200 rounded-2xl text-rose-800 text-xs flex items-center gap-2 animate-fade-slide-up">
                 <ShieldAlert className="w-4 h-4 shrink-0 text-rose-600" />
                 <span>{adminError}</span>
               </div>
             )}
 
             <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1.5 flex items-center justify-between">
+              <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center justify-between">
                 <span>اسم مستخدم مدير النظام</span>
                 <KeyRound className="w-3.5 h-3.5 text-[#c59b27]" />
               </label>
@@ -275,14 +274,14 @@ export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
                 onChange={(e) => setAdminUsername(e.target.value)}
                 placeholder="أدخل اسم المستخدم (مثل: admin)..."
                 required
-                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs bg-gray-50 focus:bg-white focus:border-[#c59b27] outline-none transition"
+                className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 text-xs bg-slate-50 focus:bg-white focus:border-[#c59b27] outline-none transition"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1.5 flex items-center justify-between">
+              <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center justify-between">
                 <span>كلمة مرور المسؤول</span>
-                <Lock className="w-3.5 h-3.5 text-gray-400" />
+                <Lock className="w-3.5 h-3.5 text-slate-400" />
               </label>
               <input
                 type="password"
@@ -290,23 +289,23 @@ export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
                 onChange={(e) => setAdminPassword(e.target.value)}
                 placeholder="••••••"
                 required
-                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs bg-gray-50 focus:bg-white focus:border-[#c59b27] outline-none transition"
+                className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 text-xs bg-slate-50 focus:bg-white focus:border-[#c59b27] outline-none transition"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full bg-[#1b4332] hover:bg-[#143728] text-[#e6c566] font-extrabold py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 shadow-md shadow-[#1b4332]/25 transition cursor-pointer"
+              className="w-full bg-gradient-to-r from-[#1b4332] via-[#143728] to-[#081c15] hover:opacity-95 text-[#e6c566] font-extrabold py-3.5 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#1b4332]/25 active:scale-95 transition-all duration-150 cursor-pointer border border-[#c59b27]/30"
             >
               <Shield className="w-4 h-4 text-[#e6c566]" />
               <span>دخول لوحة تحكم مدير النظام</span>
             </button>
 
             <div className="pt-2 text-center">
-              <span className="text-[10px] text-gray-400 inline-flex items-center gap-1">
+              <span className="text-[10px] text-slate-400 inline-flex items-center gap-1">
                 <span>بيانات مدير النظام الافتراضية:</span>
-                <span className="font-mono font-bold text-gray-600">admin</span> /{' '}
-                <span className="font-mono font-bold text-gray-600">admin</span>
+                <span className="font-mono font-bold text-slate-600">admin</span> /{' '}
+                <span className="font-mono font-bold text-slate-600">admin</span>
               </span>
             </div>
           </form>
