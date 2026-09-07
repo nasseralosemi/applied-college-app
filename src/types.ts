@@ -13,11 +13,22 @@ export interface SystemUser {
   id: string;
   employeeNumber: string;
   name: string;
+  email?: string;
   role: Exclude<UserRole, 'login'>;
   department: string;
+  branch?: string;
   password?: string;
   isActive: boolean;
   createdAt: string;
+}
+
+export interface AuditLogEntry {
+  id: string;
+  action: string;
+  actor: string;
+  target: string;
+  timestamp: string;
+  type: 'approve' | 'return' | 'upload' | 'user_edit' | 'password_reset' | 'status_toggle' | 'create';
 }
 
 export interface ActivityRequest {
@@ -44,6 +55,12 @@ export interface ActivityRequest {
   note: string;
   submittedAt?: string;
   submittedByEmpNumber?: string;
+  // مسار الاعتماد الإداري والتوجيه الذكي
+  deanApproved?: boolean;
+  deanApprovalDate?: string;
+  assignedUploader?: string; // الموظف المكلف بالرفع لمنصة ارتقاء
+  xPlatformPublish?: boolean; // يتطلب إعلان رسمي في منصة X
+  uploaderInstructions?: string; // مربع التعليمات والتوجيهات للموظف المكلف بالرفع
   // Backwards compatibility fallbacks
   date?: string;
   location?: string;

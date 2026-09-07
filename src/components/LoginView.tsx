@@ -202,8 +202,8 @@ export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
             {/* Discreet Helper for Easy Evaluation/Testing */}
             <div className="pt-3 border-t border-slate-100 text-right">
               <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[10px] font-bold text-slate-400">
-                  حسابات تجريبية مفعلة (انقر للتعبئة السريعة):
+                <span className="text-[10px] font-bold text-slate-500">
+                  الحسابات الرسمية المعتمدة (تعبئة سريعة):
                 </span>
                 <span className="text-[10px] text-slate-400 font-mono">كلمة المرور: 123</span>
               </div>
@@ -213,28 +213,44 @@ export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
                   onClick={() => fillStaffCreds('4412098', '123')}
                   className="p-2 rounded-xl border border-slate-200 bg-slate-50/80 hover:bg-emerald-50 hover:border-emerald-300 text-slate-700 text-right font-medium active:scale-95 transition-all duration-150 cursor-pointer shadow-xs"
                 >
-                  <span className="font-bold text-[#1b4332]">4412098</span>: مقدم الطلب
+                  <div className="font-bold text-[#1b4332] truncate">عبدالرحمن الطوالة</div>
+                  <div className="text-[9px] text-slate-500 flex items-center justify-between">
+                    <span>مقدم الطلب (Employee)</span>
+                    <span className="font-mono font-bold text-emerald-800">4412098</span>
+                  </div>
                 </button>
                 <button
                   type="button"
                   onClick={() => fillStaffCreds('4412001', '123')}
                   className="p-2 rounded-xl border border-slate-200 bg-slate-50/80 hover:bg-emerald-50 hover:border-emerald-300 text-slate-700 text-right font-medium active:scale-95 transition-all duration-150 cursor-pointer shadow-xs"
                 >
-                  <span className="font-bold text-[#1b4332]">4412001</span>: المدير المباشر
+                  <div className="font-bold text-[#1b4332] truncate">عمر الخنيني</div>
+                  <div className="text-[9px] text-slate-500 flex items-center justify-between">
+                    <span>المدير المباشر (Manager)</span>
+                    <span className="font-mono font-bold text-emerald-800">4412001</span>
+                  </div>
                 </button>
                 <button
                   type="button"
                   onClick={() => fillStaffCreds('4412002', '123')}
                   className="p-2 rounded-xl border border-slate-200 bg-slate-50/80 hover:bg-emerald-50 hover:border-emerald-300 text-slate-700 text-right font-medium active:scale-95 transition-all duration-150 cursor-pointer shadow-xs"
                 >
-                  <span className="font-bold text-[#1b4332]">4412002</span>: مدقق الاعتماد
+                  <div className="font-bold text-[#1b4332] truncate">وائل العفيصان</div>
+                  <div className="text-[9px] text-slate-500 flex items-center justify-between">
+                    <span>مدقق الاعتماد (Auditor)</span>
+                    <span className="font-mono font-bold text-emerald-800">4412002</span>
+                  </div>
                 </button>
                 <button
                   type="button"
                   onClick={() => fillStaffCreds('4412003', '123')}
                   className="p-2 rounded-xl border border-slate-200 bg-slate-50/80 hover:bg-emerald-50 hover:border-emerald-300 text-slate-700 text-right font-medium active:scale-95 transition-all duration-150 cursor-pointer shadow-xs"
                 >
-                  <span className="font-bold text-[#1b4332]">4412003</span>: رافع منصة ارتقاء
+                  <div className="font-bold text-[#1b4332] truncate">ناصر العصيمي</div>
+                  <div className="text-[9px] text-slate-500 flex items-center justify-between">
+                    <span>رافع ارتقاء (Uploader)</span>
+                    <span className="font-mono font-bold text-emerald-800">4412003</span>
+                  </div>
                 </button>
               </div>
             </div>
@@ -248,7 +264,7 @@ export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
               <div className="flex items-center gap-2 mb-1">
                 <span className="w-2 h-2 rounded-full bg-[#c59b27]"></span>
                 <span className="text-xs font-bold text-[#1b4332]">
-                  بوابة إدارة وتكوين النظام المركزية
+                  بوابة إدارة وتكوين النظام المركزية (ناصر العصيمي)
                 </span>
               </div>
               <p className="text-[11px] text-slate-600 leading-relaxed">
@@ -303,9 +319,9 @@ export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
 
             <div className="pt-2 text-center">
               <span className="text-[10px] text-slate-400 inline-flex items-center gap-1">
-                <span>بيانات مدير النظام الافتراضية:</span>
-                <span className="font-mono font-bold text-slate-600">admin</span> /{' '}
-                <span className="font-mono font-bold text-slate-600">admin</span>
+                <span>مدير النظام: <strong className="text-slate-700">ناصر العصيمي</strong> (المستخدم:</span>
+                <span className="font-mono font-bold text-slate-700">admin</span> /{' '}
+                <span className="font-mono font-bold text-slate-700">admin</span>)
               </span>
             </div>
           </form>

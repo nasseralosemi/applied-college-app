@@ -15,6 +15,11 @@ import {
   CheckCheck,
   Layers,
   FileSearch,
+  UserCheck,
+  Share2,
+  Award,
+  AlertCircle,
+  Info,
 } from 'lucide-react';
 
 interface Props {
@@ -43,25 +48,33 @@ export const UploaderView: React.FC<Props> = ({
       : readyRequests;
 
   return (
-    <div className="space-y-4 pb-6 font-['Tajawal',sans-serif]">
+    <div className="space-y-4 pb-8 font-['Tajawal',sans-serif] text-right">
       {/* Title Bar */}
-      <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-[#1b4332]/10 flex items-center justify-center text-[#1b4332]">
-            <CloudUpload className="w-4 h-4 text-[#c59b27]" />
-          </div>
-          <div>
-            <h2 className="text-xs font-bold text-[#1b4332] leading-tight">
+      <div className="bg-white rounded-3xl p-4 sm:p-5 shadow-lg border border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-2 h-full bg-gradient-to-b from-[#1b4332] via-[#c59b27] to-[#1b4332]" />
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-200">
+              بوابة ارتقاء
+            </span>
+            <h2 className="text-base sm:text-lg font-extrabold text-[#1b4332]">
               أخذ البيانات والرفع لمنصة ارتقاء الرسمية
             </h2>
-            <p className="text-[10px] text-slate-500">
-              تصدير ومزامنة سجل الأنشطة المعتمدة في السجل المهاري للجامعة
-            </p>
+          </div>
+          <p className="text-xs text-slate-500 mt-1">
+            مزامنة ساعات الأنشطة المعتمدة في السجل المهاري للجامعة وفق توجيهات التدقيق
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <div className="text-right">
+            <span className="text-[10px] text-slate-400 block font-bold">الأنشطة المعتمدة</span>
+            <span className="text-sm font-extrabold text-[#1b4332]">{readyRequests.length} نشاط</span>
+          </div>
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#1b4332] to-[#081c15] text-[#e6c566] flex items-center justify-center shadow-md shadow-[#1b4332]/25">
+            <CloudUpload className="w-5 h-5" />
           </div>
         </div>
-        <span className="text-[10px] bg-emerald-50 text-emerald-900 font-bold px-2.5 py-1 rounded-full border border-emerald-200">
-          {readyRequests.length} معتمد ومكتمل
-        </span>
       </div>
 
       {/* Interactive Tabs */}
@@ -72,7 +85,7 @@ export const UploaderView: React.FC<Props> = ({
           onClick={() => setActiveTab('ready')}
           className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-bold active:scale-95 transition-all duration-150 cursor-pointer ${
             activeTab === 'ready'
-              ? 'bg-[#1b4332] text-[#e6c566] shadow-md'
+              ? 'bg-[#1b4332] text-[#e6c566] shadow-md shadow-[#1b4332]/25'
               : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
           }`}
         >
@@ -99,7 +112,7 @@ export const UploaderView: React.FC<Props> = ({
           onClick={() => setActiveTab('uploaded')}
           className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-bold active:scale-95 transition-all duration-150 cursor-pointer ${
             activeTab === 'uploaded'
-              ? 'bg-[#1b4332] text-[#e6c566] shadow-md'
+              ? 'bg-[#1b4332] text-[#e6c566] shadow-md shadow-[#1b4332]/25'
               : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
           }`}
         >
@@ -118,19 +131,19 @@ export const UploaderView: React.FC<Props> = ({
           </span>
         </button>
 
-        {/* Tab 3: الكل */}
+        {/* Tab 3: أرشيف الكل */}
         <button
           type="button"
           onClick={() => setActiveTab('all')}
           className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-bold active:scale-95 transition-all duration-150 cursor-pointer ${
             activeTab === 'all'
-              ? 'bg-[#1b4332] text-[#e6c566] shadow-md'
+              ? 'bg-[#1b4332] text-[#e6c566] shadow-md shadow-[#1b4332]/25'
               : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
           }`}
         >
           <div className="flex items-center gap-1">
-            <Layers className="w-3.5 h-3.5 text-slate-400" />
-            <span className="whitespace-nowrap">كافة الأنشطة</span>
+            <Layers className="w-3.5 h-3.5 text-[#e6c566]" />
+            <span className="whitespace-nowrap">السجل الكامل</span>
           </div>
           <span
             className={`text-[10px] px-2 py-0.5 rounded-full font-bold leading-none ${
@@ -144,8 +157,8 @@ export const UploaderView: React.FC<Props> = ({
         </button>
       </div>
 
-      {/* Tab Content */}
-      <div className="space-y-3 animate-fade-slide-up">
+      {/* Main Request List */}
+      <div className="space-y-3">
         {displayedRequests.length === 0 ? (
           <div className="bg-white rounded-3xl p-8 text-center border border-slate-100 shadow-sm">
             <div className="w-12 h-12 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center mx-auto mb-2">
@@ -159,7 +172,7 @@ export const UploaderView: React.FC<Props> = ({
                 : 'لا توجد أنشطة متوفرة'}
             </p>
             <p className="text-[11px] text-slate-400">
-              تظهر الأنشطة هنا فور استكمال اعتماد رئيس الكلية ولجنة الضوابط.
+              تظهر الأنشطة هنا فور استكمال اعتماد رئيس الكلية ولجنة الضوابط والتوجيه.
             </p>
           </div>
         ) : (
@@ -188,7 +201,50 @@ export const UploaderView: React.FC<Props> = ({
                   <StatusBadge status={r.status} note={r.note} />
                 </div>
 
-                {/* Rich Field Badges */}
+                {/* Directive & Dispatch Info Bar */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-gradient-to-r from-slate-50 via-amber-50/30 to-slate-50 p-2.5 rounded-2xl text-[11px] mb-3 border border-slate-200/80">
+                  <div className="flex items-center gap-1.5">
+                    <UserCheck className="w-3.5 h-3.5 text-[#1b4332]" />
+                    <span className="text-slate-500">المكلف بالرفع:</span>
+                    <strong className="text-slate-900">
+                      {r.assignedUploader || 'موظف الرفع العام لمنصة ارتقاء'}
+                    </strong>
+                  </div>
+
+                  <div className="flex items-center gap-1.5">
+                    <Share2 className="w-3.5 h-3.5 text-[#c59b27]" />
+                    <span className="text-slate-500">النشر الإعلامي (X):</span>
+                    {r.xPlatformPublish ? (
+                      <span className="font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md flex items-center gap-1">
+                        <span className="bg-slate-900 text-white text-[9px] font-mono px-1 rounded">X</span>
+                        <span>مطلوب إعلان رسمي</span>
+                      </span>
+                    ) : (
+                      <span className="text-slate-500 bg-slate-200/70 px-2 py-0.5 rounded-md">
+                        بدون إعلان (سجل مهاري فقط)
+                      </span>
+                    )}
+                  </div>
+
+                  {r.deanApproved && (
+                    <div className="col-span-full pt-1 flex items-center gap-1.5 text-[10px] text-emerald-800 font-bold border-t border-slate-200/60">
+                      <Award className="w-3 h-3 text-emerald-700" />
+                      <span>معتمد إدارياً ورسمياً من سعادة رئيس الكلية</span>
+                      {r.deanApprovalDate && (
+                        <span className="text-slate-500 font-normal">({r.deanApprovalDate})</span>
+                      )}
+                    </div>
+                  )}
+
+                  {r.uploaderInstructions && (
+                    <div className="col-span-full pt-1 border-t border-slate-200/60 text-[10px] text-slate-700 bg-white/70 p-2 rounded-xl">
+                      <strong className="text-[#1b4332] block mb-0.5">تعليمات وإرشادات المدقق:</strong>
+                      <p className="leading-relaxed">{r.uploaderInstructions}</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Field Badges */}
                 <div className="flex flex-wrap gap-2 text-[11px] text-slate-600 bg-slate-50/90 p-2.5 rounded-2xl mb-3 border border-slate-100">
                   <span className="flex items-center gap-1">
                     <Calendar className="w-3.5 h-3.5 text-slate-400" />
@@ -218,10 +274,6 @@ export const UploaderView: React.FC<Props> = ({
                   )}
                 </div>
 
-                <p className="text-[11px] text-slate-700 mb-3 bg-slate-50/80 p-2.5 rounded-xl italic border border-slate-100">
-                  اكتملت كافة الموافقات الرسمية واعتماد الكلية، البيانات وكشوفات الحضور مطابقة لمعايير منصة ارتقاء.
-                </p>
-
                 {/* View Details Link */}
                 <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
                   <button
@@ -230,8 +282,9 @@ export const UploaderView: React.FC<Props> = ({
                     className="text-[11px] text-[#1b4332] hover:text-[#c59b27] font-bold flex items-center gap-1.5 active:scale-95 transition-all duration-150 cursor-pointer bg-slate-50 hover:bg-amber-50/60 px-3 py-1.5 rounded-xl border border-slate-200"
                   >
                     <FileSearch className="w-3.5 h-3.5 text-[#c59b27]" />
-                    <span>معاينة الاستمارة الرسمية للرفع</span>
+                    <span>عرض الاستمارة ومطابقة كشف الحضور</span>
                   </button>
+
                   {r.transactionNumber && (
                     <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-mono">
                       معاملة: {r.transactionNumber}
@@ -239,6 +292,7 @@ export const UploaderView: React.FC<Props> = ({
                   )}
                 </div>
 
+                {/* Action Buttons */}
                 {!isUploaded ? (
                   <button
                     type="button"
@@ -246,17 +300,16 @@ export const UploaderView: React.FC<Props> = ({
                     className="w-full bg-gradient-to-r from-[#1b4332] via-[#143728] to-[#081c15] text-[#e6c566] font-bold py-3.5 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#1b4332]/25 active:scale-95 transition-all duration-150 cursor-pointer border border-[#c59b27]/30"
                   >
                     <CloudUpload className="w-4 h-4 text-[#e6c566]" />
-                    <span>تأكيد الرفع إلى منصة ارتقاء الرسمية</span>
+                    <span>تأكيد الرفع والمزامنة في منصة ارتقاء (سجل مهاري)</span>
                   </button>
                 ) : (
-                  <div className="pt-2 flex items-center justify-between text-[11px]">
-                    <span className="text-emerald-700 font-bold flex items-center gap-1.5">
-                      <CheckCircle className="w-4 h-4 text-emerald-600" />
-                      <span>تمت المزامنة بنجاح في السجل المهاري</span>
-                    </span>
-                    <span className="text-[#1b4332] font-bold flex items-center gap-1.5 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 shadow-xs">
-                      <span>منصة ارتقاء</span>
-                      <CloudCheck className="w-3.5 h-3.5 text-emerald-600" />
+                  <div className="flex items-center justify-between bg-emerald-50 text-emerald-900 p-2.5 rounded-2xl text-xs font-bold border border-emerald-200">
+                    <div className="flex items-center gap-1.5">
+                      <CheckCheck className="w-4 h-4 text-emerald-600" />
+                      <span>تم توثيق الساعات في منصة ارتقاء بنجاح</span>
+                    </div>
+                    <span className="text-[10px] bg-emerald-200/60 text-emerald-900 px-2 py-0.5 rounded-md">
+                      سجل رقم #{r.id}-IRTQ
                     </span>
                   </div>
                 )}
@@ -266,10 +319,9 @@ export const UploaderView: React.FC<Props> = ({
         )}
       </div>
 
-      {/* Full Request Details Modal */}
       <RequestDetailsModal
         request={selectedRequest}
-        isOpen={Boolean(selectedRequest)}
+        isOpen={!!selectedRequest}
         onClose={() => setSelectedRequest(null)}
       />
     </div>

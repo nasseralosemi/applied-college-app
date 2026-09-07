@@ -1,11 +1,11 @@
-import { ActivityRequest, UserRole, UserProfile, SystemUser } from './types';
+import { ActivityRequest, UserRole, UserProfile, SystemUser, AuditLogEntry } from './types';
 
 export const INITIAL_REQUESTS: ActivityRequest[] = [
   {
     id: 101,
     name: "وثق إنجازك",
     type: "نشاط طلابي",
-    presenter: "وحدة شؤون الطلاب - فرع الزلفي",
+    presenter: "عبدالرحمن الطوالة - وحدة تقنية المعلومات",
     unit: "وحدة شؤون الطلاب",
     branch: "فرع الزلفي - شطر الطلاب",
     startDate: "2026-09-15",
@@ -17,7 +17,7 @@ export const INITIAL_REQUESTS: ActivityRequest[] = [
     deliveryMode: "عن بعد",
     meetingUrl: "https://blackboard.mu.edu.sa/webapps/session-101",
     partnershipApproval: "لا تحتاج إلى موافقة",
-    coordinatorName: "ناصر بن داود العصيمي",
+    coordinatorName: "عبدالرحمن الطوالة",
     summary: "التعريف بمنصة السجل المهاري وآلية الاعتماد ورفع الوثائق للأنشطة غير الصفية",
     status: "pending_manager",
     note: "",
@@ -41,7 +41,7 @@ export const INITIAL_REQUESTS: ActivityRequest[] = [
     deliveryMode: "حضوري",
     physicalLocation: "مدرج الكلية التطبيقية الرئيسي - الزلفي",
     partnershipApproval: "لا تحتاج إلى موافقة",
-    coordinatorName: "د. عبد العزيز المحمود",
+    coordinatorName: "عمر الخنيني",
     summary: "تطبيقات الذكاء الاصطناعي في تحسين الإنتاجية الأكاديمية والمهنية وتوليد الحلول البرمجية",
     status: "pending_auditor",
     note: "",
@@ -55,18 +55,19 @@ export const INITIAL_REQUESTS: ActivityRequest[] = [
     type: "دورة",
     presenter: "وحدة التطوير والجودة",
     unit: "وحدة التطوير والجودة",
-    branch: "فرع المجمعة - شطر الطالبات",
+    branch: "فرع المجمعة - شطر الطلاب",
     startDate: "2026-09-22",
     endDate: "2026-09-23",
     startTime: "11:00 ص",
     hours: "4",
     targetAudience: "الموظفون والكادر الإداري",
-    targetGender: "أنثى (شطر الطالبات)",
+    targetGender: "الجميع",
     deliveryMode: "حضوري",
     physicalLocation: "قاعة التدريب 104 - المجمعة",
     partnershipApproval: "تتطلب موافقة",
     transactionNumber: "44-0982-م",
-    coordinatorName: "أ. منى بن سليمان السعد",
+    coordinatorName: "وائل العفيصان",
+    assignedUploader: "ناصر العصيمي",
     summary: "معايير الاعتماد المؤسسي وضوابط استيفاء ساعات منصة ارتقاء والجودة الشاملة",
     status: "approved_final",
     note: "",
@@ -91,7 +92,8 @@ export const INITIAL_REQUESTS: ActivityRequest[] = [
     meetingUrl: "https://blackboard.mu.edu.sa/webapps/coop-session-2026",
     partnershipApproval: "تتطلب موافقة",
     transactionNumber: "44-1102-ش",
-    coordinatorName: "م. خالد بن راشد العتيبي",
+    coordinatorName: "ناصر العصيمي",
+    assignedUploader: "ناصر العصيمي",
     summary: "توجيه الطلاب لجهات التدريب والربط مع المنصة الوطنية وبناء الشراكات المجتمعية",
     status: "uploaded_irtqaa",
     note: "",
@@ -105,9 +107,11 @@ export const DEFAULT_USERS: SystemUser[] = [
   {
     id: 'u-1',
     employeeNumber: '4412098',
-    name: 'ناصر بن داود العصيمي',
+    name: 'عبدالرحمن الطوالة',
+    email: 'a.altowalah@mu.edu.sa',
     role: 'emp',
     department: 'قسم تقنية المعلومات',
+    branch: 'فرع الزلفي - شطر الطلاب',
     password: '123',
     isActive: true,
     createdAt: '2026-01-10'
@@ -115,9 +119,11 @@ export const DEFAULT_USERS: SystemUser[] = [
   {
     id: 'u-2',
     employeeNumber: '4412001',
-    name: 'د. عبد العزيز المحمود',
+    name: 'عمر الخنيني',
+    email: 'o.alkhonaini@mu.edu.sa',
     role: 'manager',
     department: 'إدارة البرامج والتدريب',
+    branch: 'فرع الزلفي - شطر الطلاب',
     password: '123',
     isActive: true,
     createdAt: '2026-01-05'
@@ -125,9 +131,11 @@ export const DEFAULT_USERS: SystemUser[] = [
   {
     id: 'u-3',
     employeeNumber: '4412002',
-    name: 'أ. منى بن سليمان السعد',
+    name: 'وائل العفيصان',
+    email: 'w.alofaisan@mu.edu.sa',
     role: 'auditor',
     department: 'وحدة التدقيق والاعتماد الأكاديمي',
+    branch: 'فرع الزلفي - شطر الطلاب',
     password: '123',
     isActive: true,
     createdAt: '2026-01-08'
@@ -135,9 +143,11 @@ export const DEFAULT_USERS: SystemUser[] = [
   {
     id: 'u-4',
     employeeNumber: '4412003',
-    name: 'م. خالد بن راشد العتيبي',
+    name: 'ناصر العصيمي',
+    email: 'n.alosaimi@mu.edu.sa',
     role: 'uploader',
     department: 'وحدة التوثيق ومنصة ارتقاء',
+    branch: 'فرع الزلفي - شطر الطلاب',
     password: '123',
     isActive: true,
     createdAt: '2026-01-12'
@@ -145,57 +155,102 @@ export const DEFAULT_USERS: SystemUser[] = [
   {
     id: 'u-admin',
     employeeNumber: 'admin',
-    name: 'د. فيصل بن فهد القحطاني',
+    name: 'ناصر العصيمي',
+    email: 'admin.alosaimi@mu.edu.sa',
     role: 'admin',
     department: 'إدارة النظام والتحكم العام',
+    branch: 'المقر الرئيسي - إدارة الكلية',
     password: 'admin',
     isActive: true,
     createdAt: '2026-01-01'
   }
 ];
 
+export const INITIAL_AUDIT_LOGS: AuditLogEntry[] = [
+  {
+    id: 'log-1',
+    action: 'توثيق ومزامنة النشاط في منصة ارتقاء الرسمية',
+    actor: 'ناصر العصيمي',
+    target: 'ملتقى التهيئة للتدريب التعاوني والشراكات',
+    timestamp: 'اليوم، 10:45 ص',
+    type: 'upload',
+  },
+  {
+    id: 'log-2',
+    action: 'اعتماد نهائي وتوجيه للرفع لمنصة ارتقاء',
+    actor: 'وائل العفيصان',
+    target: 'دورة التميز المؤسسي والجودة الأكاديمية',
+    timestamp: 'اليوم، 09:30 ص',
+    type: 'approve',
+  },
+  {
+    id: 'log-3',
+    action: 'موافقة وتوصية المدير المباشر على النشاط',
+    actor: 'عمر الخنيني',
+    target: 'ورشة مهارات الذكاء الاصطناعي التوليدي',
+    timestamp: 'أمس، 02:15 م',
+    type: 'approve',
+  },
+  {
+    id: 'log-4',
+    action: 'تحديث بيانات الحساب وتعيين الصلاحيات',
+    actor: 'ناصر العصيمي (مدير النظام)',
+    target: 'حساب: عبدالرحمن الطوالة',
+    timestamp: 'أمس، 11:20 ص',
+    type: 'user_edit',
+  },
+  {
+    id: 'log-5',
+    action: 'تقديم استمارة نشاط طلابي جديد للاعتماد',
+    actor: 'عبدالرحمن الطوالة',
+    target: 'فعالية وثق إنجازك',
+    timestamp: 'أمس، 08:40 ص',
+    type: 'create',
+  },
+];
+
 export const ROLE_PROFILES: Record<Exclude<UserRole, 'login'>, UserProfile> = {
   emp: {
-    name: "ناصر بن داود العصيمي",
-    roleTitle: "موظف (مقدم الطلب)",
+    name: "عبدالرحمن الطوالة",
+    roleTitle: "مقدم الطلب (Employee)",
     roleBadge: "مقدم الطلب",
-    avatarText: "ن ع",
+    avatarText: "ع ط",
     employeeNumber: "4412098",
     department: "قسم تقنية المعلومات",
     roleKey: "emp"
   },
   manager: {
-    name: "د. عبد العزيز المحمود",
-    roleTitle: "المدير المباشر",
+    name: "عمر الخنيني",
+    roleTitle: "المدير المباشر (Direct Manager)",
     roleBadge: "اعتماد المدير المباشر",
-    avatarText: "ع م",
+    avatarText: "ع خ",
     employeeNumber: "4412001",
     department: "إدارة البرامج والتدريب",
     roleKey: "manager"
   },
   auditor: {
-    name: "أ. منى بن سليمان السعد",
-    roleTitle: "مسؤول التدقيق والاعتماد",
+    name: "وائل العفيصان",
+    roleTitle: "مدقق المنظومة والاعتماد (Auditor)",
     roleBadge: "مراجعة الضوابط والرئاسة",
-    avatarText: "م س",
+    avatarText: "و ع",
     employeeNumber: "4412002",
     department: "وحدة التدقيق والاعتماد الأكاديمي",
     roleKey: "auditor"
   },
   uploader: {
-    name: "م. خالد بن راشد العتيبي",
-    roleTitle: "منسق الرفع لمنصة ارتقاء",
+    name: "ناصر العصيمي",
+    roleTitle: "مسؤول الرفع والتوثيق (Artaqa Uploader)",
     roleBadge: "التجهيز والرفع النهائي",
-    avatarText: "خ ع",
+    avatarText: "ن ع",
     employeeNumber: "4412003",
     department: "وحدة التوثيق ومنصة ارتقاء",
     roleKey: "uploader"
   },
   admin: {
-    name: "د. فيصل بن فهد القحطاني",
+    name: "ناصر العصيمي",
     roleTitle: "مدير النظام العام (System Admin)",
     roleBadge: "لوحة التحكم والتحكم المركزي",
-    avatarText: "ف ق",
+    avatarText: "ن ع",
     employeeNumber: "admin",
     department: "إدارة النظام والتحكم العام",
     roleKey: "admin"

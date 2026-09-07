@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { ActivityRequest, UserRole, SystemUser, UserProfile } from './types';
-import { INITIAL_REQUESTS, DEFAULT_USERS, ROLE_PROFILES } from './data';
+import { ActivityRequest, UserRole, SystemUser, UserProfile, AuditLogEntry } from './types';
+import { INITIAL_REQUESTS, DEFAULT_USERS, ROLE_PROFILES, INITIAL_AUDIT_LOGS } from './data';
 import { AppHeader } from './components/AppHeader';
 import { LoginView } from './components/LoginView';
 import { EmployeeView } from './components/EmployeeView';
@@ -30,10 +30,44 @@ export default function App() {
     return INITIAL_REQUESTS;
   });
 
-  // Users State (Persisted in localStorage)
+  // Users State (Persisted in localStorage with auto-migration to official users)
   const [users, setUsers] = useState<SystemUser[]>(() => {
     try {
-      const saved = localStorage.getItem('app_users');
+      const saved = localStorage.getItem('app_users_v4');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+      // Check legacy storage and migrate default accounts to official names
+      const oldSaved = localStorage.getItem('app_users');
+      if (oldSaved) {
+        const parsed = JSON.parse(oldSaved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // Keep custom non-default users created by admin, but update default users to official matrix
+          const customUsers = parsed.filter(
+            (p: SystemUser) =>
+              !DEFAULT_USERS.some(
+                (d) =>
+                  d.id === p.id ||
+                  d.employeeNumber === p.employeeNumber ||
+                  (d.role === p.role && d.role === 'admin')
+              )
+          );
+          return [...DEFAULT_USERS, ...customUsers];
+        }
+      }
+    } catch {
+      // Fallback
+    }
+    return DEFAULT_USERS;
+  });
+
+  // Audit Logs State (Persisted in localStorage)
+  const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>(() => {
+    try {
+      const saved = localStorage.getItem('app_audit_logs_v3');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -43,7 +77,7 @@ export default function App() {
     } catch {
       // Fallback
     }
-    return DEFAULT_USERS;
+    return INITIAL_AUDIT_LOGS;
   });
 
   // Current authenticated user and role
@@ -79,11 +113,39 @@ export default function App() {
   // Save users to localStorage
   useEffect(() => {
     try {
+      localStorage.setItem('app_users_v4', JSON.stringify(users));
       localStorage.setItem('app_users', JSON.stringify(users));
     } catch (e) {
       console.error('Failed to save users:', e);
     }
   }, [users]);
+
+  // Save audit logs to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('app_audit_logs_v3', JSON.stringify(auditLogs));
+      localStorage.setItem('app_audit_logs', JSON.stringify(auditLogs));
+    } catch (e) {
+      console.error('Failed to save audit logs:', e);
+    }
+  }, [auditLogs]);
+
+  const addAuditLog = (
+    action: string,
+    actor: string,
+    target: string,
+    type: AuditLogEntry['type']
+  ) => {
+    const newEntry: AuditLogEntry = {
+      id: `log-${Date.now()}`,
+      action,
+      actor,
+      target,
+      timestamp: 'الآن',
+      type,
+    };
+    setAuditLogs((prev) => [newEntry, ...prev]);
+  };
 
   const showToast = (text: string, type: 'success' | 'warning' | 'info' = 'success') => {
     setToast({
@@ -120,25 +182,45 @@ export default function App() {
     };
 
     setRequests((prev) => [newReq, ...prev]);
+    addAuditLog(
+      'تقديم استمارة نشاط مهاري جديد للاعتماد',
+      currentUser?.name || 'مقدم النشاط',
+      newReq.name,
+      'create'
+    );
     showToast('تم رفع استمارة النشاط للمدير المباشر بنجاح!', 'success');
   };
 
   // Employee: Resubmit returned request
   const handleResubmit = (id: number) => {
+    const req = requests.find((r) => r.id === id);
     setRequests((prev) =>
       prev.map((r) =>
         r.id === id ? { ...r, status: 'pending_manager', note: '' } : r
       )
+    );
+    addAuditLog(
+      'إعادة تقديم الطلب بعد استيفاء الملاحظات',
+      currentUser?.name || 'مقدم النشاط',
+      req?.name || `النشاط #${id}`,
+      'create'
     );
     showToast('تمت إعادة إرسال الطلب بعد التعديل للمدير المباشر', 'success');
   };
 
   // Manager: Approve
   const handleManagerApprove = (id: number) => {
+    const req = requests.find((r) => r.id === id);
     setRequests((prev) =>
       prev.map((r) =>
         r.id === id ? { ...r, status: 'pending_auditor', note: '' } : r
       )
+    );
+    addAuditLog(
+      'موافقة واعتماد المدير المباشر وتمرير الطلب للتدقيق',
+      currentUser?.name || 'المدير المباشر',
+      req?.name || `النشاط #${id}`,
+      'approve'
     );
     showToast('تم اعتماد النشاط وتمريره لمسؤول التدقيق والاعتماد!', 'success');
   };
@@ -153,7 +235,104 @@ export default function App() {
     });
   };
 
-  // Auditor: Approve final
+  // Auditor: Update request fields
+  const handleUpdateRequest = (updatedReq: ActivityRequest) => {
+    setRequests((prev) =>
+      prev.map((r) => (r.id === updatedReq.id ? updatedReq : r))
+    );
+    addAuditLog(
+      'تعديل وتدقيق حقول استمارة النشاط',
+      currentUser?.name || 'مسؤول التدقيق',
+      updatedReq.name,
+      'user_edit'
+    );
+    showToast('تم حفظ وتحديث بيانات استمارة النشاط بنجاح!', 'success');
+  };
+
+  // Auditor: Certify Dean approval
+  const handleDeanApprove = (id: number) => {
+    const req = requests.find((r) => r.id === id);
+    const today = new Date().toISOString().split('T')[0];
+    setRequests((prev) =>
+      prev.map((r) =>
+        r.id === id
+          ? {
+              ...r,
+              deanApproved: true,
+              deanApprovalDate: today,
+            }
+          : r
+      )
+    );
+    addAuditLog(
+      'توثيق الاعتماد الإداري من سعادة رئيس الكلية التطبيقية',
+      'سعادة رئيس الكلية التطبيقية',
+      req?.name || `النشاط #${id}`,
+      'approve'
+    );
+    showToast('تم توثيق اعتماد سعادة رئيس الكلية رسمياً للنشاط!', 'success');
+  };
+
+  // Auditor: Final Approve with Smart Dispatch
+  const handleAuditorFinalApproveWithDispatch = (payload: {
+    requestId: number;
+    assignedUploader: string;
+    xPlatformPublish: boolean;
+    uploaderInstructions: string;
+  }) => {
+    const req = requests.find((r) => r.id === payload.requestId);
+    const today = new Date().toISOString().split('T')[0];
+    setRequests((prev) =>
+      prev.map((r) =>
+        r.id === payload.requestId
+          ? {
+              ...r,
+              status: 'approved_final',
+              deanApproved: true,
+              deanApprovalDate: r.deanApprovalDate || today,
+              assignedUploader: payload.assignedUploader,
+              xPlatformPublish: payload.xPlatformPublish,
+              uploaderInstructions: payload.uploaderInstructions,
+              note: '',
+            }
+          : r
+      )
+    );
+    addAuditLog(
+      `اعتماد نهائي وتوجيه للرفع على ارتقاء (المكلف: ${payload.assignedUploader})`,
+      currentUser?.name || 'مسؤول التدقيق والاعتماد',
+      req?.name || `النشاط #${payload.requestId}`,
+      'approve'
+    );
+    showToast('تم الاعتماد النهائي وتوجيه النشاط للموظف المختص للرفع على ارتقاء!', 'success');
+  };
+
+  // Auditor: Return request to Manager or Employee
+  const handleAuditorReturn = (
+    id: number,
+    targetRole: 'manager' | 'emp',
+    note: string
+  ) => {
+    const req = requests.find((r) => r.id === id);
+    const newStatus = targetRole === 'emp' ? 'returned_emp' : 'returned_manager';
+    setRequests((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, status: newStatus, note } : r))
+    );
+    addAuditLog(
+      targetRole === 'emp' ? 'إرجاع الطلب لمقدم النشاط للاستيفاء' : 'إرجاع الطلب للمدير المباشر',
+      currentUser?.name || 'مسؤول التدقيق والاعتماد',
+      req?.name || `النشاط #${id}`,
+      'return'
+    );
+    showToast(
+      targetRole === 'emp'
+        ? 'تم إرجاع الطلب لمقدم النشاط (الموظف) مع الملاحظات'
+        : 'تم إرجاع الطلب للمدير المباشر مع الملاحظات',
+      'warning'
+    );
+  };
+
+  // Auditor: Approve final (legacy fallback)
   const handleAuditorApprove = (id: number) => {
     setRequests((prev) =>
       prev.map((r) =>
@@ -203,10 +382,17 @@ export default function App() {
 
   // Uploader: Confirm upload
   const handleConfirmUpload = (id: number) => {
+    const req = requests.find((r) => r.id === id);
     setRequests((prev) =>
       prev.map((r) =>
         r.id === id ? { ...r, status: 'uploaded_irtqaa' } : r
       )
+    );
+    addAuditLog(
+      'توثيق ومزامنة النشاط في منصة ارتقاء الرسمية',
+      currentUser?.name || 'مسؤول الرفع لمنصة ارتقاء',
+      req?.name || `النشاط #${id}`,
+      'upload'
     );
     showToast('تم تأكيد رفع النشاط إلى منصة ارتقاء الرسمية بنجاح!', 'success');
   };
@@ -219,10 +405,33 @@ export default function App() {
       ...newUserData,
     };
     setUsers((prev) => [newUser, ...prev]);
+    addAuditLog(
+      'إنشاء حساب مستخدم جديد وتعيين الصلاحيات',
+      currentUser?.name || 'مدير النظام',
+      `حساب: ${newUser.name} (#${newUser.employeeNumber})`,
+      'create'
+    );
     showToast(`تم إنشاء حساب "${newUser.name}" بنجاح!`, 'success');
   };
 
+  const handleUpdateUser = (updatedUser: SystemUser) => {
+    setUsers((prev) =>
+      prev.map((u) => (u.id === updatedUser.id ? updatedUser : u))
+    );
+    if (currentUser && currentUser.id === updatedUser.id) {
+      setCurrentUser(updatedUser);
+    }
+    addAuditLog(
+      `تعديل بيانات المستخدم (${updatedUser.name})`,
+      currentUser?.name || 'مدير النظام',
+      `رقم وظيفي: #${updatedUser.employeeNumber} - ${updatedUser.department}`,
+      'user_edit'
+    );
+    showToast(`تم حفظ تعديلات حساب "${updatedUser.name}" بنجاح!`, 'success');
+  };
+
   const handleUpdateUserRole = (userId: string, newRole: Exclude<UserRole, 'login'>) => {
+    const targetUser = users.find((u) => u.id === userId);
     setUsers((prev) =>
       prev.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
     );
@@ -231,6 +440,12 @@ export default function App() {
       setCurrentUser((prev) => (prev ? { ...prev, role: newRole } : null));
       setCurrentRole(newRole);
     }
+    addAuditLog(
+      `تحديث صلاحية ورتبة المستخدم في النظام`,
+      currentUser?.name || 'مدير النظام',
+      `حساب: ${targetUser?.name || userId}`,
+      'user_edit'
+    );
     showToast('تم تحديث صلاحية ورتبة المستخدم بنجاح!', 'success');
   };
 
@@ -243,6 +458,12 @@ export default function App() {
             updated ? `تم تفعيل حساب ${u.name}` : `تم تعطيل حساب ${u.name}`,
             updated ? 'success' : 'warning'
           );
+          addAuditLog(
+            updated ? 'تفعيل حساب المستخدم' : 'تعطيل حساب المستخدم',
+            currentUser?.name || 'مدير النظام',
+            `حساب: ${u.name} (#${u.employeeNumber})`,
+            'status_toggle'
+          );
           return { ...u, isActive: updated };
         }
         return u;
@@ -251,14 +472,28 @@ export default function App() {
   };
 
   const handleResetUserPassword = (userId: string, newPass: string) => {
+    const targetUser = users.find((u) => u.id === userId);
     setUsers((prev) =>
       prev.map((u) => (u.id === userId ? { ...u, password: newPass } : u))
     );
-    showToast('تمت إعادة تعيين كلمة المرور بنجاح!', 'success');
+    addAuditLog(
+      'إعادة تعيين كلمة المرور وتوليد كلمة مؤقتة',
+      currentUser?.name || 'مدير النظام',
+      `حساب: ${targetUser?.name || userId} (#${targetUser?.employeeNumber || ''})`,
+      'password_reset'
+    );
+    showToast('تمت إعادة تعيين وتوليد كلمة المرور بنجاح!', 'success');
   };
 
   const handleDeleteUser = (userId: string) => {
+    const targetUser = users.find((u) => u.id === userId);
     setUsers((prev) => prev.filter((u) => u.id !== userId));
+    addAuditLog(
+      'حذف حساب مستخدم من النظام',
+      currentUser?.name || 'مدير النظام',
+      `حساب: ${targetUser?.name || userId}`,
+      'user_edit'
+    );
     showToast('تم حذف المستخدم من سجلات النظام', 'info');
   };
 
@@ -325,8 +560,10 @@ export default function App() {
           {currentRole === 'auditor' && (
             <AuditorView
               requests={requests}
-              onFinalApprove={handleAuditorApprove}
-              onReturnToManagerClick={handleAuditorReturnClick}
+              onUpdateRequest={handleUpdateRequest}
+              onDeanApprove={handleDeanApprove}
+              onFinalApproveWithDispatch={handleAuditorFinalApproveWithDispatch}
+              onReturnClick={handleAuditorReturn}
             />
           )}
 
@@ -341,7 +578,9 @@ export default function App() {
             <AdminDashboardView
               users={users}
               requests={requests}
+              auditLogs={auditLogs}
               onAddUser={handleAddUser}
+              onUpdateUser={handleUpdateUser}
               onUpdateUserRole={handleUpdateUserRole}
               onToggleUserStatus={handleToggleUserStatus}
               onResetUserPassword={handleResetUserPassword}
