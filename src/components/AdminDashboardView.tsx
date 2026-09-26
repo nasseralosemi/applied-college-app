@@ -28,6 +28,11 @@ import {
   FileSpreadsheet,
   MapPin,
   Mail,
+  Share2,
+  Crown,
+  Megaphone,
+  ArrowLeft,
+  ExternalLink,
 } from 'lucide-react';
 
 interface Props {
@@ -40,6 +45,8 @@ interface Props {
   onToggleUserStatus: (userId: string) => void;
   onResetUserPassword: (userId: string, newPass: string) => void;
   onDeleteUser: (userId: string) => void;
+  onQuickAccessPR?: () => void;
+  onQuickAccessDean?: () => void;
 }
 
 const ROLE_LABELS: Record<Exclude<UserRole, 'login'>, { label: string; bg: string; text: string }> = {
@@ -47,6 +54,8 @@ const ROLE_LABELS: Record<Exclude<UserRole, 'login'>, { label: string; bg: strin
   manager: { label: 'المدير المباشر', bg: 'bg-amber-50 border-amber-200', text: 'text-amber-800' },
   auditor: { label: 'مسؤول التدقيق والاعتماد', bg: 'bg-purple-50 border-purple-200', text: 'text-purple-800' },
   uploader: { label: 'مسؤول الرفع لمنصة ارتقاء', bg: 'bg-emerald-50 border-emerald-200', text: 'text-emerald-800' },
+  pr: { label: 'وحدة العلاقات العامة (منصة X)', bg: 'bg-sky-50 border-sky-200', text: 'text-sky-800' },
+  dean: { label: 'سعادة رئيس الكلية (Executive)', bg: 'bg-amber-100/60 border-amber-300', text: 'text-amber-950' },
   admin: { label: 'مدير النظام (Admin)', bg: 'bg-slate-900 border-slate-700', text: 'text-[#e6c566]' },
 };
 
@@ -60,6 +69,8 @@ export const AdminDashboardView: React.FC<Props> = ({
   onToggleUserStatus,
   onResetUserPassword,
   onDeleteUser,
+  onQuickAccessPR,
+  onQuickAccessDean,
 }) => {
   const [activeTab, setActiveTab] = useState<'users' | 'metrics'>('users');
   const [searchQuery, setSearchQuery] = useState('');
@@ -170,6 +181,69 @@ export const AdminDashboardView: React.FC<Props> = ({
         </button>
       </div>
 
+      {/* Quick Access & Direct Supervision Bar */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {/* Quick Access PR */}
+        <div className="p-3.5 rounded-2xl bg-gradient-to-r from-sky-900/90 to-[#1b4332] text-white border border-sky-400/30 shadow-md flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-white/10 text-sky-200 border border-white/20 flex items-center justify-center shrink-0">
+              <Megaphone className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] font-black px-1.5 py-0.5 rounded-md bg-sky-500/30 text-sky-200 border border-sky-400/30 font-mono">
+                  منصة 𝕏
+                </span>
+                <span className="text-xs font-black text-white">إشراف وحدة العلاقات العامة</span>
+              </div>
+              <p className="text-[10px] text-slate-200 mt-0.5">
+                متابعة الأنشطة المحالة آلياً للنشر في حساب الكلية
+              </p>
+            </div>
+          </div>
+          {onQuickAccessPR && (
+            <button
+              type="button"
+              onClick={onQuickAccessPR}
+              className="px-3 py-1.5 rounded-xl bg-sky-400 hover:bg-sky-300 text-slate-950 text-xs font-black flex items-center gap-1 shadow-sm transition active:scale-95 cursor-pointer whitespace-nowrap"
+            >
+              <span>معاينة العلاقات العامة</span>
+              <ArrowLeft className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+
+        {/* Quick Access Dean */}
+        <div className="p-3.5 rounded-2xl bg-gradient-to-r from-[#1b4332] to-[#081c15] text-white border border-[#c59b27]/30 shadow-md flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-[#c59b27]/20 text-[#e6c566] border border-[#c59b27]/40 flex items-center justify-center shrink-0">
+              <Crown className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] font-black px-1.5 py-0.5 rounded-md bg-[#c59b27]/30 text-[#e6c566] border border-[#c59b27]/40">
+                  القيادة التنفيذية
+                </span>
+                <span className="text-xs font-black text-white">لوحة رئيس الكلية</span>
+              </div>
+              <p className="text-[10px] text-slate-300 mt-0.5">
+                نظرة شمولية استراتيجية للرسوم البيانية والمؤشرات
+              </p>
+            </div>
+          </div>
+          {onQuickAccessDean && (
+            <button
+              type="button"
+              onClick={onQuickAccessDean}
+              className="px-3 py-1.5 rounded-xl bg-[#c59b27] hover:bg-[#d8ab2e] text-slate-950 text-xs font-black flex items-center gap-1 shadow-sm transition active:scale-95 cursor-pointer whitespace-nowrap"
+            >
+              <span>معاينة الرئاسة</span>
+              <ArrowLeft className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+      </div>
+
       {/* Sub Tabs: User Management vs Workflow Metrics */}
       <div className="flex bg-slate-200/70 p-1.5 rounded-2xl border border-slate-200 shadow-inner text-xs font-bold gap-1">
         <button
@@ -270,6 +344,28 @@ export const AdminDashboardView: React.FC<Props> = ({
                 }`}
               >
                 مسؤولو ارتقاء
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedRoleFilter('pr')}
+                className={`px-3 py-1.5 rounded-xl transition whitespace-nowrap cursor-pointer ${
+                  selectedRoleFilter === 'pr'
+                    ? 'bg-sky-600 text-white shadow-xs'
+                    : 'bg-sky-50 text-sky-800 hover:bg-sky-100'
+                }`}
+              >
+                العلاقات العامة (X)
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedRoleFilter('dean')}
+                className={`px-3 py-1.5 rounded-xl transition whitespace-nowrap cursor-pointer ${
+                  selectedRoleFilter === 'dean'
+                    ? 'bg-[#c59b27] text-slate-950 font-black shadow-xs'
+                    : 'bg-amber-50 text-amber-900 hover:bg-amber-100'
+                }`}
+              >
+                رئاسة الكلية
               </button>
             </div>
           </div>
@@ -715,7 +811,9 @@ export const AdminDashboardView: React.FC<Props> = ({
                   <option value="manager">2. المدير المباشر (المراجعة الأولية والاعتماد)</option>
                   <option value="auditor">3. مسؤول التدقيق والاعتماد (مراجعة الضوابط وعميد الكلية)</option>
                   <option value="uploader">4. مسؤول الرفع لمنصة ارتقاء (التوثيق النهائي)</option>
-                  <option value="admin">5. مدير النظام (لوحة التحكم الشاملة)</option>
+                  <option value="pr">5. وحدة العلاقات العامة والإعلام (النشر في منصة X)</option>
+                  <option value="dean">6. سعادة رئيس الكلية (لوحة المتابعة التنفيذية)</option>
+                  <option value="admin">7. مدير النظام (لوحة التحكم الشاملة)</option>
                 </select>
               </div>
 

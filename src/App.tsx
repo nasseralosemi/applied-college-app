@@ -8,6 +8,8 @@ import { ManagerView } from './components/ManagerView';
 import { AuditorView } from './components/AuditorView';
 import { UploaderView } from './components/UploaderView';
 import { AdminDashboardView } from './components/AdminDashboardView';
+import { PRDashboardView } from './components/PRDashboardView';
+import { DeanExecutiveDashboardView } from './components/DeanExecutiveDashboardView';
 import { ReturnNoteModal } from './components/ReturnNoteModal';
 import { StoreReadinessModal } from './components/StoreReadinessModal';
 import { AndroidInstallModal } from './components/AndroidInstallModal';
@@ -21,7 +23,10 @@ export default function App() {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
+          return parsed.map((r: ActivityRequest) => ({
+            ...r,
+            prStatus: r.prStatus || (r.xPlatformPublish ? 'pending_pr' : undefined),
+          }));
         }
       }
     } catch {
@@ -30,32 +35,27 @@ export default function App() {
     return INITIAL_REQUESTS;
   });
 
-  // Users State (Persisted in localStorage with auto-migration to official users)
+  // Users State (Persisted in localStorage with auto-migration to include official PR & Dean accounts)
   const [users, setUsers] = useState<SystemUser[]>(() => {
     try {
-      const saved = localStorage.getItem('app_users_v4');
+      const saved = localStorage.getItem('app_users_v5');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
           return parsed;
         }
       }
-      // Check legacy storage and migrate default accounts to official names
-      const oldSaved = localStorage.getItem('app_users');
+      // Check legacy storage and migrate
+      const oldSaved = localStorage.getItem('app_users_v4') || localStorage.getItem('app_users');
       if (oldSaved) {
         const parsed = JSON.parse(oldSaved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          // Keep custom non-default users created by admin, but update default users to official matrix
-          const customUsers = parsed.filter(
-            (p: SystemUser) =>
-              !DEFAULT_USERS.some(
-                (d) =>
-                  d.id === p.id ||
-                  d.employeeNumber === p.employeeNumber ||
-                  (d.role === p.role && d.role === 'admin')
-              )
+          const existingIds = new Set(parsed.map((p: SystemUser) => p.id));
+          const existingEmpNums = new Set(parsed.map((p: SystemUser) => p.employeeNumber));
+          const missingDefaults = DEFAULT_USERS.filter(
+            (d) => !existingIds.has(d.id) && !existingEmpNums.has(d.employeeNumber)
           );
-          return [...DEFAULT_USERS, ...customUsers];
+          return [...parsed, ...missingDefaults];
         }
       }
     } catch {
@@ -83,6 +83,9 @@ export default function App() {
   // Current authenticated user and role
   const [currentUser, setCurrentUser] = useState<SystemUser | null>(null);
   const [currentRole, setCurrentRole] = useState<UserRole>('login');
+
+  // Admin Quick Access preview state for PR or Dean
+  const [adminPreviewRole, setAdminPreviewRole] = useState<'pr' | 'dean' | null>(null);
 
   const [toast, setToast] = useState<ToastMessage | null>(null);
   const [isStoreModalOpen, setIsStoreModalOpen] = useState<boolean>(false);
@@ -113,6 +116,7 @@ export default function App() {
   // Save users to localStorage
   useEffect(() => {
     try {
+      localStorage.setItem('app_users_v5', JSON.stringify(users));
       localStorage.setItem('app_users_v4', JSON.stringify(users));
       localStorage.setItem('app_users', JSON.stringify(users));
     } catch (e) {
@@ -148,6 +152,10 @@ export default function App() {
   };
 
   const showToast = (text: string, type: 'success' | 'warning' | 'info' = 'success') => {
+    // Disable all direct notifications and alerts for College President (Dean) account (view-only mode)
+    if (currentRole === 'dean' || currentUser?.role === 'dean') {
+      return;
+    }
     setToast({
       id: String(Date.now()),
       text,
@@ -159,6 +167,7 @@ export default function App() {
   const handleLoginSuccess = (user: SystemUser) => {
     setCurrentUser(user);
     setCurrentRole(user.role);
+    setAdminPreviewRole(null);
     showToast(`مرحباً بك د./أ. ${user.name}! تم الدخول بنجاح`, 'success');
   };
 
@@ -166,6 +175,7 @@ export default function App() {
   const handleLogout = () => {
     setCurrentUser(null);
     setCurrentRole('login');
+    setAdminPreviewRole(null);
     showToast('تم تسجيل الخروج بنجاح والعودة لشاشة الدخول', 'info');
   };
 
@@ -282,6 +292,8 @@ export default function App() {
   }) => {
     const req = requests.find((r) => r.id === payload.requestId);
     const today = new Date().toISOString().split('T')[0];
+    const nowIso = new Date().toISOString();
+
     setRequests((prev) =>
       prev.map((r) =>
         r.id === payload.requestId
@@ -293,18 +305,76 @@ export default function App() {
               assignedUploader: payload.assignedUploader,
               xPlatformPublish: payload.xPlatformPublish,
               uploaderInstructions: payload.uploaderInstructions,
+              prStatus: payload.xPlatformPublish ? (r.prStatus || 'pending_pr') : undefined,
+              prSentAt: payload.xPlatformPublish ? (r.prSentAt || nowIso) : undefined,
               note: '',
             }
           : r
       )
     );
+
     addAuditLog(
       `اعتماد نهائي وتوجيه للرفع على ارتقاء (المكلف: ${payload.assignedUploader})`,
       currentUser?.name || 'مسؤول التدقيق والاعتماد',
       req?.name || `النشاط #${payload.requestId}`,
       'approve'
     );
-    showToast('تم الاعتماد النهائي وتوجيه النشاط للموظف المختص للرفع على ارتقاء!', 'success');
+
+    if (payload.xPlatformPublish) {
+      addAuditLog(
+        'إرسال نسخة آلية لمعلومات النشاط إلى وحدة العلاقات العامة للإعلان في منصة X',
+        currentUser?.name || 'مسؤول التدقيق والاعتماد',
+        req?.name || `النشاط #${payload.requestId}`,
+        'approve'
+      );
+    }
+
+    showToast(
+      payload.xPlatformPublish
+        ? 'تم الاعتماد النهائي، وتوجيه النشاط للرفع، وإرسال نسخة آلية لوحدة العلاقات العامة للنشر في منصة X!'
+        : 'تم الاعتماد النهائي وتوجيه النشاط للموظف المختص للرفع على ارتقاء!',
+      'success'
+    );
+  };
+
+  // PR: Update tweet draft and publication status
+  const handleUpdatePrStatus = (
+    requestId: number,
+    prStatus: 'pending_pr' | 'published_pr',
+    tweetDraft?: string,
+    prNotes?: string
+  ) => {
+    const req = requests.find((r) => r.id === requestId);
+    const nowIso = new Date().toISOString();
+    setRequests((prev) =>
+      prev.map((r) =>
+        r.id === requestId
+          ? {
+              ...r,
+              prStatus,
+              prPublishedAt: prStatus === 'published_pr' ? (r.prPublishedAt || nowIso) : undefined,
+              prTweetDraft: tweetDraft !== undefined ? tweetDraft : r.prTweetDraft,
+              prNotes: prNotes !== undefined ? prNotes : r.prNotes,
+            }
+          : r
+      )
+    );
+
+    addAuditLog(
+      prStatus === 'published_pr'
+        ? 'توثيق نشر النشاط في الحساب الرسمي للكلية بمنصة X'
+        : 'تحديث مسودة التغريدة الرسمية للنشاط',
+      currentUser?.name || 'وحدة العلاقات العامة والإعلام',
+      req?.name || `النشاط #${requestId}`,
+      prStatus === 'published_pr' ? 'upload' : 'user_edit'
+    );
+
+    showToast(
+      prStatus === 'published_pr'
+        ? 'تم توثيق نشر النشاط في الحساب الرسمي للكلية على منصة X بنجاح!'
+        : 'تم حفظ مسودة تغريدة النشاط بنجاح',
+      'success'
+    );
   };
 
   // Auditor: Return request to Manager or Employee
@@ -510,6 +580,12 @@ export default function App() {
       }
     : null;
 
+  const isWideDashboard =
+    currentRole === 'admin' ||
+    currentRole === 'dean' ||
+    currentRole === 'pr' ||
+    adminPreviewRole !== null;
+
   return (
     <div
       dir="rtl"
@@ -517,7 +593,9 @@ export default function App() {
     >
       {/* App Container - Full Screen Mobile Layout with Independent Scroll */}
       <div
-        className={`w-full max-w-xl mx-auto flex flex-col bg-[#f8fafc] relative shadow-none ${
+        className={`w-full ${
+          isWideDashboard ? 'max-w-4xl' : 'max-w-xl'
+        } mx-auto flex flex-col bg-[#f8fafc] relative shadow-none transition-all duration-200 ${
           currentRole !== 'login' ? 'h-screen max-h-screen overflow-hidden' : 'min-h-screen'
         }`}
       >
@@ -574,7 +652,35 @@ export default function App() {
             />
           )}
 
-          {currentRole === 'admin' && (
+          {/* PR Dashboard (Direct PR User or Admin Quick Access) */}
+          {(currentRole === 'pr' || (currentRole === 'admin' && adminPreviewRole === 'pr')) && (
+            <PRDashboardView
+              requests={requests}
+              onUpdatePrStatus={handleUpdatePrStatus}
+              isAdminViewing={currentRole === 'admin' && adminPreviewRole === 'pr'}
+              onReturnToAdmin={
+                currentRole === 'admin' && adminPreviewRole === 'pr'
+                  ? () => setAdminPreviewRole(null)
+                  : undefined
+              }
+            />
+          )}
+
+          {/* Dean Executive Dashboard (Direct Dean User or Admin Quick Access) */}
+          {(currentRole === 'dean' || (currentRole === 'admin' && adminPreviewRole === 'dean')) && (
+            <DeanExecutiveDashboardView
+              requests={requests}
+              users={users}
+              isAdminViewing={currentRole === 'admin' && adminPreviewRole === 'dean'}
+              onReturnToAdmin={
+                currentRole === 'admin' && adminPreviewRole === 'dean'
+                  ? () => setAdminPreviewRole(null)
+                  : undefined
+              }
+            />
+          )}
+
+          {currentRole === 'admin' && !adminPreviewRole && (
             <AdminDashboardView
               users={users}
               requests={requests}
@@ -585,6 +691,8 @@ export default function App() {
               onToggleUserStatus={handleToggleUserStatus}
               onResetUserPassword={handleResetUserPassword}
               onDeleteUser={handleDeleteUser}
+              onQuickAccessPR={() => setAdminPreviewRole('pr')}
+              onQuickAccessDean={() => setAdminPreviewRole('dean')}
             />
           )}
         </main>

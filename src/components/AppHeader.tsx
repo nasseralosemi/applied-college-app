@@ -1,5 +1,5 @@
 import React from 'react';
-import { GraduationCap, LogOut, Smartphone, ShieldCheck } from 'lucide-react';
+import { GraduationCap, LogOut, Smartphone, ShieldCheck, Crown, Megaphone } from 'lucide-react';
 import { UserProfile, ActivityRequest } from '../types';
 
 interface Props {
@@ -88,6 +88,17 @@ export const AppHeader: React.FC<Props> = ({
     stat1 = { val: readyToUpload, label: 'جاهز للرفع' };
     stat2 = { val: uploaded, label: 'رُفعت لارتقاء' };
     stat3 = { val: requests.length, label: 'إجمالي النظام' };
+  } else if (role === 'pr') {
+    stat1 = { val: requests.filter((r) => r.xPlatformPublish).length, label: 'إعلانات منصة X' };
+    stat2 = { val: requests.filter((r) => r.xPlatformPublish && r.prStatus === 'published_pr').length, label: 'تم النشر' };
+    stat3 = { val: requests.filter((r) => r.xPlatformPublish && r.prStatus !== 'published_pr').length, label: 'قيد التجهيز' };
+  } else if (role === 'dean') {
+    stat1 = { val: requests.length, label: 'إجمالي الأنشطة' };
+    stat2 = { val: requests.filter((r) => r.status === 'uploaded_irtqaa').length, label: 'موثقة بارتقاء' };
+    stat3 = {
+      val: requests.reduce((acc, r) => acc + (parseFloat(String(r.hours)) || 0), 0),
+      label: 'ساعات التدريب',
+    };
   } else if (role === 'admin') {
     stat1 = { val: requests.length, label: 'إجمالي الطلبات' };
     stat2 = {
@@ -110,6 +121,10 @@ export const AppHeader: React.FC<Props> = ({
           <div className="w-10 h-10 bg-gradient-to-br from-[#dfb13c] via-[#c59b27] to-[#997415] rounded-2xl flex items-center justify-center text-[#081c15] shadow-md shrink-0 border border-[#e6c566]/60 transition-transform hover:scale-105">
             {role === 'admin' ? (
               <ShieldCheck className="w-5 h-5 text-[#081c15]" />
+            ) : role === 'dean' ? (
+              <Crown className="w-5 h-5 text-[#081c15]" />
+            ) : role === 'pr' ? (
+              <Megaphone className="w-5 h-5 text-[#081c15]" />
             ) : (
               <GraduationCap className="w-5 h-5 text-[#081c15]" />
             )}

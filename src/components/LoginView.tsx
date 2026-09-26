@@ -24,11 +24,13 @@ export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
     e.preventDefault();
     setStaffError(null);
 
-    const cleanEmpNum = staffEmpNum.trim();
+    const cleanEmpNum = staffEmpNum.trim().toLowerCase();
     const user = users.find(
       (u) =>
-        (u.employeeNumber.toLowerCase() === cleanEmpNum.toLowerCase() ||
-          u.id.toLowerCase() === cleanEmpNum.toLowerCase()) &&
+        (u.employeeNumber.toLowerCase() === cleanEmpNum ||
+          u.id.toLowerCase() === cleanEmpNum ||
+          (cleanEmpNum === 'pr' && u.role === 'pr') ||
+          (cleanEmpNum === 'dean' && u.role === 'dean')) &&
         u.role !== 'admin'
     );
 
@@ -247,6 +249,28 @@ export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
                   <div className="text-[9px] text-slate-500 flex items-center justify-between">
                     <span>رافع ارتقاء (Uploader)</span>
                     <span className="font-mono font-bold text-emerald-800">4412003</span>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => fillStaffCreds('4412004', '123')}
+                  className="p-2 rounded-xl border border-sky-200 bg-sky-50/70 hover:bg-sky-100/80 text-slate-700 text-right font-medium active:scale-95 transition-all duration-150 cursor-pointer shadow-xs"
+                >
+                  <div className="font-bold text-sky-950 truncate">وحدة العلاقات العامة والإعلام</div>
+                  <div className="text-[9px] text-slate-500 flex items-center justify-between">
+                    <span>العلاقات العامة (منصة X)</span>
+                    <span className="font-mono font-bold text-sky-800">4412004</span>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => fillStaffCreds('4412000', '123')}
+                  className="p-2 rounded-xl border border-amber-200 bg-amber-50/70 hover:bg-amber-100/80 text-slate-700 text-right font-medium active:scale-95 transition-all duration-150 cursor-pointer shadow-xs col-span-2"
+                >
+                  <div className="font-bold text-[#1b4332] truncate">سعادة رئيس الكلية التطبيقية</div>
+                  <div className="text-[9px] text-slate-500 flex items-center justify-between">
+                    <span>لوحة المتابعة التنفيذية والرسوم البيانية (Executive)</span>
+                    <span className="font-mono font-bold text-amber-800">4412000</span>
                   </div>
                 </button>
               </div>

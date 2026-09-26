@@ -68,6 +68,18 @@ export const INITIAL_REQUESTS: ActivityRequest[] = [
     transactionNumber: "44-0982-م",
     coordinatorName: "وائل العفيصان",
     assignedUploader: "ناصر العصيمي",
+    xPlatformPublish: true,
+    uploaderInstructions: "التأكد من رصد الحضور والتسجيل في منصة ارتقاء فور انتهاء الدورة.",
+    prStatus: "pending_pr",
+    prSentAt: "2026-09-18T10:00:00.000Z",
+    prTweetDraft: `يسر الكلية التطبيقية بجامعة المجمعة دعوتكم لحضور:
+📌 "دورة التميز المؤسسي والجودة الأكاديمية"
+🎙️ تقديم: وحدة التطوير والجودة
+🗓️ الأربعاء 2026-09-22م | ⏰ 11:00 ص
+📍 قاعة التدريب 104 - فرع المجمعة
+🔗 الحضور متاح للكوادر الإدارية والأكاديمية
+
+#الكلية_التطبيقية #جامعة_المجمعة #ارتقاء`,
     summary: "معايير الاعتماد المؤسسي وضوابط استيفاء ساعات منصة ارتقاء والجودة الشاملة",
     status: "approved_final",
     note: "",
@@ -94,6 +106,15 @@ export const INITIAL_REQUESTS: ActivityRequest[] = [
     transactionNumber: "44-1102-ش",
     coordinatorName: "ناصر العصيمي",
     assignedUploader: "ناصر العصيمي",
+    xPlatformPublish: true,
+    prStatus: "published_pr",
+    prSentAt: "2026-09-08T08:00:00.000Z",
+    prPublishedAt: "2026-09-08T09:15:00.000Z",
+    prTweetDraft: `برعاية سعادة رئيس الكلية التطبيقية، انطلقت اليوم فعاليات:
+✨ "ملتقى التهيئة للتدريب التعاوني والشراكات"
+لتوجيه الطلاب لبيئات العمل وربطهم بمنصة ارتقاء الوطنية.
+
+#الكلية_التطبيقية #جامعة_المجمعة #ارتقاء`,
     summary: "توجيه الطلاب لجهات التدريب والربط مع المنصة الوطنية وبناء الشراكات المجتمعية",
     status: "uploaded_irtqaa",
     note: "",
@@ -151,6 +172,30 @@ export const DEFAULT_USERS: SystemUser[] = [
     password: '123',
     isActive: true,
     createdAt: '2026-01-12'
+  },
+  {
+    id: 'u-5',
+    employeeNumber: '4412004',
+    name: 'وحدة العلاقات العامة والإعلام',
+    email: 'pr.media@mu.edu.sa',
+    role: 'pr',
+    department: 'وحدة العلاقات العامة والتواصل المؤسسي',
+    branch: 'المقر الرئيسي - إدارة الكلية',
+    password: '123',
+    isActive: true,
+    createdAt: '2026-01-15'
+  },
+  {
+    id: 'u-dean',
+    employeeNumber: '4412000',
+    name: 'سعادة رئيس الكلية التطبيقية',
+    email: 'dean.applied@mu.edu.sa',
+    role: 'dean',
+    department: 'مكتب رئيس الكلية التطبيقية',
+    branch: 'المقر الرئيسي - عمادة الكلية',
+    password: '123',
+    isActive: true,
+    createdAt: '2026-01-01'
   },
   {
     id: 'u-admin',
@@ -245,6 +290,24 @@ export const ROLE_PROFILES: Record<Exclude<UserRole, 'login'>, UserProfile> = {
     employeeNumber: "4412003",
     department: "وحدة التوثيق ومنصة ارتقاء",
     roleKey: "uploader"
+  },
+  pr: {
+    name: "وحدة العلاقات العامة والإعلام",
+    roleTitle: "مسؤول العلاقات العامة والإعلام (PR & Media)",
+    roleBadge: "العلاقات العامة ومنصة X",
+    avatarText: "ع ع",
+    employeeNumber: "4412004",
+    department: "وحدة العلاقات العامة والتواصل المؤسسي",
+    roleKey: "pr"
+  },
+  dean: {
+    name: "سعادة رئيس الكلية التطبيقية",
+    roleTitle: "رئيس الكلية التطبيقية (Executive Dean)",
+    roleBadge: "رئاسة الكلية (نظرة استراتيجية)",
+    avatarText: "ر ك",
+    employeeNumber: "4412000",
+    department: "مكتب رئيس الكلية التطبيقية",
+    roleKey: "dean"
   },
   admin: {
     name: "ناصر العصيمي",

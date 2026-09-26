@@ -7,7 +7,15 @@ export type RequestStatus =
   | 'uploaded_irtqaa'
   | 'rejected';
 
-export type UserRole = 'login' | 'emp' | 'manager' | 'auditor' | 'uploader' | 'admin';
+export type UserRole =
+  | 'login'
+  | 'emp'
+  | 'manager'
+  | 'auditor'
+  | 'uploader'
+  | 'admin'
+  | 'pr'
+  | 'dean';
 
 export interface SystemUser {
   id: string;
@@ -61,6 +69,12 @@ export interface ActivityRequest {
   assignedUploader?: string; // الموظف المكلف بالرفع لمنصة ارتقاء
   xPlatformPublish?: boolean; // يتطلب إعلان رسمي في منصة X
   uploaderInstructions?: string; // مربع التعليمات والتوجيهات للموظف المكلف بالرفع
+  // العلاقات العامة ومنصة X
+  prStatus?: 'pending_pr' | 'published_pr';
+  prSentAt?: string;
+  prPublishedAt?: string;
+  prNotes?: string;
+  prTweetDraft?: string;
   // Backwards compatibility fallbacks
   date?: string;
   location?: string;
