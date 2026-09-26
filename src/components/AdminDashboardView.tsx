@@ -29,9 +29,6 @@ import {
   MapPin,
   Mail,
   Share2,
-  Crown,
-  Megaphone,
-  ArrowLeft,
   ExternalLink,
 } from 'lucide-react';
 
@@ -45,8 +42,6 @@ interface Props {
   onToggleUserStatus: (userId: string) => void;
   onResetUserPassword: (userId: string, newPass: string) => void;
   onDeleteUser: (userId: string) => void;
-  onQuickAccessPR?: () => void;
-  onQuickAccessDean?: () => void;
 }
 
 const ROLE_LABELS: Record<Exclude<UserRole, 'login'>, { label: string; bg: string; text: string }> = {
@@ -69,8 +64,6 @@ export const AdminDashboardView: React.FC<Props> = ({
   onToggleUserStatus,
   onResetUserPassword,
   onDeleteUser,
-  onQuickAccessPR,
-  onQuickAccessDean,
 }) => {
   const [activeTab, setActiveTab] = useState<'users' | 'metrics'>('users');
   const [searchQuery, setSearchQuery] = useState('');
@@ -179,69 +172,6 @@ export const AdminDashboardView: React.FC<Props> = ({
           <span className="hidden sm:inline">إنشاء حساب جديد</span>
           <span className="sm:hidden">إضافة</span>
         </button>
-      </div>
-
-      {/* Quick Access & Direct Supervision Bar */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {/* Quick Access PR */}
-        <div className="p-3.5 rounded-2xl bg-gradient-to-r from-sky-900/90 to-[#1b4332] text-white border border-sky-400/30 shadow-md flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-white/10 text-sky-200 border border-white/20 flex items-center justify-center shrink-0">
-              <Megaphone className="w-4 h-4" />
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-[10px] font-black px-1.5 py-0.5 rounded-md bg-sky-500/30 text-sky-200 border border-sky-400/30 font-mono">
-                  منصة 𝕏
-                </span>
-                <span className="text-xs font-black text-white">إشراف وحدة العلاقات العامة</span>
-              </div>
-              <p className="text-[10px] text-slate-200 mt-0.5">
-                متابعة الأنشطة المحالة آلياً للنشر في حساب الكلية
-              </p>
-            </div>
-          </div>
-          {onQuickAccessPR && (
-            <button
-              type="button"
-              onClick={onQuickAccessPR}
-              className="px-3 py-1.5 rounded-xl bg-sky-400 hover:bg-sky-300 text-slate-950 text-xs font-black flex items-center gap-1 shadow-sm transition active:scale-95 cursor-pointer whitespace-nowrap"
-            >
-              <span>معاينة العلاقات العامة</span>
-              <ArrowLeft className="w-3.5 h-3.5" />
-            </button>
-          )}
-        </div>
-
-        {/* Quick Access Dean */}
-        <div className="p-3.5 rounded-2xl bg-gradient-to-r from-[#1b4332] to-[#081c15] text-white border border-[#c59b27]/30 shadow-md flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-[#c59b27]/20 text-[#e6c566] border border-[#c59b27]/40 flex items-center justify-center shrink-0">
-              <Crown className="w-4 h-4" />
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-[10px] font-black px-1.5 py-0.5 rounded-md bg-[#c59b27]/30 text-[#e6c566] border border-[#c59b27]/40">
-                  القيادة التنفيذية
-                </span>
-                <span className="text-xs font-black text-white">لوحة رئيس الكلية</span>
-              </div>
-              <p className="text-[10px] text-slate-300 mt-0.5">
-                نظرة شمولية استراتيجية للرسوم البيانية والمؤشرات
-              </p>
-            </div>
-          </div>
-          {onQuickAccessDean && (
-            <button
-              type="button"
-              onClick={onQuickAccessDean}
-              className="px-3 py-1.5 rounded-xl bg-[#c59b27] hover:bg-[#d8ab2e] text-slate-950 text-xs font-black flex items-center gap-1 shadow-sm transition active:scale-95 cursor-pointer whitespace-nowrap"
-            >
-              <span>معاينة الرئاسة</span>
-              <ArrowLeft className="w-3.5 h-3.5" />
-            </button>
-          )}
-        </div>
       </div>
 
       {/* Sub Tabs: User Management vs Workflow Metrics */}

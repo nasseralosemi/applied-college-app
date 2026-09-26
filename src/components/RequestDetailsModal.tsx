@@ -257,6 +257,49 @@ export const RequestDetailsModal: React.FC<Props> = ({
             </div>
           )}
 
+          {/* Group 4.5: Attached Attendance Sheet (if present) */}
+          {request.attendanceSheet && (
+            <div className="space-y-2 border-t border-slate-100 pt-3">
+              <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#1b4332]">
+                <FileCheck2 className="w-3.5 h-3.5 text-[#c59b27]" />
+                <span>كشف الحضور المعتمد المرفق</span>
+              </div>
+              <div className="bg-gradient-to-r from-amber-50/70 via-emerald-50/50 to-slate-50 p-3 rounded-xl border border-amber-200/80 text-[11px] space-y-2">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="p-1.5 bg-white rounded-lg border border-slate-200 font-mono text-emerald-800 font-bold">
+                      {request.attendanceSheet.fileType === 'excel' ? 'EXCEL' : 'PDF'}
+                    </span>
+                    <div>
+                      <span className="font-bold text-slate-900 block font-mono dir-ltr text-right">
+                        {request.attendanceSheet.fileName}
+                      </span>
+                      <span className="text-[10px] text-slate-500">
+                        {request.attendanceSheet.fileSize} • تاريخ الرفع: {new Date(request.attendanceSheet.uploadedAt).toLocaleString('ar-SA')}
+                      </span>
+                    </div>
+                  </div>
+                  <span className="text-xs font-bold text-emerald-900 bg-emerald-100 px-2.5 py-1 rounded-lg border border-emerald-200">
+                    {request.attendanceSheet.attendeesCount} حضور بالكشف
+                  </span>
+                </div>
+
+                {request.attendanceSheet.notes && (
+                  <p className="text-[10px] text-slate-600 bg-white/70 p-2 rounded-lg border border-slate-200">
+                    <strong>ملاحظات المنشئ:</strong> {request.attendanceSheet.notes}
+                  </p>
+                )}
+
+                {request.attendanceVerifiedAt && (
+                  <div className="text-[10px] text-emerald-900 bg-emerald-100/70 p-1.5 rounded-lg font-bold flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3 h-3 text-emerald-700" />
+                    <span>تم اعتماد التوثيق رسمياً بواسطة: {request.attendanceVerifiedBy || 'ناصر العصيمي'} ({new Date(request.attendanceVerifiedAt).toLocaleDateString('ar-SA')})</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Group 5: Administrative Lifecycle & Audit Trail */}
           <div className="space-y-2 border-t border-slate-100 pt-3">
             <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#1b4332]">
@@ -326,7 +369,7 @@ export const RequestDetailsModal: React.FC<Props> = ({
                   className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
                     request.status === 'pending_auditor'
                       ? 'bg-amber-100 text-amber-800 ring-2 ring-amber-200 animate-pulse'
-                      : request.status === 'approved_final' || request.status === 'uploaded_irtqaa'
+                      : request.status === 'approved_final' || request.status === 'attendance_submitted' || request.status === 'uploaded_irtqaa'
                       ? 'bg-emerald-600 text-white'
                       : 'bg-slate-200 text-slate-400'
                   }`}
@@ -335,33 +378,63 @@ export const RequestDetailsModal: React.FC<Props> = ({
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-800">3. التدقيق والاعتماد النهائي (رئيس الكلية)</span>
+                    <span className="font-bold text-slate-800">3. التدقيق والاعتماد الإداري (رئيس الكلية)</span>
                     <span className="text-[10px] text-slate-500">
                       {request.status === 'pending_auditor'
                         ? 'قيد التدقيق'
-                        : request.status === 'approved_final' || request.status === 'uploaded_irtqaa'
-                        ? 'معتمد نهائياً'
+                        : request.deanApproved || request.status !== 'pending_manager'
+                        ? 'معتمد رسمياً'
                         : 'مرحلة لاحقة'}
                     </span>
                   </div>
                   <p className="text-[10px] text-slate-500">
                     {request.status === 'pending_auditor'
                       ? 'المعاملة قيد مراجعة الضوابط والشراكات من قِبل مسؤول التدقيق.'
-                      : request.status === 'approved_final' || request.status === 'uploaded_irtqaa'
-                      ? 'تم التحقق من الضوابط الأكاديمية واعتماد ساعات النشاط رسمياً.'
-                      : 'تتطلب موافقة المدير المباشر أولاً.'}
+                      : 'تم التحقق من الضوابط واعتماد ساعات النشاط رسمياً من رئيس الكلية.'}
                   </p>
                 </div>
               </div>
 
-              {/* Milestone 4: Irtqaa Upload */}
+              {/* Milestone 4: Attendance Sheet Submission */}
+              <div className="flex items-start gap-2.5">
+                <div
+                  className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
+                    request.status === 'attendance_submitted' || request.status === 'uploaded_irtqaa'
+                      ? 'bg-emerald-600 text-white ring-2 ring-emerald-300'
+                      : request.status === 'approved_final'
+                      ? 'bg-amber-100 text-amber-800 ring-2 ring-amber-200 animate-pulse'
+                      : 'bg-slate-200 text-slate-400'
+                  }`}
+                >
+                  <FileCheck2 className="w-3.5 h-3.5" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-slate-800">4. إرفاق كشف الحضور المعتمد (منشئ الطلب)</span>
+                    <span className="text-[10px] text-slate-500">
+                      {request.attendanceSheet
+                        ? 'تم الإرفاق والإرسال'
+                        : request.status === 'approved_final'
+                        ? 'بانتظار الإرفاق'
+                        : 'مرحلة لاحقة'}
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-slate-500">
+                    {request.attendanceSheet
+                      ? `تم رفع كشف الحضور المعتمد (${request.attendanceSheet.fileName}) وتحويل المعاملة آلياً لمسؤول التوثيق (ناصر العصيمي).`
+                      : 'يتم إرفاق الكشف المعتمد (Excel أو PDF) بعد انتهاء موعد الفعالية.'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Milestone 5: Verification & Official Closure */}
               <div className="flex items-start gap-2.5">
                 <div
                   className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
                     request.status === 'uploaded_irtqaa'
                       ? 'bg-[#1b4332] text-[#e6c566] ring-2 ring-[#c59b27]'
-                      : request.status === 'approved_final'
-                      ? 'bg-emerald-100 text-emerald-800 ring-2 ring-emerald-300'
+                      : request.status === 'attendance_submitted'
+                      ? 'bg-amber-100 text-amber-800 ring-2 ring-amber-300 animate-pulse'
                       : 'bg-slate-200 text-slate-400'
                   }`}
                 >
@@ -369,21 +442,21 @@ export const RequestDetailsModal: React.FC<Props> = ({
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-800">4. الرفع إلى منصة ارتقاء الرسمية</span>
+                    <span className="font-bold text-slate-800">5. اعتماد التوثيق وإغلاق الطلب (منصة ارتقاء)</span>
                     <span className="text-[10px] text-slate-500">
                       {request.status === 'uploaded_irtqaa'
-                        ? 'مكتمل ومرفوع'
-                        : request.status === 'approved_final'
-                        ? 'جاهز للرفع'
+                        ? 'موثق ومغلق رسمياً'
+                        : request.status === 'attendance_submitted'
+                        ? 'بانتظار اعتماد ناصر العصيمي'
                         : 'قيد الإجراء'}
                     </span>
                   </div>
                   <p className="text-[10px] text-slate-500">
                     {request.status === 'uploaded_irtqaa'
-                      ? 'تمت المزامنة بنجاح في السجل المهاري للطلاب على منصة ارتقاء.'
-                      : request.status === 'approved_final'
-                      ? 'الطلب جاهز لدى مسؤول المنصة للرفع الفوري.'
-                      : 'في انتظار اكتمال الموافقات السابقة.'}
+                      ? 'تمت مطابقة كشف الحضور واعتماد التوثيق وإغلاق المعاملة رسمياً في منصة ارتقاء بواسطة ناصر العصيمي.'
+                      : request.status === 'attendance_submitted'
+                      ? 'الكشف بانتظار مطابقة ناصر العصيمي والضغط على زر "اعتماد التوثيق وإغلاق الطلب".'
+                      : 'في انتظار اكتمال المراحل السابقة.'}
                   </p>
                 </div>
               </div>

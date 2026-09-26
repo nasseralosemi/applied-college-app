@@ -46,13 +46,16 @@ export const DeanExecutiveDashboardView: React.FC<Props> = ({ requests }) => {
   // Executive Core Calculations
   const totalActivities = requests.length;
   const uploadedToIrtqaa = requests.filter((r) => r.status === 'uploaded_irtqaa').length;
-  const approvedFinal = requests.filter((r) => r.status === 'approved_final' || r.status === 'uploaded_irtqaa').length;
+  const approvedFinal = requests.filter(
+    (r) => r.status === 'approved_final' || r.status === 'attendance_submitted' || r.status === 'uploaded_irtqaa'
+  ).length;
   const inWorkflow = requests.filter(
     (r) =>
       r.status === 'pending_manager' ||
       r.status === 'pending_auditor' ||
       r.status === 'returned_emp' ||
-      r.status === 'returned_manager'
+      r.status === 'returned_manager' ||
+      r.status === 'attendance_submitted'
   ).length;
 
   const totalTrainingHours = requests.reduce(
@@ -60,7 +63,14 @@ export const DeanExecutiveDashboardView: React.FC<Props> = ({ requests }) => {
     0
   );
 
-  const deanApprovedCount = requests.filter((r) => r.deanApproved === true || r.status === 'approved_final' || r.status === 'uploaded_irtqaa').length;
+  const totalVerifiedAttendees = requests.reduce(
+    (sum, r) => sum + (r.attendanceSheet?.attendeesCount || 0),
+    0
+  );
+
+  const deanApprovedCount = requests.filter(
+    (r) => r.deanApproved === true || r.status === 'approved_final' || r.status === 'attendance_submitted' || r.status === 'uploaded_irtqaa'
+  ).length;
   const xPublishedCount = requests.filter((r) => r.xPlatformPublish === true).length;
 
   const remoteCount = requests.filter((r) => r.deliveryMode === 'عن بعد').length;
@@ -99,9 +109,9 @@ export const DeanExecutiveDashboardView: React.FC<Props> = ({ requests }) => {
       selectedStatusFilter === 'all'
         ? true
         : selectedStatusFilter === 'completed'
-        ? r.status === 'uploaded_irtqaa' || r.status === 'approved_final'
+        ? r.status === 'uploaded_irtqaa' || r.status === 'approved_final' || r.status === 'attendance_submitted'
         : selectedStatusFilter === 'in_progress'
-        ? r.status === 'pending_manager' || r.status === 'pending_auditor'
+        ? r.status === 'pending_manager' || r.status === 'pending_auditor' || r.status === 'attendance_submitted'
         : r.status === selectedStatusFilter;
 
     return matchesSearch && matchesBranch && matchesType && matchesStatus;

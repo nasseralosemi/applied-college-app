@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ActivityRequest, UserRole, SystemUser, UserProfile, AuditLogEntry } from './types';
+import { ActivityRequest, UserRole, SystemUser, UserProfile, AuditLogEntry, AttendanceSheet } from './types';
 import { INITIAL_REQUESTS, DEFAULT_USERS, ROLE_PROFILES, INITIAL_AUDIT_LOGS } from './data';
 import { AppHeader } from './components/AppHeader';
 import { LoginView } from './components/LoginView';
@@ -84,9 +84,6 @@ export default function App() {
   const [currentUser, setCurrentUser] = useState<SystemUser | null>(null);
   const [currentRole, setCurrentRole] = useState<UserRole>('login');
 
-  // Admin Quick Access preview state for PR or Dean
-  const [adminPreviewRole, setAdminPreviewRole] = useState<'pr' | 'dean' | null>(null);
-
   const [toast, setToast] = useState<ToastMessage | null>(null);
   const [isStoreModalOpen, setIsStoreModalOpen] = useState<boolean>(false);
   const [isAndroidModalOpen, setIsAndroidModalOpen] = useState<boolean>(false);
@@ -167,7 +164,6 @@ export default function App() {
   const handleLoginSuccess = (user: SystemUser) => {
     setCurrentUser(user);
     setCurrentRole(user.role);
-    setAdminPreviewRole(null);
     showToast(`مرحباً بك د./أ. ${user.name}! تم الدخول بنجاح`, 'success');
   };
 
@@ -175,7 +171,6 @@ export default function App() {
   const handleLogout = () => {
     setCurrentUser(null);
     setCurrentRole('login');
-    setAdminPreviewRole(null);
     showToast('تم تسجيل الخروج بنجاح والعودة لشاشة الدخول', 'info');
   };
 
@@ -450,21 +445,73 @@ export default function App() {
     );
   };
 
-  // Uploader: Confirm upload
-  const handleConfirmUpload = (id: number) => {
-    const req = requests.find((r) => r.id === id);
+  // Employee: Upload attendance sheet and automatically route to Documentation Officer (Nasser Al-Osaimi)
+  const handleUploadAttendanceSheet = (requestId: number, attendanceData: AttendanceSheet) => {
+    const req = requests.find((r) => r.id === requestId);
     setRequests((prev) =>
       prev.map((r) =>
-        r.id === id ? { ...r, status: 'uploaded_irtqaa' } : r
+        r.id === requestId
+          ? {
+              ...r,
+              status: 'attendance_submitted',
+              assignedUploader: 'ناصر العصيمي',
+              attendanceSheet: attendanceData,
+            }
+          : r
+      )
+    );
+
+    addAuditLog(
+      'إرفاق كشف الحضور المعتمد وتوجيه المعاملة آلياً لمسؤول التوثيق (ناصر العصيمي)',
+      currentUser?.name || 'مقدم النشاط',
+      req?.name || `النشاط #${requestId}`,
+      'upload'
+    );
+
+    showToast(
+      'تم إرفاق كشف الحضور بنجاح وتوجيه الطلب آلياً إلى مسؤول التوثيق (ناصر العصيمي) لمنصة ارتقاء!',
+      'success'
+    );
+  };
+
+  // Uploader (Nasser Al-Osaimi): Final documentation approval and closure of the request
+  const handleConfirmAttendanceVerificationAndClose = (id: number) => {
+    const req = requests.find((r) => r.id === id);
+    const nowIso = new Date().toISOString();
+    setRequests((prev) =>
+      prev.map((r) =>
+        r.id === id
+          ? {
+              ...r,
+              status: 'uploaded_irtqaa',
+              attendanceVerifiedAt: nowIso,
+              attendanceVerifiedBy: 'ناصر العصيمي',
+            }
+          : r
       )
     );
     addAuditLog(
-      'توثيق ومزامنة النشاط في منصة ارتقاء الرسمية',
-      currentUser?.name || 'مسؤول الرفع لمنصة ارتقاء',
+      'اعتماد التوثيق ومطابقة كشف الحضور وإغلاق الطلب رسمياً في منصة ارتقاء',
+      currentUser?.name || 'ناصر العصيمي (مسؤول التوثيق)',
       req?.name || `النشاط #${id}`,
       'upload'
     );
-    showToast('تم تأكيد رفع النشاط إلى منصة ارتقاء الرسمية بنجاح!', 'success');
+    showToast('تم اعتماد التوثيق ومطابقة كشف الحضور وإغلاق الطلب رسمياً بنجاح!', 'success');
+  };
+
+  // Simulation toggle for testing activity ended
+  const handleToggleForceEnded = (id: number) => {
+    setRequests((prev) =>
+      prev.map((r) =>
+        r.id === id ? { ...r, forceActivityEnded: !r.forceActivityEnded } : r
+      )
+    );
+    showToast('تم تحديث حالة انتهاء الفعالية بنجاح!', 'info');
+  };
+
+  // Uploader: Confirm upload (legacy fallback)
+  const handleConfirmUpload = (id: number) => {
+    handleConfirmAttendanceVerificationAndClose(id);
   };
 
   // Admin Actions
@@ -583,8 +630,7 @@ export default function App() {
   const isWideDashboard =
     currentRole === 'admin' ||
     currentRole === 'dean' ||
-    currentRole === 'pr' ||
-    adminPreviewRole !== null;
+    currentRole === 'pr';
 
   return (
     <div
@@ -623,6 +669,8 @@ export default function App() {
               requests={requests}
               onSubmitRequest={handleSubmitRequest}
               onResubmitRequest={handleResubmit}
+              onUploadAttendanceSheet={handleUploadAttendanceSheet}
+              onToggleForceEnded={handleToggleForceEnded}
               currentUserEmpNumber={currentUser?.employeeNumber}
             />
           )}
@@ -648,39 +696,27 @@ export default function App() {
           {currentRole === 'uploader' && (
             <UploaderView
               requests={requests}
-              onConfirmUpload={handleConfirmUpload}
+              onConfirmUpload={handleConfirmAttendanceVerificationAndClose}
+              onApproveAndClose={handleConfirmAttendanceVerificationAndClose}
             />
           )}
 
-          {/* PR Dashboard (Direct PR User or Admin Quick Access) */}
-          {(currentRole === 'pr' || (currentRole === 'admin' && adminPreviewRole === 'pr')) && (
+          {/* PR Dashboard (Direct PR User) */}
+          {currentRole === 'pr' && (
             <PRDashboardView
               requests={requests}
               onUpdatePrStatus={handleUpdatePrStatus}
-              isAdminViewing={currentRole === 'admin' && adminPreviewRole === 'pr'}
-              onReturnToAdmin={
-                currentRole === 'admin' && adminPreviewRole === 'pr'
-                  ? () => setAdminPreviewRole(null)
-                  : undefined
-              }
             />
           )}
 
-          {/* Dean Executive Dashboard (Direct Dean User or Admin Quick Access) */}
-          {(currentRole === 'dean' || (currentRole === 'admin' && adminPreviewRole === 'dean')) && (
+          {/* Dean Executive Dashboard (Direct Dean User) */}
+          {currentRole === 'dean' && (
             <DeanExecutiveDashboardView
               requests={requests}
-              users={users}
-              isAdminViewing={currentRole === 'admin' && adminPreviewRole === 'dean'}
-              onReturnToAdmin={
-                currentRole === 'admin' && adminPreviewRole === 'dean'
-                  ? () => setAdminPreviewRole(null)
-                  : undefined
-              }
             />
           )}
 
-          {currentRole === 'admin' && !adminPreviewRole && (
+          {currentRole === 'admin' && (
             <AdminDashboardView
               users={users}
               requests={requests}
@@ -691,8 +727,6 @@ export default function App() {
               onToggleUserStatus={handleToggleUserStatus}
               onResetUserPassword={handleResetUserPassword}
               onDeleteUser={handleDeleteUser}
-              onQuickAccessPR={() => setAdminPreviewRole('pr')}
-              onQuickAccessDean={() => setAdminPreviewRole('dean')}
             />
           )}
         </main>
