@@ -679,20 +679,15 @@ export default function App() {
       }
     : null;
 
-  const isWideDashboard =
-    currentRole === 'admin' ||
-    currentRole === 'dean' ||
-    currentRole === 'pr';
-
   return (
     <div
       dir="rtl"
       className="min-h-screen w-full bg-[#f8fafc] flex flex-col text-slate-800 antialiased font-['Tajawal',sans-serif]"
     >
-      {/* App Container - Full Screen Mobile Layout with Independent Scroll */}
+      {/* App Container - Unified Wide Layout for all views */}
       <div
         className={`w-full ${
-          isWideDashboard ? 'max-w-4xl' : 'max-w-xl'
+          currentRole === 'login' ? 'max-w-md' : 'max-w-4xl'
         } mx-auto flex flex-col bg-[#f8fafc] relative shadow-none transition-all duration-200 ${
           currentRole !== 'login' ? 'h-screen max-h-screen overflow-hidden' : 'min-h-screen'
         }`}
