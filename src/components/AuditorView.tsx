@@ -67,8 +67,6 @@ export const AuditorView: React.FC<Props> = ({
   const approvedRequests = requests.filter(
     (r) =>
       r.status === 'approved_final' ||
-      r.status === 'attendance_submitted' ||
-      r.status === 'attendance_returned' ||
       r.status === 'uploaded_irtqaa'
   );
   const returnedRequests = requests.filter(
@@ -81,15 +79,10 @@ export const AuditorView: React.FC<Props> = ({
     const isStage2Done = true;
     const isStage3Done =
       status === 'approved_final' ||
-      status === 'attendance_submitted' ||
-      status === 'attendance_returned' ||
       status === 'uploaded_irtqaa';
     const isStage3Active = status === 'pending_auditor';
     const isStage4Done = status === 'uploaded_irtqaa';
-    const isStage4Active =
-      status === 'approved_final' ||
-      status === 'attendance_submitted' ||
-      status === 'attendance_returned';
+    const isStage4Active = status === 'approved_final';
 
     return (
       <div className="bg-slate-50/90 rounded-2xl p-3 border border-slate-200/80 mb-3 space-y-2 font-['Tajawal',sans-serif]">
