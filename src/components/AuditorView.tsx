@@ -65,7 +65,11 @@ export const AuditorView: React.FC<Props> = ({
 
   const pendingRequests = requests.filter((r) => r.status === 'pending_auditor');
   const approvedRequests = requests.filter(
-    (r) => r.status === 'approved_final' || r.status === 'attendance_submitted' || r.status === 'uploaded_irtqaa'
+    (r) =>
+      r.status === 'approved_final' ||
+      r.status === 'attendance_submitted' ||
+      r.status === 'attendance_returned' ||
+      r.status === 'uploaded_irtqaa'
   );
   const returnedRequests = requests.filter(
     (r) => r.status === 'returned_manager' || r.status === 'returned_emp'
@@ -75,10 +79,17 @@ export const AuditorView: React.FC<Props> = ({
   const renderWorkflowTimeline = (status: RequestStatus, deanApproved?: boolean) => {
     const isStage1Done = true;
     const isStage2Done = true;
-    const isStage3Done = status === 'approved_final' || status === 'attendance_submitted' || status === 'uploaded_irtqaa';
+    const isStage3Done =
+      status === 'approved_final' ||
+      status === 'attendance_submitted' ||
+      status === 'attendance_returned' ||
+      status === 'uploaded_irtqaa';
     const isStage3Active = status === 'pending_auditor';
     const isStage4Done = status === 'uploaded_irtqaa';
-    const isStage4Active = status === 'approved_final' || status === 'attendance_submitted';
+    const isStage4Active =
+      status === 'approved_final' ||
+      status === 'attendance_submitted' ||
+      status === 'attendance_returned';
 
     return (
       <div className="bg-slate-50/90 rounded-2xl p-3 border border-slate-200/80 mb-3 space-y-2 font-['Tajawal',sans-serif]">

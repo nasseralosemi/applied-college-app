@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { ActivityRequest, AttendanceSheet } from '../types';
 import { StatusBadge } from './StatusBadge';
 import { RequestDetailsModal } from './RequestDetailsModal';
-import { AttendanceSheetModal } from './AttendanceSheetModal';
+import { UploadAttendanceModal } from './UploadAttendanceModal';
+import { AttendancePreviewModal } from './AttendancePreviewModal';
+import { isActivityEnded, downloadAttendanceSheet } from '../utils/activityUtils';
 import {
   PlusCircle,
   Calendar,
@@ -20,15 +22,12 @@ import {
   CheckCircle2,
   FileText,
   RotateCcw,
-  FileSpreadsheet,
-  Upload,
-  Paperclip,
-  Check,
-  AlertCircle,
-  Download,
+  UploadCloud,
+  Lock,
   Eye,
-  Sparkles,
-  UserCheck,
+  Download,
+  AlertTriangle,
+  FileCheck,
 } from 'lucide-react';
 
 const ACTIVITY_TYPES = [
@@ -85,8 +84,7 @@ interface Props {
   requests: ActivityRequest[];
   onSubmitRequest: (newReq: Omit<ActivityRequest, 'id' | 'status' | 'note'>) => void;
   onResubmitRequest?: (id: number) => void;
-  onUploadAttendanceSheet?: (requestId: number, attendanceData: AttendanceSheet) => void;
-  onToggleForceEnded?: (requestId: number) => void;
+  onUploadAttendance?: (requestId: number, sheetData: AttendanceSheet) => void;
   currentUserEmpNumber?: string;
 }
 
@@ -94,29 +92,13 @@ export const EmployeeView: React.FC<Props> = ({
   requests,
   onSubmitRequest,
   onResubmitRequest,
-  onUploadAttendanceSheet,
-  onToggleForceEnded,
+  onUploadAttendance,
   currentUserEmpNumber,
 }) => {
   const [activeTab, setActiveTab] = useState<'form' | 'tracking'>('form');
   const [selectedRequest, setSelectedRequest] = useState<ActivityRequest | null>(null);
-  const [selectedAttendanceRequest, setSelectedAttendanceRequest] = useState<ActivityRequest | null>(null);
-
-  // Per-request attendance upload form state
-  const [attendanceDrafts, setAttendanceDrafts] = useState<
-    Record<
-      number,
-      {
-        fileName: string;
-        fileSize: string;
-        fileType: 'excel' | 'pdf';
-        fileData?: string;
-        attendeesCount: string;
-        notes: string;
-        error?: string;
-      }
-    >
-  >({});
+  const [uploadModalRequest, setUploadModalRequest] = useState<ActivityRequest | null>(null);
+  const [previewModalRequest, setPreviewModalRequest] = useState<ActivityRequest | null>(null);
 
   // Group 1: Basic Info & Activity Type
   const [type, setType] = useState<string>('ورشة عمل');
@@ -147,113 +129,6 @@ export const EmployeeView: React.FC<Props> = ({
 
   // Validation Error State
   const [formError, setFormError] = useState<string>('');
-
-  // Check if activity has ended in time
-  const isActivityEnded = (r: ActivityRequest): boolean => {
-    if (r.forceActivityEnded) return true;
-    const dateStr = r.endDate || r.startDate || r.date;
-    if (!dateStr) return false;
-    const now = new Date();
-    const todayStr = now.toISOString().split('T')[0];
-    return dateStr <= todayStr;
-  };
-
-  // Helper for attendance form draft per request
-  const getDraft = (id: number) => {
-    return (
-      attendanceDrafts[id] || {
-        fileName: '',
-        fileSize: '',
-        fileType: 'excel' as const,
-        attendeesCount: '',
-        notes: '',
-        error: '',
-      }
-    );
-  };
-
-  const updateDraft = (
-    id: number,
-    patch: Partial<{
-      fileName: string;
-      fileSize: string;
-      fileType: 'excel' | 'pdf';
-      fileData?: string;
-      attendeesCount: string;
-      notes: string;
-      error?: string;
-    }>
-  ) => {
-    setAttendanceDrafts((prev) => ({
-      ...prev,
-      [id]: {
-        ...getDraft(id),
-        ...patch,
-      },
-    }));
-  };
-
-  const handleSelectRealFile = (id: number, file: File) => {
-    const isPdf = file.name.toLowerCase().endsWith('.pdf') || file.type.includes('pdf');
-    const sizeKb = Math.round(file.size / 1024);
-    const sizeStr = sizeKb > 1024 ? `${(sizeKb / 1024).toFixed(1)} MB` : `${sizeKb} KB`;
-
-    updateDraft(id, {
-      fileName: file.name,
-      fileSize: sizeStr,
-      fileType: isPdf ? 'pdf' : 'excel',
-      error: '',
-    });
-  };
-
-  const handleApplySampleFile = (id: number, type: 'excel' | 'pdf', activityName: string) => {
-    const cleanName = activityName.replace(/[\s\W]+/g, '_').slice(0, 30);
-    if (type === 'excel') {
-      updateDraft(id, {
-        fileName: `كشف_حضور_${cleanName}_المعتمد.xlsx`,
-        fileSize: '320 KB',
-        fileType: 'excel',
-        attendeesCount: '45',
-        notes: 'تمت مطابقة أسماء المستفيدين مع السجل الأكاديمي والتحقق من التوقيعات.',
-        error: '',
-      });
-    } else {
-      updateDraft(id, {
-        fileName: `كشف_حضور_${cleanName}_المعتمد.pdf`,
-        fileSize: '680 KB',
-        fileType: 'pdf',
-        attendeesCount: '45',
-        notes: 'كشف حضور معتمد ومختوم رسمياً من رئيس الوحدة المشرفة.',
-        error: '',
-      });
-    }
-  };
-
-  const handleSubmitAttendanceSheet = (id: number) => {
-    const draft = getDraft(id);
-    if (!draft.fileName) {
-      updateDraft(id, { error: 'يرجى إرفاق ملف كشف الحضور المعتمد (Excel أو PDF).' });
-      return;
-    }
-    const count = parseInt(draft.attendeesCount, 10);
-    if (isNaN(count) || count <= 0) {
-      updateDraft(id, { error: 'يرجى إدخال عدد الحضور الفعلي في الكشف (أكبر من صفر).' });
-      return;
-    }
-
-    if (onUploadAttendanceSheet) {
-      const attendanceData: AttendanceSheet = {
-        fileName: draft.fileName,
-        fileSize: draft.fileSize || '350 KB',
-        fileType: draft.fileType,
-        uploadedAt: new Date().toISOString(),
-        uploadedBy: currentUserEmpNumber ? `الموظف #${currentUserEmpNumber}` : 'مقدم النشاط',
-        attendeesCount: count,
-        notes: draft.notes,
-      };
-      onUploadAttendanceSheet(id, attendanceData);
-    }
-  };
 
   // Filter requests to show this employee's submitted requests
   const myRequests = currentUserEmpNumber
@@ -921,241 +796,201 @@ export const EmployeeView: React.FC<Props> = ({
                       </div>
                     )}
 
-                    {/* PHASE: ATTENDANCE SHEET SECTION */}
-                    {/* CASE 1: Request is approved_final and needs attendance sheet */}
-                    {r.status === 'approved_final' && !r.attendanceSheet && (
-                      <div className="mb-3">
-                        {isActivityEnded(r) ? (
-                          /* Activity has ended: Show the required "إرفاق كشف الحضور المعتمد" box */
-                          <div className="bg-gradient-to-br from-amber-50/80 via-emerald-50/40 to-white border-2 border-[#c59b27] rounded-2xl p-4 shadow-sm">
-                            <div className="flex items-start justify-between gap-2 mb-2.5 pb-2.5 border-b border-[#c59b27]/30">
-                              <div className="flex items-center gap-2">
-                                <div className="w-8 h-8 rounded-xl bg-[#c59b27] text-slate-950 flex items-center justify-center shrink-0 shadow-xs font-bold">
-                                  <FileSpreadsheet className="w-4 h-4" />
-                                </div>
-                                <div>
-                                  <h5 className="font-extrabold text-slate-900 text-xs sm:text-sm flex items-center gap-1.5">
-                                    <span>إرفاق كشف الحضور المعتمد</span>
-                                    <span className="text-[10px] bg-emerald-100 text-emerald-900 font-bold px-2 py-0.5 rounded-full border border-emerald-200">
-                                      انتهت الفعالية
-                                    </span>
-                                  </h5>
-                                  <p className="text-[10px] text-slate-500 mt-0.5">
-                                    يرجى رفع كشف الحضور بصيغة (Excel / PDF) لتحويل المعاملة آلياً لمسؤول التوثيق (ناصر العصيمي)
-                                  </p>
-                                </div>
-                              </div>
-                              <span className="text-[10px] font-mono text-slate-500 bg-white px-2 py-1 rounded-lg border border-slate-200 shrink-0">
-                                نهاية الفعالية: {r.endDate || r.startDate || r.date}
-                              </span>
+                    {/* مرحلة كشف الحضور الختامية (تتفعل فور انتهاء النشاط) */}
+                    <div className="mb-3">
+                      {!isActivityEnded(r) ? (
+                        /* Case 1: النشاط لم ينتهِ بعد */
+                        <div className="bg-slate-50/90 border border-slate-200/90 rounded-2xl p-3 flex items-center justify-between gap-2 text-slate-600">
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-8 h-8 rounded-xl bg-slate-200/80 flex items-center justify-center text-slate-400 shrink-0">
+                              <Lock className="w-4 h-4" />
                             </div>
-
-                            {/* File Upload Control */}
-                            <div className="space-y-3">
-                              {/* Drop / Select Zone */}
-                              <div className="relative border-2 border-dashed border-slate-300 hover:border-[#c59b27] rounded-xl p-3 bg-white/80 transition-colors text-center">
-                                {getDraft(r.id).fileName ? (
-                                  <div className="flex items-center justify-between gap-2 bg-slate-50 p-2 rounded-lg border border-slate-200">
-                                    <div className="flex items-center gap-2">
-                                      {getDraft(r.id).fileType === 'excel' ? (
-                                        <FileSpreadsheet className="w-5 h-5 text-emerald-600 shrink-0" />
-                                      ) : (
-                                        <FileText className="w-5 h-5 text-rose-600 shrink-0" />
-                                      )}
-                                      <div className="text-right">
-                                        <span className="text-xs font-bold text-slate-900 block font-mono dir-ltr">
-                                          {getDraft(r.id).fileName}
-                                        </span>
-                                        <span className="text-[10px] text-slate-500">
-                                          {getDraft(r.id).fileSize} • ملف {getDraft(r.id).fileType === 'excel' ? 'Excel' : 'PDF'} جاهز للإرسال
-                                        </span>
-                                      </div>
-                                    </div>
-                                    <button
-                                      type="button"
-                                      onClick={() => updateDraft(r.id, { fileName: '', fileSize: '' })}
-                                      className="text-[10px] text-rose-600 hover:text-rose-800 font-bold px-2 py-1 bg-rose-50 hover:bg-rose-100 rounded-lg cursor-pointer"
-                                    >
-                                      تغيير الملف
-                                    </button>
-                                  </div>
-                                ) : (
-                                  <div>
-                                    <label className="cursor-pointer block">
-                                      <Upload className="w-6 h-6 text-[#c59b27] mx-auto mb-1 animate-bounce" />
-                                      <span className="text-xs font-bold text-slate-800 block">
-                                        اضغط لاختيار كشف الحضور (Excel أو PDF)
-                                      </span>
-                                      <span className="text-[10px] text-slate-400 block mt-0.5">
-                                        يدعم صيغ (.xlsx, .xls, .csv, .pdf)
-                                      </span>
-                                      <input
-                                        type="file"
-                                        accept=".xlsx,.xls,.csv,.pdf,application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                                        onChange={(e) => {
-                                          if (e.target.files && e.target.files[0]) {
-                                            handleSelectRealFile(r.id, e.target.files[0]);
-                                          }
-                                        }}
-                                        className="hidden"
-                                      />
-                                    </label>
-
-                                    {/* 1-Click Test Templates */}
-                                    <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-center gap-2">
-                                      <span className="text-[10px] text-slate-400 font-medium">أو تجربة نموذج جاهز:</span>
-                                      <button
-                                        type="button"
-                                        onClick={() => handleApplySampleFile(r.id, 'excel', r.name)}
-                                        className="text-[10px] bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 px-2 py-1 rounded-md font-bold transition-all cursor-pointer flex items-center gap-1"
-                                      >
-                                        <FileSpreadsheet className="w-3 h-3 text-emerald-700" />
-                                        <span>نموذج Excel (.xlsx)</span>
-                                      </button>
-                                      <button
-                                        type="button"
-                                        onClick={() => handleApplySampleFile(r.id, 'pdf', r.name)}
-                                        className="text-[10px] bg-rose-50 hover:bg-rose-100 text-rose-900 border border-rose-200 px-2 py-1 rounded-md font-bold transition-all cursor-pointer flex items-center gap-1"
-                                      >
-                                        <FileText className="w-3 h-3 text-rose-700" />
-                                        <span>نموذج PDF (.pdf)</span>
-                                      </button>
-                                    </div>
-                                  </div>
-                                )}
+                            <div>
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-xs font-bold text-slate-700">مرحلة كشف الحضور الختامية</span>
+                                <span className="text-[9px] bg-slate-200 text-slate-600 font-bold px-1.5 py-0.5 rounded">
+                                  غير مفعلة بعد
+                                </span>
                               </div>
-
-                              {/* Form Inputs: Attendees Count & Notes */}
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-right">
-                                <div>
-                                  <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                                    عدد الحضور الفعلي في الكشف <span className="text-rose-500">*</span>
-                                  </label>
-                                  <input
-                                    type="number"
-                                    min="1"
-                                    placeholder="مثال: 45 مستفيداً"
-                                    value={getDraft(r.id).attendeesCount}
-                                    onChange={(e) => updateDraft(r.id, { attendeesCount: e.target.value, error: '' })}
-                                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] outline-none font-medium"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                                    ملاحظات إضافية لمسؤول التوثيق (اختياري)
-                                  </label>
-                                  <input
-                                    type="text"
-                                    placeholder="أي ملاحظات حول الكشف أو التحقق..."
-                                    value={getDraft(r.id).notes}
-                                    onChange={(e) => updateDraft(r.id, { notes: e.target.value })}
-                                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] outline-none font-medium"
-                                  />
-                                </div>
-                              </div>
-
-                              {getDraft(r.id).error && (
-                                <p className="text-[11px] text-rose-600 bg-rose-50 p-2 rounded-xl border border-rose-200 font-bold flex items-center gap-1.5">
-                                  <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                                  <span>{getDraft(r.id).error}</span>
-                                </p>
-                              )}
-
-                              {/* Submit Attendance Button */}
-                              <button
-                                type="button"
-                                onClick={() => handleSubmitAttendanceSheet(r.id)}
-                                className="w-full bg-gradient-to-r from-[#1b4332] via-[#143728] to-[#0d281e] hover:from-[#143728] hover:to-[#081c15] text-[#e6c566] font-extrabold py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 shadow-md shadow-[#1b4332]/25 active:scale-95 transition-all duration-150 cursor-pointer border border-[#c59b27]/40"
-                              >
-                                <Send className="w-4 h-4 text-[#e6c566]" />
-                                <span>إرسال كشف الحضور وتوجيه المعاملة لمسؤول التوثيق (ناصر العصيمي)</span>
-                              </button>
+                              <p className="text-[10px] text-slate-400 mt-0.5">
+                                تتفعل هذه الخانة فور انتهاء النشاط بتاريخ ({r.endDate || r.startDate || r.date})
+                              </p>
                             </div>
                           </div>
-                        ) : (
-                          /* Activity not ended yet: Inform user when it will be open */
-                          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs">
-                            <div className="flex items-center gap-2 text-slate-600">
-                              <Clock className="w-4 h-4 text-amber-600 shrink-0" />
-                              <span>
-                                تاريخ الفعالية ({r.startDate || r.date} إلى {r.endDate || r.startDate || r.date}) • ستتاح خانة إرفاق كشف الحضور المعتمد فور انتهاء موعد الفعالية.
-                              </span>
-                            </div>
-                            {onToggleForceEnded && (
-                              <button
-                                type="button"
-                                onClick={() => onToggleForceEnded(r.id)}
-                                className="text-[10px] bg-amber-100 hover:bg-amber-200 text-amber-900 px-2.5 py-1 rounded-lg font-bold border border-amber-300 transition-all cursor-pointer shrink-0"
-                              >
-                                🧪 محاكاة انتهاء النشاط الآن للتجربة
-                              </button>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {/* CASE 2: Attendance sheet submitted, pending Nasser Al-Osaimi */}
-                    {r.status === 'attendance_submitted' && r.attendanceSheet && (
-                      <div className="bg-gradient-to-r from-amber-50/90 via-emerald-50/70 to-slate-50 border border-amber-300 rounded-2xl p-3.5 mb-3 shadow-xs">
-                        <div className="flex flex-wrap items-center justify-between gap-2 mb-2 pb-2 border-b border-amber-200/60">
-                          <div className="flex items-center gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                            <h5 className="font-bold text-slate-900 text-xs">
-                              تم إرفاق كشف الحضور المعتمد بنجاح
-                            </h5>
-                          </div>
-                          <span className="text-[10px] font-bold bg-[#1b4332] text-[#e6c566] px-2.5 py-0.5 rounded-full border border-[#c59b27]/30">
-                            محال آلياً لمسؤول التوثيق (ناصر العصيمي)
+                          <span className="text-[10px] text-slate-400 hidden sm:inline-block font-mono">
+                            موعد الانتهاء: {r.endDate || r.startDate}
                           </span>
                         </div>
+                      ) : !r.attendanceSheet ? (
+                        /* Case 2: النشاط منتهي ولم يتم رفع الكشف بعد */
+                        <div className="bg-gradient-to-r from-emerald-50 via-amber-50/40 to-emerald-50 border-2 border-emerald-300/80 rounded-2xl p-3 sm:p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping shrink-0" />
+                              <span className="text-[10px] font-bold text-emerald-900 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200">
+                                النشاط منتهي • خانة الرفع مفعلة
+                              </span>
+                            </div>
+                            <h5 className="text-xs font-bold text-[#1b4332]">
+                              مرحلة كشف الحضور الختامية (منصة ارتقاء)
+                            </h5>
+                            <p className="text-[10px] text-slate-600 mt-0.5">
+                              انتهت فعاليات النشاط. يرجى رفع كشف الحضور المعتمد لتوثيق الساعات في السجل المهاري وإغلاق المعاملة رسمياً.
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setUploadModalRequest(r)}
+                            className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#1b4332] via-[#143728] to-[#081c15] text-[#e6c566] text-xs font-bold shadow-md shadow-[#1b4332]/25 active:scale-95 transition-all cursor-pointer border border-[#c59b27]/40 shrink-0"
+                          >
+                            <UploadCloud className="w-4 h-4 text-[#e6c566]" />
+                            <span>رفع كشف الحضور</span>
+                          </button>
+                        </div>
+                      ) : r.attendanceSheet.status === 'returned' ? (
+                        /* Case 3: الكشف أُعيد للموظف مع ملاحظات التعديل */
+                        <div className="bg-rose-50/95 border-2 border-rose-300 rounded-2xl p-3.5 space-y-2.5 text-rose-950 shadow-xs animate-fade-slide-up">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+                              <span className="text-xs font-extrabold text-rose-900">
+                                تمت إعادة كشف الحضور من مسؤول الرفع لمنصة ارتقاء
+                              </span>
+                            </div>
+                            <span className="text-[10px] bg-rose-200 text-rose-900 font-bold px-2 py-0.5 rounded-full">
+                              مطلوب التعديل
+                            </span>
+                          </div>
 
-                        <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-700 bg-white/80 p-2.5 rounded-xl border border-slate-200">
-                          <div className="flex items-center gap-2">
-                            {r.attendanceSheet.fileType === 'excel' ? (
-                              <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
-                            ) : (
-                              <FileText className="w-4 h-4 text-rose-600" />
+                          <div className="bg-white/95 p-3 rounded-xl border border-rose-200 text-xs text-slate-800">
+                            <strong className="text-rose-900 block text-[11px] mb-1">
+                              ملاحظات وسبب الإعادة من مسؤول الرفع:
+                            </strong>
+                            <p className="leading-relaxed font-semibold text-slate-900">
+                              {r.attendanceSheet.returnNote || 'يرجى استيفاء وتعديل بيانات كشف الحضور وفق ضوابط منصة ارتقاء.'}
+                            </p>
+                            {r.attendanceSheet.returnedAt && (
+                              <span className="text-[9px] text-slate-400 block mt-1 font-mono">
+                                تاريخ الإعادة: {new Date(r.attendanceSheet.returnedAt).toLocaleString('ar-SA')}
+                              </span>
                             )}
-                            <span className="font-bold font-mono dir-ltr">{r.attendanceSheet.fileName}</span>
-                            <span className="text-slate-400">({r.attendanceSheet.fileSize})</span>
-                            <span className="text-emerald-800 font-bold">• {r.attendanceSheet.attendeesCount} حضور</span>
                           </div>
 
-                          <button
-                            type="button"
-                            onClick={() => setSelectedAttendanceRequest(r)}
-                            className="inline-flex items-center gap-1 text-[11px] text-[#1b4332] hover:text-[#c59b27] font-bold px-2.5 py-1 bg-slate-100 hover:bg-amber-50 rounded-lg border border-slate-200 cursor-pointer"
-                          >
-                            <Eye className="w-3.5 h-3.5 text-[#c59b27]" />
-                            <span>معاينة كشف الحضور</span>
-                          </button>
-                        </div>
-                        <p className="text-[10px] text-slate-500 mt-2">
-                          المعاملة بانتظار قيام مسؤول التوثيق (ناصر العصيمي) بمطابقة الكشف واعتماد التوثيق النهائي وإغلاق المعاملة رسمياً في منصة ارتقاء.
-                        </p>
-                      </div>
-                    )}
+                          <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-rose-200/60">
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => setPreviewModalRequest(r)}
+                                className="text-[11px] text-slate-700 bg-white hover:bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1 active:scale-95 transition-all cursor-pointer shadow-xs"
+                              >
+                                <Eye className="w-3.5 h-3.5 text-slate-500" />
+                                <span>معاينة الكشف السابق</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => downloadAttendanceSheet(r)}
+                                className="text-[11px] text-slate-700 bg-white hover:bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1 active:scale-95 transition-all cursor-pointer shadow-xs"
+                              >
+                                <Download className="w-3.5 h-3.5 text-slate-500" />
+                                <span>تحميل</span>
+                              </button>
+                            </div>
 
-                    {/* CASE 3: Fully verified and closed in Irtiqa */}
-                    {r.status === 'uploaded_irtqaa' && r.attendanceSheet && (
-                      <div className="bg-gradient-to-r from-emerald-50 to-teal-50/50 border border-emerald-200 rounded-2xl p-3 mb-3 text-xs">
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-2 text-emerald-950 font-bold">
-                            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                            <span>اكتملت كافة مراحل المعاملة رسمياً، وتم اعتماد التوثيق وإغلاق الطلب في منصة ارتقاء</span>
+                            <button
+                              type="button"
+                              onClick={() => setUploadModalRequest(r)}
+                              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-rose-700 hover:bg-rose-800 text-white text-xs font-bold shadow-md shadow-rose-700/25 active:scale-95 transition-all cursor-pointer"
+                            >
+                              <RotateCcw className="w-3.5 h-3.5" />
+                              <span>إعادة رفع الكشف المحدث</span>
+                            </button>
                           </div>
-                          <button
-                            type="button"
-                            onClick={() => setSelectedAttendanceRequest(r)}
-                            className="text-[10px] text-[#1b4332] font-bold px-2 py-1 rounded-lg bg-white border border-emerald-300 hover:bg-emerald-100/60 cursor-pointer flex items-center gap-1"
-                          >
-                            <Eye className="w-3 h-3 text-emerald-700" />
-                            <span>كشف الحضور المعتمد</span>
-                          </button>
                         </div>
-                      </div>
-                    )}
+                      ) : r.attendanceSheet.status === 'approved' ? (
+                        /* Case 4: الكشف معتمد رسمياً والمغلق */
+                        <div className="bg-emerald-50/90 border border-emerald-300 rounded-2xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-emerald-950 shadow-xs">
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0 border border-emerald-200">
+                              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs font-bold text-slate-900">{r.attendanceSheet.fileName}</span>
+                                <span className="text-[10px] bg-emerald-200 text-emerald-900 font-bold px-2 py-0.5 rounded-full">
+                                  معتمد ومغلق رسمياً
+                                </span>
+                              </div>
+                              <p className="text-[10px] text-emerald-800 font-medium mt-0.5">
+                                تم قبول واعتماد كشف الحضور رسمياً • المعاملة موثقة ومغلقة
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => setPreviewModalRequest(r)}
+                              className="text-[11px] text-[#1b4332] bg-white hover:bg-emerald-100/50 border border-slate-200 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1 active:scale-95 transition-all cursor-pointer shadow-xs"
+                            >
+                              <Eye className="w-3.5 h-3.5 text-[#c59b27]" />
+                              <span>معاينة الكشف</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => downloadAttendanceSheet(r)}
+                              className="text-[11px] text-emerald-900 bg-white hover:bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1 active:scale-95 transition-all cursor-pointer shadow-xs"
+                            >
+                              <Download className="w-3.5 h-3.5 text-emerald-700" />
+                              <span>تحميل</span>
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        /* Case 5: الكشف مرفوع وبانتظار المراجعة والاعتماد */
+                        <div className="bg-amber-50/80 border border-amber-200 rounded-2xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-amber-950 shadow-xs">
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0 border border-amber-200">
+                              <FileCheck className="w-4 h-4 text-amber-700" />
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs font-bold text-slate-900">{r.attendanceSheet.fileName}</span>
+                                <span className="text-[10px] bg-amber-200/80 text-amber-900 font-bold px-2 py-0.5 rounded-full">
+                                  بانتظار الاعتماد
+                                </span>
+                              </div>
+                              <p className="text-[10px] text-slate-600 mt-0.5">
+                                تم رفع الكشف ({r.attendanceSheet.attendeesCount || 35} حاضر) • بانتظار مراجعة واعتماد مسؤول الرفع لمنصة ارتقاء
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => setPreviewModalRequest(r)}
+                              className="text-[11px] text-[#1b4332] bg-white hover:bg-amber-100/50 border border-slate-200 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1 active:scale-95 transition-all cursor-pointer shadow-xs"
+                            >
+                              <Eye className="w-3.5 h-3.5 text-[#c59b27]" />
+                              <span>معاينة</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => downloadAttendanceSheet(r)}
+                              className="text-[11px] text-slate-700 bg-white hover:bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1 active:scale-95 transition-all cursor-pointer shadow-xs"
+                            >
+                              <Download className="w-3.5 h-3.5 text-slate-500" />
+                              <span>تحميل</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setUploadModalRequest(r)}
+                              className="text-[10px] text-slate-500 hover:text-slate-800 underline px-1 cursor-pointer"
+                            >
+                              تحديث الملف
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
 
                     {/* Actions Bar */}
                     <div className="flex items-center justify-between pt-2.5 border-t border-slate-100">
@@ -1194,11 +1029,25 @@ export const EmployeeView: React.FC<Props> = ({
         onClose={() => setSelectedRequest(null)}
       />
 
-      {/* Attendance Sheet Preview Modal */}
-      <AttendanceSheetModal
-        request={selectedAttendanceRequest}
-        isOpen={Boolean(selectedAttendanceRequest)}
-        onClose={() => setSelectedAttendanceRequest(null)}
+      {/* Upload Attendance Sheet Modal */}
+      <UploadAttendanceModal
+        isOpen={Boolean(uploadModalRequest)}
+        request={uploadModalRequest}
+        onUpload={(requestId, sheetData) => {
+          if (onUploadAttendance) {
+            onUploadAttendance(requestId, sheetData);
+          }
+          setUploadModalRequest(null);
+        }}
+        onClose={() => setUploadModalRequest(null)}
+        currentUserEmpNumber={currentUserEmpNumber}
+      />
+
+      {/* Preview Attendance Sheet Modal */}
+      <AttendancePreviewModal
+        isOpen={Boolean(previewModalRequest)}
+        request={previewModalRequest}
+        onClose={() => setPreviewModalRequest(null)}
       />
     </div>
   );

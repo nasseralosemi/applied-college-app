@@ -4,7 +4,6 @@ export type RequestStatus =
   | 'pending_auditor'
   | 'returned_manager'
   | 'approved_final'
-  | 'attendance_submitted'
   | 'uploaded_irtqaa'
   | 'rejected';
 
@@ -40,15 +39,21 @@ export interface AuditLogEntry {
   type: 'approve' | 'return' | 'upload' | 'user_edit' | 'password_reset' | 'status_toggle' | 'create';
 }
 
+export type AttendanceSheetStatus = 'pending_review' | 'approved' | 'returned';
+
 export interface AttendanceSheet {
+  id?: string;
   fileName: string;
   fileSize?: string;
-  fileType: 'pdf' | 'excel';
-  fileData?: string; // Data URL or download reference
+  fileUrl?: string; // base64 or URL
   uploadedAt: string;
-  uploadedBy: string;
+  uploadedBy?: string;
   attendeesCount?: number;
-  notes?: string;
+  status: AttendanceSheetStatus;
+  returnNote?: string;
+  returnedAt?: string;
+  approvedAt?: string;
+  approvedBy?: string;
 }
 
 export interface ActivityRequest {
@@ -87,11 +92,9 @@ export interface ActivityRequest {
   prPublishedAt?: string;
   prNotes?: string;
   prTweetDraft?: string;
-  // مرحلة إرفاق واعتماد كشف الحضور والتوثيق لمنصة ارتقاء
+  // مرحلة كشف الحضور الختامية
   attendanceSheet?: AttendanceSheet;
-  attendanceVerifiedAt?: string;
-  attendanceVerifiedBy?: string;
-  forceActivityEnded?: boolean; // تفعيل انتهاء النشاط للتجربة الفورية
+  isOfficiallyClosed?: boolean; // إغلاق المعاملة رسمياً بعد قبول واعتماد كشف الحضور
   // Backwards compatibility fallbacks
   date?: string;
   location?: string;

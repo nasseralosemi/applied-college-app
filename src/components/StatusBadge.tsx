@@ -1,6 +1,6 @@
 import React from 'react';
 import { RequestStatus } from '../types';
-import { Clock, AlertTriangle, CheckCircle2, CloudUpload, XCircle, ShieldCheck, FileSpreadsheet } from 'lucide-react';
+import { Clock, AlertTriangle, CheckCircle2, CloudUpload, XCircle, ShieldCheck } from 'lucide-react';
 
 interface Props {
   status: RequestStatus;
@@ -55,21 +55,35 @@ export const StatusBadge: React.FC<Props> = ({ status, note }) => {
       return (
         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold bg-gradient-to-r from-emerald-500/20 via-teal-500/20 to-green-500/15 text-emerald-950 border border-emerald-400 shadow-xs shadow-emerald-500/10 backdrop-blur-xs">
           <CheckCircle2 className="w-3 h-3 text-emerald-700" />
-          <span>معتمد • بانتظار كشف الحضور</span>
+          <span>معتمد نهائياً - جاهز للرفع</span>
         </span>
       );
     case 'attendance_submitted':
       return (
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold bg-gradient-to-r from-amber-500/20 via-yellow-400/25 to-emerald-500/20 text-amber-950 border border-amber-400 shadow-xs shadow-amber-500/15 backdrop-blur-xs">
-          <FileSpreadsheet className="w-3 h-3 text-amber-700 animate-bounce" />
-          <span>كشف الحضور مرفق • محال لتوثيق ارتقاء</span>
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold bg-gradient-to-r from-teal-500/20 via-emerald-500/20 to-cyan-500/15 text-teal-950 border border-teal-400 shadow-xs shadow-teal-500/10 backdrop-blur-xs">
+          <CheckCircle2 className="w-3 h-3 text-teal-700" />
+          <span>كشف الحضور قيد التدقيق</span>
         </span>
+      );
+    case 'attendance_returned':
+      return (
+        <div className="flex flex-col items-start gap-1">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold bg-gradient-to-r from-rose-500/20 via-amber-500/20 to-rose-400/20 text-rose-950 border border-rose-400 shadow-xs shadow-rose-500/10 backdrop-blur-xs">
+            <AlertTriangle className="w-3 h-3 text-rose-700" />
+            <span>كشف الحضور مُعاد للتعديل</span>
+          </span>
+          {note && (
+            <span className="text-[10px] text-rose-900 bg-rose-50/95 px-2.5 py-1 rounded-xl border border-rose-200 shadow-xs">
+              الملاحظة: {note}
+            </span>
+          )}
+        </div>
       );
     case 'uploaded_irtqaa':
       return (
         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold bg-gradient-to-r from-[#1b4332]/20 via-[#1b4332]/15 to-[#c59b27]/25 text-[#1b4332] border border-[#c59b27]/50 shadow-xs shadow-[#1b4332]/10 backdrop-blur-xs">
           <CloudUpload className="w-3 h-3 text-[#1b4332]" />
-          <span>موثق ومغلق رسمياً في ارتقاء</span>
+          <span>مرفوع على منصة ارتقاء</span>
         </span>
       );
     case 'rejected':

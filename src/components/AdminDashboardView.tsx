@@ -101,7 +101,12 @@ export const AdminDashboardView: React.FC<Props> = ({
   const pendingManager = requests.filter((r) => r.status === 'pending_manager').length;
   const pendingAuditor = requests.filter((r) => r.status === 'pending_auditor').length;
   const returnedCount = requests.filter((r) => r.status === 'returned_emp' || r.status === 'returned_manager').length;
-  const approvedCount = requests.filter((r) => r.status === 'approved_final').length;
+  const approvedCount = requests.filter(
+    (r) =>
+      r.status === 'approved_final' ||
+      r.status === 'attendance_submitted' ||
+      r.status === 'attendance_returned'
+  ).length;
   const uploadedCount = requests.filter((r) => r.status === 'uploaded_irtqaa').length;
   const completionRate = totalRequests > 0 ? Math.round((uploadedCount / totalRequests) * 100) : 0;
 

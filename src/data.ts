@@ -118,20 +118,17 @@ export const INITIAL_REQUESTS: ActivityRequest[] = [
     summary: "توجيه الطلاب لجهات التدريب والربط مع المنصة الوطنية وبناء الشراكات المجتمعية",
     status: "uploaded_irtqaa",
     note: "",
-    attendanceSheet: {
-      fileName: "كشف_حضور_ملتقى_التهيئة_المعتمد.xlsx",
-      fileSize: "412 KB",
-      fileType: "excel",
-      uploadedAt: "2026-09-09T12:30:00.000Z",
-      uploadedBy: "عبدالرحمن الطوالة",
-      attendeesCount: 58,
-      notes: "تم استيفاء حضور الخريجين ومطابقة الهويات الجامعية"
-    },
-    attendanceVerifiedAt: "2026-09-09T14:00:00.000Z",
-    attendanceVerifiedBy: "ناصر العصيمي",
     submittedByEmpNumber: "4412098",
     date: "2026-09-08",
-    location: "عن بعد - Blackboard"
+    location: "عن بعد - Blackboard",
+    attendanceSheet: {
+      fileName: "كشف_حضور_ملتقى_التهيئة_للشراكات_نهائي.pdf",
+      fileSize: "1.4 MB",
+      uploadedAt: "2026-09-10T11:30:00.000Z",
+      uploadedBy: "4412098",
+      attendeesCount: 58,
+      status: "pending_review",
+    },
   }
 ];
 

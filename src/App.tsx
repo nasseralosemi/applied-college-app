@@ -23,10 +23,14 @@ export default function App() {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.map((r: ActivityRequest) => ({
-            ...r,
-            prStatus: r.prStatus || (r.xPlatformPublish ? 'pending_pr' : undefined),
-          }));
+          return parsed.map((r: ActivityRequest) => {
+            const initialMatch = INITIAL_REQUESTS.find((init) => init.id === r.id);
+            return {
+              ...r,
+              prStatus: r.prStatus || (r.xPlatformPublish ? 'pending_pr' : undefined),
+              attendanceSheet: r.attendanceSheet || initialMatch?.attendanceSheet,
+            };
+          });
         }
       }
     } catch {
@@ -445,73 +449,121 @@ export default function App() {
     );
   };
 
-  // Employee: Upload attendance sheet and automatically route to Documentation Officer (Nasser Al-Osaimi)
-  const handleUploadAttendanceSheet = (requestId: number, attendanceData: AttendanceSheet) => {
+  // Uploader: Confirm upload
+  const handleConfirmUpload = (id: number) => {
+    const req = requests.find((r) => r.id === id);
+    setRequests((prev) =>
+      prev.map((r) =>
+        r.id === id ? { ...r, status: 'uploaded_irtqaa' } : r
+      )
+    );
+    addAuditLog(
+      'توثيق ومزامنة النشاط في منصة ارتقاء الرسمية',
+      currentUser?.name || 'مسؤول الرفع لمنصة ارتقاء',
+      req?.name || `النشاط #${id}`,
+      'upload'
+    );
+    showToast('تم تأكيد رفع النشاط إلى منصة ارتقاء الرسمية بنجاح!', 'success');
+  };
+
+  // Employee: Upload or re-upload attendance sheet for ended activity
+  const handleUploadAttendance = (requestId: number, sheetData: AttendanceSheet) => {
     const req = requests.find((r) => r.id === requestId);
+    const isReupload = req?.attendanceSheet?.status === 'returned';
+
     setRequests((prev) =>
       prev.map((r) =>
         r.id === requestId
           ? {
               ...r,
-              status: 'attendance_submitted',
-              assignedUploader: 'ناصر العصيمي',
-              attendanceSheet: attendanceData,
+              attendanceSheet: sheetData,
             }
           : r
       )
     );
 
     addAuditLog(
-      'إرفاق كشف الحضور المعتمد وتوجيه المعاملة آلياً لمسؤول التوثيق (ناصر العصيمي)',
+      isReupload
+        ? 'إعادة رفع كشف الحضور المحدث بعد استيفاء ملاحظات مسؤول الرفع'
+        : 'رفع كشف الحضور الختامي للنشاط للاعتماد والتوثيق',
       currentUser?.name || 'مقدم النشاط',
       req?.name || `النشاط #${requestId}`,
       'upload'
     );
 
     showToast(
-      'تم إرفاق كشف الحضور بنجاح وتوجيه الطلب آلياً إلى مسؤول التوثيق (ناصر العصيمي) لمنصة ارتقاء!',
+      isReupload
+        ? 'تمت إعادة رفع كشف الحضور المحدث بنجاح وإحالته لمسؤول الرفع!'
+        : 'تم رفع كشف الحضور بنجاح وبانتظار اعتماد مسؤول منصة ارتقاء!',
       'success'
     );
   };
 
-  // Uploader (Nasser Al-Osaimi): Final documentation approval and closure of the request
-  const handleConfirmAttendanceVerificationAndClose = (id: number) => {
-    const req = requests.find((r) => r.id === id);
+  // Uploader: Accept and approve attendance sheet (officially close transaction)
+  const handleApproveAttendance = (requestId: number) => {
+    const req = requests.find((r) => r.id === requestId);
     const nowIso = new Date().toISOString();
+
     setRequests((prev) =>
       prev.map((r) =>
-        r.id === id
+        r.id === requestId
           ? {
               ...r,
-              status: 'uploaded_irtqaa',
-              attendanceVerifiedAt: nowIso,
-              attendanceVerifiedBy: 'ناصر العصيمي',
+              isOfficiallyClosed: true,
+              attendanceSheet: r.attendanceSheet
+                ? {
+                    ...r.attendanceSheet,
+                    status: 'approved',
+                    approvedAt: nowIso,
+                    approvedBy: currentUser?.name || 'مسؤول الرفع والتوثيق',
+                  }
+                : undefined,
             }
           : r
       )
     );
+
     addAuditLog(
-      'اعتماد التوثيق ومطابقة كشف الحضور وإغلاق الطلب رسمياً في منصة ارتقاء',
-      currentUser?.name || 'ناصر العصيمي (مسؤول التوثيق)',
-      req?.name || `النشاط #${id}`,
-      'upload'
+      'قبول واعتماد كشف الحضور وتوثيق النشاط وإغلاق المعاملة رسمياً',
+      currentUser?.name || 'مسؤول الرفع والتوثيق (منصة ارتقاء)',
+      req?.name || `النشاط #${requestId}`,
+      'approve'
     );
-    showToast('تم اعتماد التوثيق ومطابقة كشف الحضور وإغلاق الطلب رسمياً بنجاح!', 'success');
+
+    showToast('تم قبول واعتماد كشف الحضور رسمياً وتوثيق النشاط وإغلاق المعاملة بنجاح!', 'success');
   };
 
-  // Simulation toggle for testing activity ended
-  const handleToggleForceEnded = (id: number) => {
+  // Uploader: Return attendance sheet to employee with mandatory note
+  const handleReturnAttendance = (requestId: number, note: string) => {
+    const req = requests.find((r) => r.id === requestId);
+    const nowIso = new Date().toISOString();
+
     setRequests((prev) =>
       prev.map((r) =>
-        r.id === id ? { ...r, forceActivityEnded: !r.forceActivityEnded } : r
+        r.id === requestId
+          ? {
+              ...r,
+              attendanceSheet: r.attendanceSheet
+                ? {
+                    ...r.attendanceSheet,
+                    status: 'returned',
+                    returnNote: note,
+                    returnedAt: nowIso,
+                  }
+                : undefined,
+            }
+          : r
       )
     );
-    showToast('تم تحديث حالة انتهاء الفعالية بنجاح!', 'info');
-  };
 
-  // Uploader: Confirm upload (legacy fallback)
-  const handleConfirmUpload = (id: number) => {
-    handleConfirmAttendanceVerificationAndClose(id);
+    addAuditLog(
+      `إعادة كشف الحضور للموظف للتعديل: "${note}"`,
+      currentUser?.name || 'مسؤول الرفع والتوثيق (منصة ارتقاء)',
+      req?.name || `النشاط #${requestId}`,
+      'return'
+    );
+
+    showToast('تمت إعادة كشف الحضور للموظف مع الملاحظات المحددة', 'warning');
   };
 
   // Admin Actions
@@ -669,8 +721,7 @@ export default function App() {
               requests={requests}
               onSubmitRequest={handleSubmitRequest}
               onResubmitRequest={handleResubmit}
-              onUploadAttendanceSheet={handleUploadAttendanceSheet}
-              onToggleForceEnded={handleToggleForceEnded}
+              onUploadAttendance={handleUploadAttendance}
               currentUserEmpNumber={currentUser?.employeeNumber}
             />
           )}
@@ -696,8 +747,9 @@ export default function App() {
           {currentRole === 'uploader' && (
             <UploaderView
               requests={requests}
-              onConfirmUpload={handleConfirmAttendanceVerificationAndClose}
-              onApproveAndClose={handleConfirmAttendanceVerificationAndClose}
+              onConfirmUpload={handleConfirmUpload}
+              onApproveAttendance={handleApproveAttendance}
+              onReturnAttendance={handleReturnAttendance}
             />
           )}
 

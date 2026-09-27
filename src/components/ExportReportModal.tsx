@@ -42,6 +42,10 @@ export const ExportReportModal: React.FC<Props> = ({
         return 'موثق في منصة ارتقاء';
       case 'approved_final':
         return 'معتمد وجاهز للرفع';
+      case 'attendance_submitted':
+        return 'تم إرفاق كشف الحضور - قيد التدقيق';
+      case 'attendance_returned':
+        return 'كشف الحضور مُعاد للتعديل';
       case 'pending_auditor':
         return 'بانتظار تدقيق الكلية';
       case 'pending_manager':
