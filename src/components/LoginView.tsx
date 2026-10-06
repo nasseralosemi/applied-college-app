@@ -204,19 +204,6 @@ export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
         <div className="absolute top-10 right-10 w-72 h-72 bg-[#c59b27]/15 rounded-full blur-2xl" />
       </div>
 
-      {/* Cloud Live Sync Indicator Banner */}
-      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 backdrop-blur-md border border-emerald-300/80 text-emerald-900 text-xs font-bold shadow-sm mb-4 animate-in fade-in slide-in-from-top-2 duration-300">
-        <span className="relative flex h-2.5 w-2.5">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-600"></span>
-        </span>
-        <span className="font-semibold tracking-wide">
-          النظام متصل بالسحابة اللحظية - Live Firestore
-        </span>
-        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-        <span className="text-[10px] text-emerald-700 font-mono">مزامنة فورية</span>
-      </div>
-
       {/* Brand Crest with Glow Effect */}
       <div className="relative group mb-3">
         <div className="absolute -inset-2 bg-gradient-to-r from-[#c59b27]/40 via-emerald-500/30 to-[#c59b27]/40 rounded-3xl blur-xl opacity-75 group-hover:opacity-100 transition-all duration-500" />
@@ -400,6 +387,17 @@ export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
                   );
                 })}
               </div>
+
+              {/* Live Cloud Status Indicator */}
+              <div className="pt-3 flex items-center justify-center">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50/90 border border-emerald-300/80 text-emerald-900 text-xs font-bold shadow-2xs">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600"></span>
+                  </span>
+                  <span>النظام متصل بالسحابة اللحظية</span>
+                </div>
+              </div>
             </div>
           </form>
         )}
@@ -505,6 +503,17 @@ export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
                   admin / admin
                 </span>
               </button>
+
+              {/* Live Cloud Status Indicator */}
+              <div className="pt-2 flex items-center justify-center">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50/90 border border-emerald-300/80 text-emerald-900 text-xs font-bold shadow-2xs">
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-600"></span>
+                  </span>
+                  <span>النظام متصل بالسحابة اللحظية</span>
+                </div>
+              </div>
             </div>
           </form>
         )}
