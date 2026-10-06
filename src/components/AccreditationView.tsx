@@ -11,7 +11,6 @@ import {
   Award,
   ShieldCheck,
   FileCheck2,
-  Clock,
   Building2,
   Calendar,
   Search,
@@ -43,10 +42,6 @@ export const AccreditationView: React.FC<Props> = ({ requests }) => {
   // Statistics
   const totalAccredited = accreditedActivities.length;
   const withAccreditationDoc = accreditedActivities.filter((r) => r.accreditationDocument).length;
-  const totalHours = accreditedActivities.reduce(
-    (sum, r) => sum + (parseFloat(String(r.hours)) || 0),
-    0
-  );
   const documentationRate =
     totalAccredited > 0 ? Math.round((withAccreditationDoc / totalAccredited) * 100) : 100;
 
@@ -73,7 +68,7 @@ export const AccreditationView: React.FC<Props> = ({ requests }) => {
   }, [accreditedActivities]);
 
   const handleExportArchive = () => {
-    const csvHeader = 'رقم المعاملة,اسم النشاط,نوع النشاط,المقدم,الفرع,الساعات التدريبية,رقم الاعتماد بمنصة ارتقاء,اسم ملف النموذج المطبوع,تاريخ الرفع والمزامنة\n';
+    const csvHeader = 'رقم المعاملة,اسم النشاط,نوع النشاط,المقدم,الفرع,رقم الاعتماد بمنصة ارتقاء,اسم ملف النموذج المطبوع,تاريخ الرفع والمزامنة\n';
     const csvRows = filteredActivities.map((r) => {
       const accNum = r.accreditationDocument?.accreditationNumber || `IRTQ-${r.id}`;
       const docName = r.accreditationDocument?.fileName || 'نموذج_اعتماد_ارتقاء_مطبوع.pdf';
@@ -81,7 +76,7 @@ export const AccreditationView: React.FC<Props> = ({ requests }) => {
         ? new Date(r.accreditationDocument.uploadedAt).toLocaleDateString('ar-SA')
         : '2026-09-10';
 
-      return `"${r.id}","${r.name}","${r.type}","${r.presenter}","${r.branch || 'المقر الرئيسي'}","${r.hours}","${accNum}","${docName}","${uploadDate}"`;
+      return `"${r.id}","${r.name}","${r.type}","${r.presenter}","${r.branch || 'المقر الرئيسي'}","${accNum}","${docName}","${uploadDate}"`;
     }).join('\n');
 
     const blob = new Blob(['\uFEFF' + csvHeader + csvRows], { type: 'text/csv;charset=utf-8' });
@@ -131,7 +126,7 @@ export const AccreditationView: React.FC<Props> = ({ requests }) => {
       </div>
 
       {/* KPI Cards Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
         <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-xs relative overflow-hidden">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-slate-500">الأنشطة المعتمدة في ارتقاء</span>
@@ -155,21 +150,6 @@ export const AccreditationView: React.FC<Props> = ({ requests }) => {
           <div className="text-xl sm:text-2xl font-black text-blue-700 mt-1">{withAccreditationDoc}</div>
           <div className="text-[10px] text-slate-500 mt-0.5">
             نماذج مطبوعة ومزامنة
-          </div>
-        </div>
-
-        <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-xs relative overflow-hidden">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">الساعات التدريبية المعتمدة</span>
-            <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
-              <Clock className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-xl sm:text-2xl font-black text-[#1b4332] mt-1">
-            {totalHours} <span className="text-xs font-normal text-slate-400">ساعة</span>
-          </div>
-          <div className="text-[10px] text-slate-500 mt-0.5">
-            إجمالي الساعات المسجلة
           </div>
         </div>
 
@@ -291,10 +271,6 @@ export const AccreditationView: React.FC<Props> = ({ requests }) => {
                   <span className="flex items-center gap-1">
                     <Calendar className="w-3.5 h-3.5 text-slate-400" />
                     <span>{req.startDate || req.date}</span>
-                  </span>
-                  <span className="flex items-center gap-1 font-bold text-slate-900">
-                    <Clock className="w-3.5 h-3.5 text-slate-400" />
-                    <span>{req.hours} ساعات معتمدة</span>
                   </span>
                   <span className="flex items-center gap-1">
                     {req.deliveryMode === 'عن بعد' ? (

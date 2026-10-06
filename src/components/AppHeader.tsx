@@ -114,13 +114,13 @@ export const AppHeader: React.FC<Props> = ({
   } else if (role === 'accreditation') {
     const irtqaaActivities = requests.filter((r) => r.status === 'uploaded_irtqaa');
     const withAccreditationDoc = irtqaaActivities.filter((r) => r.accreditationDocument);
-    const totalAccreditedHours = irtqaaActivities.reduce(
-      (sum, r) => sum + (parseFloat(String(r.hours)) || 0),
-      0
-    );
+    const completionRate =
+      irtqaaActivities.length > 0
+        ? Math.round((withAccreditationDoc.length / irtqaaActivities.length) * 100)
+        : 100;
     stat1 = { val: irtqaaActivities.length, label: 'سجلات ارتقاء المعتمدة' };
     stat2 = { val: withAccreditationDoc.length, label: 'النماذج الموثقة' };
-    stat3 = { val: totalAccreditedHours, label: 'الساعات المعتمدة' };
+    stat3 = { val: `${completionRate}%`, label: 'نسبة التوثيق' };
   }
 
   return (
