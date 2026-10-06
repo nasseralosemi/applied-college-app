@@ -780,7 +780,7 @@ export default function App() {
       {/* App Container - Unified Wide Layout for all views */}
       <div
         className={`w-full ${
-          currentRole === 'login' ? 'max-w-md' : 'max-w-7xl'
+          currentRole === 'login' ? 'max-w-4xl' : 'max-w-7xl'
         } mx-auto flex flex-col bg-[#f8fafc] relative shadow-none transition-all duration-200 ${
           currentRole !== 'login' ? 'h-screen max-h-screen overflow-hidden' : 'min-h-screen'
         }`}
