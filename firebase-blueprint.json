@@ -1,0 +1,66 @@
+{
+  "entities": {
+    "ActivityRequest": {
+      "title": "ActivityRequest",
+      "description": "طلب أو معاملة النشاط الأكاديمي والطلابي والتوثيق والاعتماد",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "description": "معرف النشاط"
+        },
+        "name": {
+          "type": "string",
+          "description": "اسم النشاط"
+        },
+        "type": {
+          "type": "string",
+          "description": "نوع النشاط"
+        },
+        "presenter": {
+          "type": "string",
+          "description": "مقدم النشاط"
+        },
+        "status": {
+          "type": "string",
+          "description": "حالة المعاملة الحالية"
+        }
+      },
+      "required": ["id", "name", "type", "status"]
+    },
+    "AuditLogEntry": {
+      "title": "AuditLogEntry",
+      "description": "سجل تتبع الإجراءات والموافقات",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "معرف السجل"
+        },
+        "action": {
+          "type": "string",
+          "description": "الإجراء المنفذ"
+        },
+        "actor": {
+          "type": "string",
+          "description": "الموظف المنفذ"
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "توقيت الإجراء"
+        }
+      },
+      "required": ["id", "action", "actor"]
+    }
+  },
+  "firestore": {
+    "/requests/{requestId}": {
+      "schema": "ActivityRequest",
+      "description": "مجموعة معاملات الأنشطة المزامنة سحابياً بين جميع الموظفين"
+    },
+    "/audit_logs/{logId}": {
+      "schema": "AuditLogEntry",
+      "description": "سجل تتبع تدقيق المعاملات"
+    }
+  }
+}

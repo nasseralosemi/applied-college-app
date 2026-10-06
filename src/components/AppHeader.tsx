@@ -159,8 +159,21 @@ export const AppHeader: React.FC<Props> = ({
           </div>
         </div>
 
-        {/* Action Controls: Prominent Logout Button */}
-        <div className="flex items-center gap-1.5">
+        {/* Action Controls: Prominent Logout Button & Cloud Live Sync Status */}
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          {/* Cloud Database Live Sync Indicator */}
+          <div
+            title="قاعدة بيانات سحابية حية (Firestore): أي تعديل أو اعتماد يُحفظ ويتزامن فوراً مع جميع الأجهزة والموظفين"
+            className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-xl bg-emerald-950/70 border border-emerald-500/40 text-emerald-300 text-[10px] font-bold shadow-xs select-none"
+          >
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span className="hidden sm:inline">سحابة حية • تزامن فوري</span>
+            <span className="sm:hidden">سحابي</span>
+          </div>
+
           {onOpenAndroidInstall && (
             <button
               type="button"

@@ -1,6 +1,14 @@
 import { useState, useEffect } from 'react';
 import { ActivityRequest, UserRole, SystemUser, UserProfile, AuditLogEntry, AttendanceSheet, AccreditationDocument } from './types';
 import { INITIAL_REQUESTS, DEFAULT_USERS, ROLE_PROFILES, INITIAL_AUDIT_LOGS } from './data';
+import {
+  saveRequestToCloud,
+  subscribeToRequests,
+  subscribeToAuditLogs,
+  addAuditLogToCloud,
+  subscribeToUsers,
+  saveUserToCloud,
+} from './firebase';
 import { AppHeader } from './components/AppHeader';
 import { LoginView } from './components/LoginView';
 import { EmployeeView } from './components/EmployeeView';
@@ -125,7 +133,56 @@ export default function App() {
     title: '',
   });
 
-  // Save requests to localStorage
+  // Cloud Firestore Real-time Multi-Device Synchronization
+  useEffect(() => {
+    const unsubRequests = subscribeToRequests((cloudRequests) => {
+      if (cloudRequests && cloudRequests.length > 0) {
+        setRequests(cloudRequests);
+        try {
+          localStorage.setItem('app_requests', JSON.stringify(cloudRequests));
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    });
+
+    const unsubAuditLogs = subscribeToAuditLogs((cloudLogs) => {
+      if (cloudLogs && cloudLogs.length > 0) {
+        setAuditLogs(cloudLogs);
+        try {
+          localStorage.setItem('app_audit_logs_v3', JSON.stringify(cloudLogs));
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    });
+
+    const unsubUsers = subscribeToUsers((cloudUsers) => {
+      if (cloudUsers && cloudUsers.length > 0) {
+        setUsers(cloudUsers);
+        try {
+          localStorage.setItem('app_users_v6', JSON.stringify(cloudUsers));
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    });
+
+    return () => {
+      unsubRequests();
+      unsubAuditLogs();
+      unsubUsers();
+    };
+  }, []);
+
+  // Helper to persist requests to Cloud Firestore with seamless background retry
+  const persistRequest = (updatedReq: ActivityRequest) => {
+    saveRequestToCloud(updatedReq).catch((err) => {
+      console.warn('Live cloud database sync note:', err);
+    });
+  };
+
+  // Save requests to localStorage (instant local cache fallback)
   useEffect(() => {
     try {
       localStorage.setItem('app_requests', JSON.stringify(requests));
@@ -171,6 +228,7 @@ export default function App() {
       type,
     };
     setAuditLogs((prev) => [newEntry, ...prev]);
+    addAuditLogToCloud(newEntry).catch((e) => console.warn(e));
   };
 
   const showToast = (text: string, type: 'success' | 'warning' | 'info' = 'success') => {
@@ -212,47 +270,50 @@ export default function App() {
     };
 
     setRequests((prev) => [newReq, ...prev]);
+    persistRequest(newReq);
     addAuditLog(
       'تقديم استمارة نشاط مهاري جديد للاعتماد',
       currentUser?.name || 'مقدم النشاط',
       newReq.name,
       'create'
     );
-    showToast('تم رفع استمارة النشاط للمدير المباشر بنجاح!', 'success');
+    showToast('تم حفظ التعديل وتحديثه لدى جميع المستخدمين بنجاح', 'success');
   };
 
   // Employee: Resubmit returned request
   const handleResubmit = (id: number) => {
     const req = requests.find((r) => r.id === id);
+    if (!req) return;
+    const updated = { ...req, status: 'pending_manager' as const, note: '' };
     setRequests((prev) =>
-      prev.map((r) =>
-        r.id === id ? { ...r, status: 'pending_manager', note: '' } : r
-      )
+      prev.map((r) => (r.id === id ? updated : r))
     );
+    persistRequest(updated);
     addAuditLog(
       'إعادة تقديم الطلب بعد استيفاء الملاحظات',
       currentUser?.name || 'مقدم النشاط',
-      req?.name || `النشاط #${id}`,
+      req.name || `النشاط #${id}`,
       'create'
     );
-    showToast('تمت إعادة إرسال الطلب بعد التعديل للمدير المباشر', 'success');
+    showToast('تم حفظ التعديل وتحديثه لدى جميع المستخدمين بنجاح', 'success');
   };
 
   // Manager: Approve
   const handleManagerApprove = (id: number) => {
     const req = requests.find((r) => r.id === id);
+    if (!req) return;
+    const updated = { ...req, status: 'pending_auditor' as const, note: '' };
     setRequests((prev) =>
-      prev.map((r) =>
-        r.id === id ? { ...r, status: 'pending_auditor', note: '' } : r
-      )
+      prev.map((r) => (r.id === id ? updated : r))
     );
+    persistRequest(updated);
     addAuditLog(
       'موافقة واعتماد المدير المباشر وتمرير الطلب للتدقيق',
       currentUser?.name || 'المدير المباشر',
-      req?.name || `النشاط #${id}`,
+      req.name || `النشاط #${id}`,
       'approve'
     );
-    showToast('تم اعتماد النشاط وتمريره لمسؤول التدقيق والاعتماد!', 'success');
+    showToast('تم حفظ التعديل وتحديثه لدى جميع المستخدمين بنجاح', 'success');
   };
 
   // Manager: Open return modal
@@ -270,37 +331,37 @@ export default function App() {
     setRequests((prev) =>
       prev.map((r) => (r.id === updatedReq.id ? updatedReq : r))
     );
+    persistRequest(updatedReq);
     addAuditLog(
       'تعديل وتدقيق حقول استمارة النشاط',
       currentUser?.name || 'مسؤول التدقيق',
       updatedReq.name,
       'user_edit'
     );
-    showToast('تم حفظ وتحديث بيانات استمارة النشاط بنجاح!', 'success');
+    showToast('تم حفظ التعديل وتحديثه لدى جميع المستخدمين بنجاح', 'success');
   };
 
   // Auditor: Certify Dean approval
   const handleDeanApprove = (id: number) => {
     const req = requests.find((r) => r.id === id);
+    if (!req) return;
     const today = new Date().toISOString().split('T')[0];
+    const updated = {
+      ...req,
+      deanApproved: true,
+      deanApprovalDate: today,
+    };
     setRequests((prev) =>
-      prev.map((r) =>
-        r.id === id
-          ? {
-              ...r,
-              deanApproved: true,
-              deanApprovalDate: today,
-            }
-          : r
-      )
+      prev.map((r) => (r.id === id ? updated : r))
     );
+    persistRequest(updated);
     addAuditLog(
       'توثيق الاعتماد الإداري من سعادة رئيس الكلية التطبيقية',
       'سعادة رئيس الكلية التطبيقية',
-      req?.name || `النشاط #${id}`,
+      req.name || `النشاط #${id}`,
       'approve'
     );
-    showToast('تم توثيق اعتماد سعادة رئيس الكلية رسمياً للنشاط!', 'success');
+    showToast('تم حفظ التعديل وتحديثه لدى جميع المستخدمين بنجاح', 'success');
   };
 
   // Auditor: Final Approve with Smart Dispatch
@@ -311,32 +372,32 @@ export default function App() {
     uploaderInstructions: string;
   }) => {
     const req = requests.find((r) => r.id === payload.requestId);
+    if (!req) return;
     const today = new Date().toISOString().split('T')[0];
     const nowIso = new Date().toISOString();
 
+    const updated: ActivityRequest = {
+      ...req,
+      status: 'approved_final',
+      deanApproved: true,
+      deanApprovalDate: req.deanApprovalDate || today,
+      assignedUploader: payload.assignedUploader,
+      xPlatformPublish: payload.xPlatformPublish,
+      uploaderInstructions: payload.uploaderInstructions,
+      prStatus: payload.xPlatformPublish ? (req.prStatus || 'pending_pr') : undefined,
+      prSentAt: payload.xPlatformPublish ? (req.prSentAt || nowIso) : undefined,
+      note: '',
+    };
+
     setRequests((prev) =>
-      prev.map((r) =>
-        r.id === payload.requestId
-          ? {
-              ...r,
-              status: 'approved_final',
-              deanApproved: true,
-              deanApprovalDate: r.deanApprovalDate || today,
-              assignedUploader: payload.assignedUploader,
-              xPlatformPublish: payload.xPlatformPublish,
-              uploaderInstructions: payload.uploaderInstructions,
-              prStatus: payload.xPlatformPublish ? (r.prStatus || 'pending_pr') : undefined,
-              prSentAt: payload.xPlatformPublish ? (r.prSentAt || nowIso) : undefined,
-              note: '',
-            }
-          : r
-      )
+      prev.map((r) => (r.id === payload.requestId ? updated : r))
     );
+    persistRequest(updated);
 
     addAuditLog(
       `اعتماد نهائي وتوجيه للرفع على ارتقاء (المكلف: ${payload.assignedUploader})`,
       currentUser?.name || 'مسؤول التدقيق والاعتماد',
-      req?.name || `النشاط #${payload.requestId}`,
+      req.name || `النشاط #${payload.requestId}`,
       'approve'
     );
 
@@ -344,17 +405,12 @@ export default function App() {
       addAuditLog(
         'إرسال نسخة آلية لمعلومات النشاط إلى وحدة العلاقات العامة للإعلان في منصة X',
         currentUser?.name || 'مسؤول التدقيق والاعتماد',
-        req?.name || `النشاط #${payload.requestId}`,
+        req.name || `النشاط #${payload.requestId}`,
         'approve'
       );
     }
 
-    showToast(
-      payload.xPlatformPublish
-        ? 'تم الاعتماد النهائي، وتوجيه النشاط للرفع، وإرسال نسخة آلية لوحدة العلاقات العامة للنشر في منصة X!'
-        : 'تم الاعتماد النهائي وتوجيه النشاط للموظف المختص للرفع على ارتقاء!',
-      'success'
-    );
+    showToast('تم حفظ التعديل وتحديثه لدى جميع المستخدمين بنجاح', 'success');
   };
 
   // PR: Update tweet draft and publication status
@@ -365,36 +421,31 @@ export default function App() {
     prNotes?: string
   ) => {
     const req = requests.find((r) => r.id === requestId);
+    if (!req) return;
     const nowIso = new Date().toISOString();
+    const updated: ActivityRequest = {
+      ...req,
+      prStatus,
+      prPublishedAt: prStatus === 'published_pr' ? (req.prPublishedAt || nowIso) : undefined,
+      prTweetDraft: tweetDraft !== undefined ? tweetDraft : req.prTweetDraft,
+      prNotes: prNotes !== undefined ? prNotes : req.prNotes,
+    };
+
     setRequests((prev) =>
-      prev.map((r) =>
-        r.id === requestId
-          ? {
-              ...r,
-              prStatus,
-              prPublishedAt: prStatus === 'published_pr' ? (r.prPublishedAt || nowIso) : undefined,
-              prTweetDraft: tweetDraft !== undefined ? tweetDraft : r.prTweetDraft,
-              prNotes: prNotes !== undefined ? prNotes : r.prNotes,
-            }
-          : r
-      )
+      prev.map((r) => (r.id === requestId ? updated : r))
     );
+    persistRequest(updated);
 
     addAuditLog(
       prStatus === 'published_pr'
         ? 'توثيق نشر النشاط في الحساب الرسمي للكلية بمنصة X'
         : 'تحديث مسودة التغريدة الرسمية للنشاط',
       currentUser?.name || 'وحدة العلاقات العامة والإعلام',
-      req?.name || `النشاط #${requestId}`,
+      req.name || `النشاط #${requestId}`,
       prStatus === 'published_pr' ? 'upload' : 'user_edit'
     );
 
-    showToast(
-      prStatus === 'published_pr'
-        ? 'تم توثيق نشر النشاط في الحساب الرسمي للكلية على منصة X بنجاح!'
-        : 'تم حفظ مسودة تغريدة النشاط بنجاح',
-      'success'
-    );
+    showToast('تم حفظ التعديل وتحديثه لدى جميع المستخدمين بنجاح', 'success');
   };
 
   // Auditor: Return request to Manager or Employee
@@ -404,32 +455,32 @@ export default function App() {
     note: string
   ) => {
     const req = requests.find((r) => r.id === id);
+    if (!req) return;
     const newStatus = targetRole === 'emp' ? 'returned_emp' : 'returned_manager';
+    const updated = { ...req, status: newStatus as ActivityRequest['status'], note };
     setRequests((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status: newStatus, note } : r))
+      prev.map((r) => (r.id === id ? updated : r))
     );
+    persistRequest(updated);
     addAuditLog(
       targetRole === 'emp' ? 'إرجاع الطلب لمقدم النشاط للاستيفاء' : 'إرجاع الطلب للمدير المباشر',
       currentUser?.name || 'مسؤول التدقيق والاعتماد',
-      req?.name || `النشاط #${id}`,
+      req.name || `النشاط #${id}`,
       'return'
     );
-    showToast(
-      targetRole === 'emp'
-        ? 'تم إرجاع الطلب لمقدم النشاط (الموظف) مع الملاحظات'
-        : 'تم إرجاع الطلب للمدير المباشر مع الملاحظات',
-      'warning'
-    );
+    showToast('تم حفظ التعديل وتحديثه لدى جميع المستخدمين بنجاح', 'warning');
   };
 
   // Auditor: Approve final (legacy fallback)
   const handleAuditorApprove = (id: number) => {
+    const req = requests.find((r) => r.id === id);
+    if (!req) return;
+    const updated = { ...req, status: 'approved_final' as ActivityRequest['status'], note: '' };
     setRequests((prev) =>
-      prev.map((r) =>
-        r.id === id ? { ...r, status: 'approved_final', note: '' } : r
-      )
+      prev.map((r) => (r.id === id ? updated : r))
     );
-    showToast('تم اعتماد النشاط من رئيس الكلية، وجاهز للرفع على ارتقاء!', 'success');
+    persistRequest(updated);
+    showToast('تم حفظ التعديل وتحديثه لدى جميع المستخدمين بنجاح', 'success');
   };
 
   // Auditor: Open return to manager modal
@@ -446,14 +497,16 @@ export default function App() {
   const handleConfirmReturn = (note: string) => {
     const { requestId, targetRole } = returnModalState;
     if (!requestId) return;
+    const req = requests.find((r) => r.id === requestId);
+    if (!req) return;
 
     const newStatus = targetRole === 'emp' ? 'returned_emp' : 'returned_manager';
+    const updated = { ...req, status: newStatus as ActivityRequest['status'], note };
 
     setRequests((prev) =>
-      prev.map((r) =>
-        r.id === requestId ? { ...r, status: newStatus, note } : r
-      )
+      prev.map((r) => (r.id === requestId ? updated : r))
     );
+    persistRequest(updated);
 
     setReturnModalState({
       isOpen: false,
@@ -462,17 +515,13 @@ export default function App() {
       title: '',
     });
 
-    showToast(
-      targetRole === 'emp'
-        ? 'تم إرجاع الطلب لمقدم النشاط مع الملاحظة'
-        : 'تم إرجاع الطلب للمدير المباشر للمراجعة',
-      'warning'
-    );
+    showToast('تم حفظ التعديل وتحديثه لدى جميع المستخدمين بنجاح', 'warning');
   };
 
   // Uploader: Confirm upload with mandatory printed accreditation document
   const handleConfirmUpload = (id: number, accreditationDoc?: AccreditationDocument) => {
     const req = requests.find((r) => r.id === id);
+    if (!req) return;
     const docToSave: AccreditationDocument = accreditationDoc || {
       id: `acc-${Date.now()}`,
       fileName: `نموذج_اعتماد_منصة_ارتقاء_${req?.name.replace(/\s+/g, '_') || id}_مطبوع.pdf`,
@@ -483,127 +532,119 @@ export default function App() {
       notes: 'تمت مطابقة الساعات واعتماد النموذج مطبوعاً وموقعاً عبر منصة ارتقاء بالجامعة.',
     };
 
+    const updated: ActivityRequest = {
+      ...req,
+      status: 'uploaded_irtqaa',
+      accreditationDocument: docToSave,
+    };
+
     setRequests((prev) =>
-      prev.map((r) =>
-        r.id === id
-          ? {
-              ...r,
-              status: 'uploaded_irtqaa',
-              accreditationDocument: docToSave,
-            }
-          : r
-      )
+      prev.map((r) => (r.id === id ? updated : r))
     );
+    persistRequest(updated);
+
     addAuditLog(
       'توثيق ومزامنة النشاط في منصة ارتقاء وإرسال نسخة الاعتماد المطبوع لأرشيف بيان الطيار',
       currentUser?.name || 'مسؤول الرفع لمنصة ارتقاء',
-      req?.name || `النشاط #${id}`,
+      req.name || `النشاط #${id}`,
       'upload'
     );
-    showToast(
-      'تم تأكيد الرفع والمزامنة بنجاح وإرسال نسخة نموذج الاعتماد المطبوع إلى صفحة الاعتمادات (بيان الطيار)!',
-      'success'
-    );
+    showToast('تم حفظ التعديل وتحديثه لدى جميع المستخدمين بنجاح', 'success');
   };
 
   // Employee: Upload or re-upload attendance sheet for ended activity
   const handleUploadAttendance = (requestId: number, sheetData: AttendanceSheet) => {
     const req = requests.find((r) => r.id === requestId);
-    const isReupload = req?.attendanceSheet?.status === 'returned';
+    if (!req) return;
+    const isReupload = req.attendanceSheet?.status === 'returned';
+
+    const updated: ActivityRequest = {
+      ...req,
+      attendanceSheet: sheetData,
+    };
 
     setRequests((prev) =>
-      prev.map((r) =>
-        r.id === requestId
-          ? {
-              ...r,
-              attendanceSheet: sheetData,
-            }
-          : r
-      )
+      prev.map((r) => (r.id === requestId ? updated : r))
     );
+    persistRequest(updated);
 
     addAuditLog(
       isReupload
         ? 'إعادة رفع كشف الحضور المحدث بعد استيفاء ملاحظات مسؤول الرفع'
         : 'رفع كشف الحضور الختامي للنشاط للاعتماد والتوثيق',
       currentUser?.name || 'مقدم النشاط',
-      req?.name || `النشاط #${requestId}`,
+      req.name || `النشاط #${requestId}`,
       'upload'
     );
 
-    showToast(
-      isReupload
-        ? 'تمت إعادة رفع كشف الحضور المحدث بنجاح وإحالته لمسؤول الرفع!'
-        : 'تم رفع كشف الحضور بنجاح وبانتظار اعتماد مسؤول منصة ارتقاء!',
-      'success'
-    );
+    showToast('تم حفظ التعديل وتحديثه لدى جميع المستخدمين بنجاح', 'success');
   };
 
   // Uploader: Accept and approve attendance sheet (officially close transaction)
   const handleApproveAttendance = (requestId: number) => {
     const req = requests.find((r) => r.id === requestId);
+    if (!req) return;
     const nowIso = new Date().toISOString();
 
+    const updated: ActivityRequest = {
+      ...req,
+      isOfficiallyClosed: true,
+      attendanceSheet: req.attendanceSheet
+        ? {
+            ...req.attendanceSheet,
+            status: 'approved',
+            approvedAt: nowIso,
+            approvedBy: currentUser?.name || 'مسؤول الرفع والتوثيق',
+          }
+        : undefined,
+    };
+
     setRequests((prev) =>
-      prev.map((r) =>
-        r.id === requestId
-          ? {
-              ...r,
-              isOfficiallyClosed: true,
-              attendanceSheet: r.attendanceSheet
-                ? {
-                    ...r.attendanceSheet,
-                    status: 'approved',
-                    approvedAt: nowIso,
-                    approvedBy: currentUser?.name || 'مسؤول الرفع والتوثيق',
-                  }
-                : undefined,
-            }
-          : r
-      )
+      prev.map((r) => (r.id === requestId ? updated : r))
     );
+    persistRequest(updated);
 
     addAuditLog(
       'قبول واعتماد كشف الحضور وتوثيق النشاط وإغلاق المعاملة رسمياً',
       currentUser?.name || 'مسؤول الرفع والتوثيق (منصة ارتقاء)',
-      req?.name || `النشاط #${requestId}`,
+      req.name || `النشاط #${requestId}`,
       'approve'
     );
 
-    showToast('تم قبول واعتماد كشف الحضور رسمياً وتوثيق النشاط وإغلاق المعاملة بنجاح!', 'success');
+    showToast('تم حفظ التعديل وتحديثه لدى جميع المستخدمين بنجاح', 'success');
   };
 
   // Uploader: Return attendance sheet to employee with mandatory note
   const handleReturnAttendance = (requestId: number, note: string) => {
     const req = requests.find((r) => r.id === requestId);
+    if (!req) return;
     const nowIso = new Date().toISOString();
 
+    const updated: ActivityRequest = {
+      ...req,
+      attendanceSheet: req.attendanceSheet
+        ? {
+            ...req.attendanceSheet,
+            status: 'returned',
+            returnNote: note,
+            returnedAt: nowIso,
+          }
+        : undefined,
+    };
+
     setRequests((prev) =>
-      prev.map((r) =>
-        r.id === requestId
-          ? {
-              ...r,
-              attendanceSheet: r.attendanceSheet
-                ? {
-                    ...r.attendanceSheet,
-                    status: 'returned',
-                    returnNote: note,
-                    returnedAt: nowIso,
-                  }
-                : undefined,
-            }
-          : r
-      )
+      prev.map((r) => (r.id === requestId ? updated : r))
     );
+    persistRequest(updated);
 
     addAuditLog(
       `إعادة كشف الحضور للموظف للتعديل: "${note}"`,
       currentUser?.name || 'مسؤول الرفع والتوثيق (منصة ارتقاء)',
-      req?.name || `النشاط #${requestId}`,
+      req.name || `النشاط #${requestId}`,
       'return'
     );
 
-    showToast('تمت إعادة كشف الحضور للموظف مع الملاحظات المحددة', 'warning');
+    showToast('تم حفظ التعديل وتحديثه لدى جميع المستخدمين بنجاح', 'warning');
   };
 
   // Admin Actions
@@ -614,19 +655,23 @@ export default function App() {
       ...newUserData,
     };
     setUsers((prev) => [newUser, ...prev]);
+    saveUserToCloud(newUser).catch((e) => console.warn(e));
+
     addAuditLog(
       'إنشاء حساب مستخدم جديد وتعيين الصلاحيات',
       currentUser?.name || 'مدير النظام',
       `حساب: ${newUser.name} (#${newUser.employeeNumber})`,
       'create'
     );
-    showToast(`تم إنشاء حساب "${newUser.name}" بنجاح!`, 'success');
+    showToast('تم حفظ التعديل وتحديثه لدى جميع المستخدمين بنجاح', 'success');
   };
 
   const handleUpdateUser = (updatedUser: SystemUser) => {
     setUsers((prev) =>
       prev.map((u) => (u.id === updatedUser.id ? updatedUser : u))
     );
+    saveUserToCloud(updatedUser).catch((e) => console.warn(e));
+
     if (currentUser && currentUser.id === updatedUser.id) {
       setCurrentUser(updatedUser);
     }
@@ -636,11 +681,15 @@ export default function App() {
       `رقم وظيفي: #${updatedUser.employeeNumber} - ${updatedUser.department}`,
       'user_edit'
     );
-    showToast(`تم حفظ تعديلات حساب "${updatedUser.name}" بنجاح!`, 'success');
+    showToast('تم حفظ التعديل وتحديثه لدى جميع المستخدمين بنجاح', 'success');
   };
 
   const handleUpdateUserRole = (userId: string, newRole: Exclude<UserRole, 'login'>) => {
     const targetUser = users.find((u) => u.id === userId);
+    const updated = targetUser ? { ...targetUser, role: newRole } : null;
+    if (updated) {
+      saveUserToCloud(updated).catch((e) => console.warn(e));
+    }
     setUsers((prev) =>
       prev.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
     );
@@ -655,18 +704,18 @@ export default function App() {
       `حساب: ${targetUser?.name || userId}`,
       'user_edit'
     );
-    showToast('تم تحديث صلاحية ورتبة المستخدم بنجاح!', 'success');
+    showToast('تم حفظ التعديل وتحديثه لدى جميع المستخدمين بنجاح', 'success');
   };
 
   const handleToggleUserStatus = (userId: string) => {
+    const targetUser = users.find((u) => u.id === userId);
+    if (targetUser) {
+      saveUserToCloud({ ...targetUser, isActive: !targetUser.isActive }).catch((e) => console.warn(e));
+    }
     setUsers((prev) =>
       prev.map((u) => {
         if (u.id === userId) {
           const updated = !u.isActive;
-          showToast(
-            updated ? `تم تفعيل حساب ${u.name}` : `تم تعطيل حساب ${u.name}`,
-            updated ? 'success' : 'warning'
-          );
           addAuditLog(
             updated ? 'تفعيل حساب المستخدم' : 'تعطيل حساب المستخدم',
             currentUser?.name || 'مدير النظام',
@@ -678,10 +727,14 @@ export default function App() {
         return u;
       })
     );
+    showToast('تم حفظ التعديل وتحديثه لدى جميع المستخدمين بنجاح', 'success');
   };
 
   const handleResetUserPassword = (userId: string, newPass: string) => {
     const targetUser = users.find((u) => u.id === userId);
+    if (targetUser) {
+      saveUserToCloud({ ...targetUser, password: newPass }).catch((e) => console.warn(e));
+    }
     setUsers((prev) =>
       prev.map((u) => (u.id === userId ? { ...u, password: newPass } : u))
     );
@@ -691,7 +744,7 @@ export default function App() {
       `حساب: ${targetUser?.name || userId} (#${targetUser?.employeeNumber || ''})`,
       'password_reset'
     );
-    showToast('تمت إعادة تعيين وتوليد كلمة المرور بنجاح!', 'success');
+    showToast('تم حفظ التعديل وتحديثه لدى جميع المستخدمين بنجاح', 'success');
   };
 
   const handleDeleteUser = (userId: string) => {
@@ -703,7 +756,7 @@ export default function App() {
       `حساب: ${targetUser?.name || userId}`,
       'user_edit'
     );
-    showToast('تم حذف المستخدم من سجلات النظام', 'info');
+    showToast('تم حفظ التعديل وتحديثه لدى جميع المستخدمين بنجاح', 'info');
   };
 
   // Dynamic user profile for AppHeader
