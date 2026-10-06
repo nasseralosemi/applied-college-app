@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1b4332"/>
+      <stop offset="50%" stop-color="#143728"/>
+      <stop offset="100%" stop-color="#081c15"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f3d887"/>
+      <stop offset="50%" stop-color="#c59b27"/>
+      <stop offset="100%" stop-color="#9a7718"/>
+    </linearGradient>
+    <filter id="dropShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Background with Squircle / iOS & Android standard canvas -->
+  <rect width="512" height="512" rx="115" fill="url(#bgGrad)"/>
+
+  <!-- Subtle Emblem Inner Ring -->
+  <circle cx="256" cy="240" r="170" fill="none" stroke="url(#goldGrad)" stroke-width="4" stroke-opacity="0.35" stroke-dasharray="8 6"/>
+  <circle cx="256" cy="240" r="140" fill="none" stroke="url(#goldGrad)" stroke-width="8" stroke-opacity="0.85"/>
+
+  <!-- Graduation Cap & Portal Icon -->
+  <g filter="url(#dropShadow)">
+    <!-- Mortarboard Cap Top -->
+    <path d="M256 145 L365 195 L256 245 L147 195 Z" fill="url(#goldGrad)"/>
+    <!-- Mortarboard Cap Base -->
+    <path d="M190 220 L190 270 Q256 305 322 270 L322 220 Q256 250 190 220 Z" fill="#e6c566"/>
+    <!-- Tassel -->
+    <path d="M340 205 L355 240 L350 285" fill="none" stroke="#f3d887" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="350" cy="290" r="6" fill="#f3d887"/>
+
+    <!-- Verification / Star Check at bottom -->
+    <circle cx="256" cy="355" r="38" fill="url(#goldGrad)"/>
+    <path d="M242 355 L252 365 L272 345" fill="none" stroke="#081c15" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Typography / Subtitle -->
+  <text x="256" y="445" text-anchor="middle" fill="#f3d887" font-family="'Tajawal', sans-serif" font-size="28" font-weight="800" letter-spacing="2">الكلية التطبيقية | ارتقاء</text>
+</svg>

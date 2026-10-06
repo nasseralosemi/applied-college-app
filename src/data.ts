@@ -1,0 +1,367 @@
+import { ActivityRequest, UserRole, UserProfile, SystemUser, AuditLogEntry } from './types';
+import { generateAccreditationSampleImage } from './utils/activityUtils';
+
+export const INITIAL_REQUESTS: ActivityRequest[] = [
+  {
+    id: 101,
+    name: "وثق إنجازك",
+    type: "نشاط طلابي",
+    presenter: "عبدالرحمن الطوالة - وحدة تقنية المعلومات",
+    unit: "وحدة شؤون الطلاب",
+    branch: "فرع الزلفي - شطر الطلاب",
+    startDate: "2026-09-15",
+    endDate: "2026-09-15",
+    startTime: "10:00 ص",
+    hours: "2",
+    targetAudience: "الطلاب والطالبات",
+    targetGender: "الجنسين (ذكر وأنثى)",
+    deliveryMode: "عن بعد",
+    meetingUrl: "https://blackboard.mu.edu.sa/webapps/session-101",
+    partnershipApproval: "لا تحتاج إلى موافقة",
+    coordinatorName: "عبدالرحمن الطوالة",
+    summary: "التعريف بمنصة السجل المهاري وآلية الاعتماد ورفع الوثائق للأنشطة غير الصفية",
+    status: "pending_manager",
+    note: "",
+    submittedByEmpNumber: "4412098",
+    date: "2026-09-15",
+    location: "عن بعد - Blackboard"
+  },
+  {
+    id: 102,
+    name: "ورشة مهارات الذكاء الاصطناعي التوليدي",
+    type: "ورشة عمل",
+    presenter: "قسم تقنية المعلومات - شطر الطلاب",
+    unit: "قسم تقنية المعلومات",
+    branch: "فرع الزلفي - شطر الطلاب",
+    startDate: "2026-09-18",
+    endDate: "2026-09-18",
+    startTime: "09:30 ص",
+    hours: "3",
+    targetAudience: "الطلاب وأعضاء هيئة التدريس",
+    targetGender: "الجنسين (ذكر وأنثى)",
+    deliveryMode: "حضوري",
+    physicalLocation: "مدرج الكلية التطبيقية الرئيسي - الزلفي",
+    partnershipApproval: "لا تحتاج إلى موافقة",
+    coordinatorName: "عمر الخنيني",
+    summary: "تطبيقات الذكاء الاصطناعي في تحسين الإنتاجية الأكاديمية والمهنية وتوليد الحلول البرمجية",
+    status: "pending_auditor",
+    note: "",
+    submittedByEmpNumber: "4412098",
+    date: "2026-09-18",
+    location: "مدرج الكلية التطبيقية الرئيسي"
+  },
+  {
+    id: 103,
+    name: "دورة التميز المؤسسي والجودة الأكاديمية",
+    type: "دورة",
+    presenter: "وحدة التطوير والجودة",
+    unit: "وحدة التطوير والجودة",
+    branch: "فرع المجمعة - شطر الطلاب",
+    startDate: "2026-09-22",
+    endDate: "2026-09-23",
+    startTime: "11:00 ص",
+    hours: "4",
+    targetAudience: "الموظفون والكادر الإداري",
+    targetGender: "الجميع",
+    deliveryMode: "حضوري",
+    physicalLocation: "قاعة التدريب 104 - المجمعة",
+    partnershipApproval: "تتطلب موافقة",
+    transactionNumber: "44-0982-م",
+    coordinatorName: "وائل العفيصان",
+    assignedUploader: "ناصر العصيمي",
+    xPlatformPublish: true,
+    uploaderInstructions: "التأكد من رصد الحضور والتسجيل في منصة ارتقاء فور انتهاء الدورة.",
+    prStatus: "pending_pr",
+    prSentAt: "2026-09-18T10:00:00.000Z",
+    prTweetDraft: `يسر الكلية التطبيقية بجامعة المجمعة دعوتكم لحضور:
+📌 "دورة التميز المؤسسي والجودة الأكاديمية"
+🎙️ تقديم: وحدة التطوير والجودة
+🗓️ الأربعاء 2026-09-22م | ⏰ 11:00 ص
+📍 قاعة التدريب 104 - فرع المجمعة
+🔗 الحضور متاح للكوادر الإدارية والأكاديمية
+
+#الكلية_التطبيقية #جامعة_المجمعة #ارتقاء`,
+    summary: "معايير الاعتماد المؤسسي وضوابط استيفاء ساعات منصة ارتقاء والجودة الشاملة",
+    status: "approved_final",
+    note: "",
+    submittedByEmpNumber: "4412098",
+    date: "2026-09-22",
+    location: "قاعة التدريب 104 - الزلفي"
+  },
+  {
+    id: 104,
+    name: "ملتقى التهيئة للتدريب التعاوني والشراكات",
+    type: "ملتقى",
+    presenter: "وحدة التدريب الميداني والشراكات",
+    unit: "وحدة التدريب والشراكات",
+    branch: "فرع الزلفي - شطر الطلاب",
+    startDate: "2026-09-08",
+    endDate: "2026-09-09",
+    startTime: "08:30 ص",
+    hours: "5",
+    targetAudience: "الطلاب الخريجون",
+    targetGender: "ذكر (شطر الطلاب)",
+    deliveryMode: "عن بعد",
+    meetingUrl: "https://blackboard.mu.edu.sa/webapps/coop-session-2026",
+    partnershipApproval: "تتطلب موافقة",
+    transactionNumber: "44-1102-ش",
+    coordinatorName: "ناصر العصيمي",
+    assignedUploader: "ناصر العصيمي",
+    xPlatformPublish: true,
+    prStatus: "published_pr",
+    prSentAt: "2026-09-08T08:00:00.000Z",
+    prPublishedAt: "2026-09-08T09:15:00.000Z",
+    prTweetDraft: `برعاية سعادة رئيس الكلية التطبيقية، انطلقت اليوم فعاليات:
+✨ "ملتقى التهيئة للتدريب التعاوني والشراكات"
+لتوجيه الطلاب لبيئات العمل وربطهم بمنصة ارتقاء الوطنية.
+
+#الكلية_التطبيقية #جامعة_المجمعة #ارتقاء`,
+    summary: "توجيه الطلاب لجهات التدريب والربط مع المنصة الوطنية وبناء الشراكات المجتمعية",
+    status: "uploaded_irtqaa",
+    note: "",
+    submittedByEmpNumber: "4412098",
+    date: "2026-09-08",
+    location: "عن بعد - Blackboard",
+    attendanceSheet: {
+      fileName: "كشف_حضور_ملتقى_التهيئة_للشراكات_نهائي.pdf",
+      fileSize: "1.4 MB",
+      uploadedAt: "2026-09-10T11:30:00.000Z",
+      uploadedBy: "4412098",
+      attendeesCount: 58,
+      status: "pending_review",
+    },
+    accreditationDocument: {
+      fileName: "صورة_نموذج_اعتماد_منصة_ارتقاء_ملتقى_التهيئة_مطبوع.svg",
+      fileSize: "2.1 MB",
+      fileUrl: generateAccreditationSampleImage(
+        "ملتقى التهيئة للتدريب التعاوني والشراكات",
+        "IRTQ-2026-0984",
+        "ناصر العصيمي",
+        5,
+        "2026-09-08",
+        "فرع الزلفي - شطر الطلاب"
+      ),
+      uploadedAt: "2026-09-10T12:00:00.000Z",
+      uploadedBy: "ناصر العصيمي",
+      accreditationNumber: "IRTQ-2026-0984",
+      notes: "تمت مطابقة الساعات واعتماد النموذج مطبوعاً وموقعاً عبر منصة ارتقاء الجامعية.",
+    },
+  }
+];
+
+export const DEFAULT_USERS: SystemUser[] = [
+  {
+    id: 'u-1',
+    employeeNumber: '4412098',
+    name: 'عبدالرحمن الطوالة',
+    email: 'a.altowalah@mu.edu.sa',
+    role: 'emp',
+    department: 'قسم تقنية المعلومات',
+    branch: 'فرع الزلفي - شطر الطلاب',
+    password: '123',
+    isActive: true,
+    createdAt: '2026-01-10'
+  },
+  {
+    id: 'u-2',
+    employeeNumber: '4412001',
+    name: 'عمر الخنيني',
+    email: 'o.alkhonaini@mu.edu.sa',
+    role: 'manager',
+    department: 'إدارة البرامج والتدريب',
+    branch: 'فرع الزلفي - شطر الطلاب',
+    password: '123',
+    isActive: true,
+    createdAt: '2026-01-05'
+  },
+  {
+    id: 'u-3',
+    employeeNumber: '4412002',
+    name: 'وائل العفيصان',
+    email: 'w.alofaisan@mu.edu.sa',
+    role: 'auditor',
+    department: 'وحدة التدقيق والاعتماد الأكاديمي',
+    branch: 'فرع الزلفي - شطر الطلاب',
+    password: '123',
+    isActive: true,
+    createdAt: '2026-01-08'
+  },
+  {
+    id: 'u-4',
+    employeeNumber: '4412003',
+    name: 'ناصر العصيمي',
+    email: 'n.alosaimi@mu.edu.sa',
+    role: 'uploader',
+    department: 'وحدة التوثيق ومنصة ارتقاء',
+    branch: 'فرع الزلفي - شطر الطلاب',
+    password: '123',
+    isActive: true,
+    createdAt: '2026-01-12'
+  },
+  {
+    id: 'u-5',
+    employeeNumber: '4412004',
+    name: 'وحدة العلاقات العامة والإعلام',
+    email: 'pr.media@mu.edu.sa',
+    role: 'pr',
+    department: 'وحدة العلاقات العامة والتواصل المؤسسي',
+    branch: 'المقر الرئيسي - إدارة الكلية',
+    password: '123',
+    isActive: true,
+    createdAt: '2026-01-15'
+  },
+  {
+    id: 'u-dean',
+    employeeNumber: '4412000',
+    name: 'سعادة رئيس الكلية التطبيقية',
+    email: 'dean.applied@mu.edu.sa',
+    role: 'dean',
+    department: 'مكتب رئيس الكلية التطبيقية',
+    branch: 'المقر الرئيسي - عمادة الكلية',
+    password: '123',
+    isActive: true,
+    createdAt: '2026-01-01'
+  },
+  {
+    id: 'u-accreditation',
+    employeeNumber: '4412005',
+    name: 'بيان الطيار',
+    email: 'b.altayyar@mu.edu.sa',
+    role: 'accreditation',
+    department: 'وحدة الاعتمادات والتوثيق الأكاديمي',
+    branch: 'المقر الرئيسي - إدارة الكلية',
+    password: '123',
+    isActive: true,
+    createdAt: '2026-01-20'
+  },
+  {
+    id: 'u-admin',
+    employeeNumber: 'admin',
+    name: 'ناصر العصيمي',
+    email: 'admin.alosaimi@mu.edu.sa',
+    role: 'admin',
+    department: 'إدارة النظام والتحكم العام',
+    branch: 'المقر الرئيسي - إدارة الكلية',
+    password: 'admin',
+    isActive: true,
+    createdAt: '2026-01-01'
+  }
+];
+
+export const INITIAL_AUDIT_LOGS: AuditLogEntry[] = [
+  {
+    id: 'log-1',
+    action: 'توثيق ومزامنة النشاط في منصة ارتقاء الرسمية',
+    actor: 'ناصر العصيمي',
+    target: 'ملتقى التهيئة للتدريب التعاوني والشراكات',
+    timestamp: 'اليوم، 10:45 ص',
+    type: 'upload',
+  },
+  {
+    id: 'log-2',
+    action: 'اعتماد نهائي وتوجيه للرفع لمنصة ارتقاء',
+    actor: 'وائل العفيصان',
+    target: 'دورة التميز المؤسسي والجودة الأكاديمية',
+    timestamp: 'اليوم، 09:30 ص',
+    type: 'approve',
+  },
+  {
+    id: 'log-3',
+    action: 'موافقة وتوصية المدير المباشر على النشاط',
+    actor: 'عمر الخنيني',
+    target: 'ورشة مهارات الذكاء الاصطناعي التوليدي',
+    timestamp: 'أمس، 02:15 م',
+    type: 'approve',
+  },
+  {
+    id: 'log-4',
+    action: 'تحديث بيانات الحساب وتعيين الصلاحيات',
+    actor: 'ناصر العصيمي (مدير النظام)',
+    target: 'حساب: عبدالرحمن الطوالة',
+    timestamp: 'أمس، 11:20 ص',
+    type: 'user_edit',
+  },
+  {
+    id: 'log-5',
+    action: 'تقديم استمارة نشاط طلابي جديد للاعتماد',
+    actor: 'عبدالرحمن الطوالة',
+    target: 'فعالية وثق إنجازك',
+    timestamp: 'أمس، 08:40 ص',
+    type: 'create',
+  },
+];
+
+export const ROLE_PROFILES: Record<Exclude<UserRole, 'login'>, UserProfile> = {
+  emp: {
+    name: "عبدالرحمن الطوالة",
+    roleTitle: "مقدم الطلب (Employee)",
+    roleBadge: "مقدم الطلب",
+    avatarText: "ع ط",
+    employeeNumber: "4412098",
+    department: "قسم تقنية المعلومات",
+    roleKey: "emp"
+  },
+  manager: {
+    name: "عمر الخنيني",
+    roleTitle: "المدير المباشر (Direct Manager)",
+    roleBadge: "اعتماد المدير المباشر",
+    avatarText: "ع خ",
+    employeeNumber: "4412001",
+    department: "إدارة البرامج والتدريب",
+    roleKey: "manager"
+  },
+  auditor: {
+    name: "وائل العفيصان",
+    roleTitle: "مدقق المنظومة والاعتماد (Auditor)",
+    roleBadge: "مراجعة الضوابط والرئاسة",
+    avatarText: "و ع",
+    employeeNumber: "4412002",
+    department: "وحدة التدقيق والاعتماد الأكاديمي",
+    roleKey: "auditor"
+  },
+  uploader: {
+    name: "ناصر العصيمي",
+    roleTitle: "مسؤول الرفع والتوثيق (Artaqa Uploader)",
+    roleBadge: "التجهيز والرفع النهائي",
+    avatarText: "ن ع",
+    employeeNumber: "4412003",
+    department: "وحدة التوثيق ومنصة ارتقاء",
+    roleKey: "uploader"
+  },
+  pr: {
+    name: "وحدة العلاقات العامة والإعلام",
+    roleTitle: "مسؤول العلاقات العامة والإعلام (PR & Media)",
+    roleBadge: "العلاقات العامة ومنصة X",
+    avatarText: "ع ع",
+    employeeNumber: "4412004",
+    department: "وحدة العلاقات العامة والتواصل المؤسسي",
+    roleKey: "pr"
+  },
+  dean: {
+    name: "سعادة رئيس الكلية التطبيقية",
+    roleTitle: "رئيس الكلية التطبيقية (Executive Dean)",
+    roleBadge: "رئاسة الكلية (نظرة استراتيجية)",
+    avatarText: "ر ك",
+    employeeNumber: "4412000",
+    department: "مكتب رئيس الكلية التطبيقية",
+    roleKey: "dean"
+  },
+  accreditation: {
+    name: "بيان الطيار",
+    roleTitle: "موظف الاعتمادات والتوثيق (Accreditations)",
+    roleBadge: "الاعتمادات - بيان الطيار",
+    avatarText: "ب ط",
+    employeeNumber: "4412005",
+    department: "وحدة الاعتمادات والتوثيق الأكاديمي",
+    roleKey: "accreditation"
+  },
+  admin: {
+    name: "ناصر العصيمي",
+    roleTitle: "مدير النظام العام (System Admin)",
+    roleBadge: "لوحة التحكم والتحكم المركزي",
+    avatarText: "ن ع",
+    employeeNumber: "admin",
+    department: "إدارة النظام والتحكم العام",
+    roleKey: "admin"
+  }
+};

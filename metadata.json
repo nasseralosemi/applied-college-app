@@ -1,0 +1,6 @@
+{
+  "name": "إدارة واعتماد الأنشطة - الكلية التطبيقية",
+  "description": "تطبيق جوال تفاعلي لإدارة واعتماد الأنشطة والدورات والرفع لمنصة ارتقاء بالكلية التطبيقية",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,18 @@
+{
+  "appId": "sa.edu.college.irtqaa",
+  "appName": "أنشطة الكلية التطبيقية",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "buildOptions": {
+      "keystorePath": "release-key.keystore",
+      "keystoreAlias": "irtqaa-release-key"
+    }
+  },
+  "ios": {
+    "scheme": "أنشطة الكلية"
+  }
+}
