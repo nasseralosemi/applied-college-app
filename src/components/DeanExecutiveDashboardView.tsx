@@ -88,18 +88,24 @@ export const DeanExecutiveDashboardView: React.FC<Props> = ({ requests }) => {
   const allBranches = Array.from(new Set(requests.map((r) => r.branch))).filter(Boolean);
 
   return (
-    <div className="space-y-4 pb-6 font-['Tajawal',sans-serif]">
-      {/* Standardized View Title & Header Banner */}
-      <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-[#1b4332]/10 flex items-center justify-center text-[#1b4332] shrink-0">
-            <Crown className="w-4 h-4 text-[#c59b27]" />
+    <div className="space-y-4 pb-8 font-['Tajawal',sans-serif] text-right">
+      {/* Title Bar */}
+      <div className="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-2 h-full bg-gradient-to-b from-[#1b4332] via-[#c59b27] to-[#1b4332]" />
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-[#1b4332]/10 text-[#1b4332] flex items-center justify-center shrink-0 border border-[#1b4332]/20">
+            <Crown className="w-5 h-5 text-[#c59b27]" />
           </div>
           <div>
-            <h2 className="text-xs font-bold text-[#1b4332] leading-tight">
-              لوحة المتابعة التنفيذية - سعادة رئيس الكلية
-            </h2>
-            <p className="text-[10px] text-slate-500">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-900 border border-amber-200">
+                الرئاسة والقيادة
+              </span>
+              <h2 className="text-sm sm:text-base font-extrabold text-[#1b4332]">
+                لوحة المتابعة التنفيذية - سعادة رئيس الكلية
+              </h2>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
               متابعة مؤشرات الأداء، مسارات الأنشطة، والتوثيق الرسمي في منصة ارتقاء
             </p>
           </div>
@@ -108,16 +114,76 @@ export const DeanExecutiveDashboardView: React.FC<Props> = ({ requests }) => {
         <button
           type="button"
           onClick={() => setIsExportModalOpen(true)}
-          className="px-2.5 py-1.5 rounded-xl bg-[#c59b27] hover:bg-[#d4ab37] text-slate-950 text-[11px] font-bold flex items-center gap-1.5 shadow-xs active:scale-95 transition-all cursor-pointer shrink-0"
+          className="px-3 py-2 rounded-xl bg-[#c59b27] hover:bg-[#d4ab37] text-slate-950 text-xs font-bold flex items-center gap-1.5 shadow-xs active:scale-95 transition-all cursor-pointer shrink-0 self-start sm:self-center"
         >
-          <FileSpreadsheet className="w-3.5 h-3.5 text-slate-950" />
-          <span className="hidden sm:inline">تصدير التقرير التنفيذي الشامل</span>
-          <span className="sm:hidden">تصدير التقرير</span>
+          <FileSpreadsheet className="w-4 h-4 text-slate-950" />
+          <span>تصدير التقرير التنفيذي (CSV)</span>
         </button>
       </div>
 
-      {/* Top Segmented Navigation Tabs: Overview & Analytics only */}
-      <div className="grid grid-cols-2 gap-2 p-1 bg-slate-200/70 rounded-2xl border border-slate-200 shadow-inner">
+      {/* Unified 4-Card KPI Metrics Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-slate-500">إجمالي الأنشطة</span>
+            <div className="w-7 h-7 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
+              <Layers className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div className="text-xl sm:text-2xl font-black text-slate-900 mt-1">{totalActivities}</div>
+          <div className="flex items-center gap-1 mt-0.5 text-[10px] text-slate-500 font-medium">
+            <span className="font-bold text-emerald-700">{approvedFinal} معتمد</span>
+            <span>•</span>
+            <span className="text-amber-700 font-bold">{inWorkflow} تدقيق</span>
+          </div>
+        </div>
+
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-slate-500">الساعات التدريبية</span>
+            <div className="w-7 h-7 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+              <Clock className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div className="text-xl sm:text-2xl font-black text-[#1b4332] mt-1">
+            {totalTrainingHours} <span className="text-[10px] font-normal text-slate-400">ساعة</span>
+          </div>
+          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">
+            متوسط {(totalActivities > 0 ? totalTrainingHours / totalActivities : 0).toFixed(1)} س / نشاط
+          </div>
+        </div>
+
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-emerald-800">موثقة بارتقاء</span>
+            <div className="w-7 h-7 rounded-xl bg-[#1b4332] text-[#e6c566] flex items-center justify-center">
+              <ShieldCheck className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div className="text-xl sm:text-2xl font-black text-emerald-700 mt-1">{uploadedToIrtqaa}</div>
+          <div className="text-[10px] text-emerald-800 mt-0.5 font-bold truncate">
+            سجل مهاري وطني
+          </div>
+        </div>
+
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-slate-500">الإنجاز الكلي</span>
+            <div className="w-7 h-7 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
+              <Award className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div className="text-xl sm:text-2xl font-black text-amber-700 mt-1">
+            {totalActivities > 0 ? Math.round((approvedFinal / totalActivities) * 100) : 0}%
+          </div>
+          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">
+            {deanApprovedCount} اعتماد رئاسة
+          </div>
+        </div>
+      </div>
+
+      {/* Top Segmented Navigation Tabs */}
+      <div className="grid grid-cols-2 gap-2 p-1.5 bg-slate-200/70 rounded-2xl border border-slate-200 shadow-inner">
         <button
           type="button"
           onClick={() => setActiveTab('overview')}
@@ -143,67 +209,6 @@ export const DeanExecutiveDashboardView: React.FC<Props> = ({ requests }) => {
           <BarChart3 className="w-4 h-4 shrink-0" />
           <span>الرسوم البيانية والتحليل الإحصائي</span>
         </button>
-      </div>
-
-      {/* KPI Cards Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-        <div className="p-3 rounded-2xl bg-white border border-slate-200 shadow-xs relative overflow-hidden">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">إجمالي الأنشطة</span>
-            <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center">
-              <Layers className="w-3.5 h-3.5" />
-            </div>
-          </div>
-          <div className="text-xl sm:text-2xl font-black text-slate-900 mt-1">{totalActivities}</div>
-          <div className="flex items-center gap-1 mt-0.5 text-[10px] text-slate-500">
-            <span className="font-bold text-emerald-700">{approvedFinal} معتمد</span>
-            <span>•</span>
-            <span className="text-amber-700 font-bold">{inWorkflow} تدقيق</span>
-          </div>
-        </div>
-
-        <div className="p-3 rounded-2xl bg-white border border-slate-200 shadow-xs relative overflow-hidden">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">الساعات التدريبية</span>
-            <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
-              <Clock className="w-3.5 h-3.5" />
-            </div>
-          </div>
-          <div className="text-xl sm:text-2xl font-black text-[#1b4332] mt-1">
-            {totalTrainingHours} <span className="text-[10px] font-normal text-slate-400">ساعة</span>
-          </div>
-          <div className="text-[10px] text-slate-500 mt-0.5">
-            متوسط {(totalActivities > 0 ? totalTrainingHours / totalActivities : 0).toFixed(1)} س / نشاط
-          </div>
-        </div>
-
-        <div className="p-3 rounded-2xl bg-white border border-slate-200 shadow-xs relative overflow-hidden">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-emerald-800">موثقة بارتقاء</span>
-            <div className="w-7 h-7 rounded-lg bg-[#1b4332] text-[#e6c566] flex items-center justify-center">
-              <ShieldCheck className="w-3.5 h-3.5" />
-            </div>
-          </div>
-          <div className="text-xl sm:text-2xl font-black text-emerald-700 mt-1">{uploadedToIrtqaa}</div>
-          <div className="text-[10px] text-emerald-800 mt-0.5 font-medium truncate">
-            سجل مهاري وطني
-          </div>
-        </div>
-
-        <div className="p-3 rounded-2xl bg-white border border-slate-200 shadow-xs relative overflow-hidden">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">الإنجاز الكلي</span>
-            <div className="w-7 h-7 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center">
-              <Award className="w-3.5 h-3.5" />
-            </div>
-          </div>
-          <div className="text-xl sm:text-2xl font-black text-amber-700 mt-1">
-            {totalActivities > 0 ? Math.round((approvedFinal / totalActivities) * 100) : 0}%
-          </div>
-          <div className="text-[10px] text-slate-500 mt-0.5">
-            {deanApprovedCount} اعتماد رئاسة
-          </div>
-        </div>
       </div>
 
       {/* ======================================================== */}

@@ -125,13 +125,13 @@ export const AccreditationView: React.FC<Props> = ({ requests }) => {
         </div>
       </div>
 
-      {/* KPI Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
-        <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-xs relative overflow-hidden">
+      {/* Unified 4-Card KPI Metrics Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">الأنشطة المعتمدة في ارتقاء</span>
-            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
-              <ShieldCheck className="w-4 h-4" />
+            <span className="text-[11px] font-bold text-slate-500">معتمدة بارتقاء</span>
+            <div className="w-7 h-7 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+              <ShieldCheck className="w-3.5 h-3.5" />
             </div>
           </div>
           <div className="text-xl sm:text-2xl font-black text-slate-900 mt-1">{totalAccredited}</div>
@@ -140,24 +140,37 @@ export const AccreditationView: React.FC<Props> = ({ requests }) => {
           </div>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-xs relative overflow-hidden">
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">نماذج الاعتماد المطبوعة</span>
-            <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
-              <FileCheck2 className="w-4 h-4" />
+            <span className="text-[11px] font-bold text-slate-500">نماذج مرفوعة</span>
+            <div className="w-7 h-7 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
+              <FileCheck2 className="w-3.5 h-3.5" />
             </div>
           </div>
           <div className="text-xl sm:text-2xl font-black text-blue-700 mt-1">{withAccreditationDoc}</div>
-          <div className="text-[10px] text-slate-500 mt-0.5">
+          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">
             نماذج مطبوعة ومزامنة
           </div>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-xs relative overflow-hidden">
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">معدل اكتمال التوثيق</span>
-            <div className="w-8 h-8 rounded-xl bg-[#1b4332] text-[#e6c566] flex items-center justify-center">
-              <CheckCircle2 className="w-4 h-4" />
+            <span className="text-[11px] font-bold text-slate-500">بانتظار النموذج</span>
+            <div className="w-7 h-7 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
+              <Layers className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div className="text-xl sm:text-2xl font-black text-amber-700 mt-1">{Math.max(0, totalAccredited - withAccreditationDoc)}</div>
+          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">
+            أنشطة بانتظار إرفاق النموذج
+          </div>
+        </div>
+
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-slate-500">معدل التوثيق</span>
+            <div className="w-7 h-7 rounded-xl bg-[#1b4332]/10 text-[#1b4332] flex items-center justify-center">
+              <CheckCircle2 className="w-3.5 h-3.5" />
             </div>
           </div>
           <div className="text-xl sm:text-2xl font-black text-emerald-700 mt-1">{documentationRate}%</div>

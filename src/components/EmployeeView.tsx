@@ -111,25 +111,8 @@ export const EmployeeView: React.FC<Props> = ({
   const todayStr = new Date().toISOString().split('T')[0];
   const [startDate, setStartDate] = useState<string>(todayStr);
   const [endDate, setEndDate] = useState<string>(todayStr);
-  const [startTime, setStartTime] = useState<string>('10:00');
+  const [startTime, setStartTime] = useState<string>('10:00 ص');
   const [hours, setHours] = useState<string>('2');
-
-  // Format time for Arabic display (e.g. 10:00 -> 10:00 ص, 14:30 -> 02:30 م)
-  const formatDisplayTime = (t: string) => {
-    if (!t) return '10:00 ص';
-    if (t.includes('ص') || t.includes('م')) return t;
-    const parts = t.split(':');
-    if (parts.length >= 2) {
-      const h = parseInt(parts[0], 10);
-      const m = parts[1];
-      if (!isNaN(h)) {
-        const isPM = h >= 12;
-        const h12 = h % 12 === 0 ? 12 : h % 12;
-        return `${String(h12).padStart(2, '0')}:${m} ${isPM ? 'م' : 'ص'}`;
-      }
-    }
-    return t;
-  };
 
   // Group 3: Audience & Execution
   const [targetAudience, setTargetAudience] = useState<string>('الطلاب');
@@ -147,30 +130,14 @@ export const EmployeeView: React.FC<Props> = ({
   // Validation Error State
   const [formError, setFormError] = useState<string>('');
 
-  // Safe requests array to prevent null/undefined runtime crashes
-  const safeRequests = Array.isArray(requests)
-    ? requests.filter((r): r is ActivityRequest => Boolean(r && typeof r === 'object' && r.id !== undefined))
-    : [];
-
   // Filter requests to show this employee's submitted requests
   const myRequests = currentUserEmpNumber
-    ? safeRequests.filter((r) => {
-        if (!r) return false;
-        if (!r.submittedByEmpNumber) return true;
-        return (
-          String(r.submittedByEmpNumber).trim().toLowerCase() ===
-          String(currentUserEmpNumber).trim().toLowerCase()
-        );
-      })
-    : safeRequests;
-
-  // Safe stat counts for top counters
-  const totalSubmittedCount = myRequests.length;
-  const pendingCount = myRequests.filter((r) => {
-    const s = r?.status;
-    return s === 'pending_manager' || s === 'pending_auditor';
-  }).length;
-  const returnedCount = myRequests.filter((r) => r?.status === 'returned_emp').length;
+    ? requests.filter(
+        (r) =>
+          r.submittedByEmpNumber === currentUserEmpNumber ||
+          !r.submittedByEmpNumber
+      )
+    : requests;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -218,33 +185,29 @@ export const EmployeeView: React.FC<Props> = ({
       return;
     }
 
-    const formattedTime = formatDisplayTime(startTime);
-
-    // Submit complete formal request safely
-    if (typeof onSubmitRequest === 'function') {
-      onSubmitRequest({
-        name: name.trim(),
-        type,
-        presenter: presenter.trim(),
-        unit,
-        branch,
-        startDate,
-        endDate,
-        startTime: formattedTime,
-        hours: Number(hours),
-        targetAudience,
-        targetGender,
-        deliveryMode,
-        meetingUrl: deliveryMode === 'عن بعد' ? meetingUrl.trim() : undefined,
-        physicalLocation: deliveryMode === 'حضوري' ? physicalLocation.trim() : undefined,
-        partnershipApproval,
-        transactionNumber: transactionNumber.trim() || undefined,
-        coordinatorName: coordinatorName.trim(),
-        summary: summary.trim(),
-        date: startDate,
-        location: deliveryMode === 'عن بعد' ? `عن بعد - ${meetingUrl.trim()}` : physicalLocation.trim(),
-      });
-    }
+    // Submit complete formal request
+    onSubmitRequest({
+      name: name.trim(),
+      type,
+      presenter: presenter.trim(),
+      unit,
+      branch,
+      startDate,
+      endDate,
+      startTime: startTime.trim(),
+      hours: Number(hours),
+      targetAudience,
+      targetGender,
+      deliveryMode,
+      meetingUrl: deliveryMode === 'عن بعد' ? meetingUrl.trim() : undefined,
+      physicalLocation: deliveryMode === 'حضوري' ? physicalLocation.trim() : undefined,
+      partnershipApproval,
+      transactionNumber: transactionNumber.trim() || undefined,
+      coordinatorName: coordinatorName.trim(),
+      summary: summary.trim(),
+      date: startDate,
+      location: deliveryMode === 'عن بعد' ? `عن بعد - ${meetingUrl.trim()}` : physicalLocation.trim(),
+    });
 
     // Reset Form
     setName('');
@@ -260,87 +223,117 @@ export const EmployeeView: React.FC<Props> = ({
     setActiveTab('tracking');
   };
 
+  const totalMyRequests = myRequests.length;
+  const inProgressCount = myRequests.filter(
+    (r) => r.status === 'pending_manager' || r.status === 'pending_auditor'
+  ).length;
+  const approvedCount = myRequests.filter(
+    (r) => r.status === 'approved_final' || r.status === 'uploaded_irtqaa'
+  ).length;
+  const returnedCount = myRequests.filter((r) => r.status === 'returned_emp').length;
+
   return (
-    <div className="space-y-3.5 sm:space-y-4 pb-6 font-['Tajawal',sans-serif]">
-      {/* 1. العدادات العلوية المتجاوبة (Mobile-First Responsive Counters with Flex-wrap) */}
-      <div className="flex flex-wrap items-stretch gap-2 sm:gap-3">
-        {/* طلباتي المرفوعة */}
-        <div className="flex-1 min-w-[100px] sm:min-w-[120px] bg-white rounded-2xl p-2.5 sm:p-3.5 border border-slate-200/90 shadow-xs flex flex-col justify-between hover:border-emerald-300 hover:shadow-sm transition-all duration-200">
-          <div className="flex items-center justify-between gap-1 mb-1">
-            <span className="text-[11px] sm:text-xs font-bold text-slate-600">طلباتي المرفوعة</span>
-            <div className="w-6 h-6 rounded-lg bg-emerald-100/80 text-emerald-800 flex items-center justify-center shrink-0">
-              <FileText className="w-3.5 h-3.5" />
+    <div className="space-y-4 pb-8 font-['Tajawal',sans-serif] text-right">
+      {/* View Title & Context Banner */}
+      <div className="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-2 h-full bg-gradient-to-b from-[#1b4332] via-[#c59b27] to-[#1b4332]" />
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-[#1b4332]/10 text-[#1b4332] flex items-center justify-center shrink-0 border border-[#1b4332]/20">
+            <FileText className="w-5 h-5 text-[#c59b27]" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-900 border border-emerald-200">
+                بوابة الموظف
+              </span>
+              <h2 className="text-sm sm:text-base font-extrabold text-[#1b4332]">
+                تقديم الأنشطة ومتابعة مسار الاعتماد
+              </h2>
             </div>
-          </div>
-          <div className="flex items-baseline gap-1 mt-0.5">
-            <span className="text-xl sm:text-2xl font-black text-[#1b4332]">{totalSubmittedCount}</span>
-            <span className="text-[10px] text-slate-400 font-medium">طلب</span>
-          </div>
-        </div>
-
-        {/* قيد الاعتماد */}
-        <div className="flex-1 min-w-[100px] sm:min-w-[120px] bg-white rounded-2xl p-2.5 sm:p-3.5 border border-amber-200/90 shadow-xs flex flex-col justify-between hover:border-amber-400 hover:shadow-sm transition-all duration-200">
-          <div className="flex items-center justify-between gap-1 mb-1">
-            <span className="text-[11px] sm:text-xs font-bold text-amber-800">قيد الاعتماد</span>
-            <div className="w-6 h-6 rounded-lg bg-amber-100/80 text-amber-800 flex items-center justify-center shrink-0">
-              <Clock className="w-3.5 h-3.5" />
-            </div>
-          </div>
-          <div className="flex items-baseline gap-1 mt-0.5">
-            <span className="text-xl sm:text-2xl font-black text-amber-600">
-              {pendingCount}
-            </span>
-            <span className="text-[10px] text-amber-600/70 font-medium">معاملة</span>
-          </div>
-        </div>
-
-        {/* تحتاج تعديل */}
-        <div className="flex-1 min-w-[100px] sm:min-w-[120px] bg-white rounded-2xl p-2.5 sm:p-3.5 border border-rose-200/90 shadow-xs flex flex-col justify-between hover:border-rose-400 hover:shadow-sm transition-all duration-200">
-          <div className="flex items-center justify-between gap-1 mb-1">
-            <span className="text-[11px] sm:text-xs font-bold text-rose-800">تحتاج تعديل</span>
-            <div className="w-6 h-6 rounded-lg bg-rose-100/80 text-rose-800 flex items-center justify-center shrink-0">
-              <RotateCcw className="w-3.5 h-3.5" />
-            </div>
-          </div>
-          <div className="flex items-baseline gap-1 mt-0.5">
-            <span className="text-xl sm:text-2xl font-black text-rose-600">
-              {returnedCount}
-            </span>
-            <span className="text-[10px] text-rose-600/70 font-medium">طلب</span>
+            <p className="text-xs text-slate-500 mt-0.5">
+              رفع الفعاليات والبرامج التدريبية وتتبع الدورة المستندية حتى التوثيق النهائي
+            </p>
           </div>
         </div>
       </div>
 
-      {/* 2. التبويبات العلوية المحسنة للمس والأصابع (Touch-Optimized Segmented Tabs) */}
-      <div className="grid grid-cols-2 gap-2 p-1.5 bg-slate-200/80 rounded-2xl border border-slate-300/80 shadow-inner">
+      {/* Unified 4-Card KPI Metrics Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-slate-500">طلباتي المرفوعة</span>
+            <div className="w-7 h-7 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
+              <History className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div className="text-xl sm:text-2xl font-black text-slate-900 mt-1">{totalMyRequests}</div>
+          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">سجل الأنشطة الكلي</div>
+        </div>
+
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-slate-500">قيد المعالجة</span>
+            <div className="w-7 h-7 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
+              <Clock className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div className="text-xl sm:text-2xl font-black text-amber-700 mt-1">{inProgressCount}</div>
+          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">المدير المباشر والتدقيق</div>
+        </div>
+
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-slate-500">معتمدة وموثقة</span>
+            <div className="w-7 h-7 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div className="text-xl sm:text-2xl font-black text-emerald-700 mt-1">{approvedCount}</div>
+          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">جاهزة أو رُفعت لارتقاء</div>
+        </div>
+
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-slate-500">تحتاج استكمال</span>
+            <div className="w-7 h-7 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center">
+              <RotateCcw className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div className="text-xl sm:text-2xl font-black text-rose-700 mt-1">{returnedCount}</div>
+          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">ملاحظات تستدعي التعديل</div>
+        </div>
+      </div>
+
+      {/* Top Segmented Tabs: New Form vs Tracking */}
+      <div className="grid grid-cols-2 gap-2 p-1.5 bg-slate-200/70 rounded-2xl border border-slate-200 shadow-inner">
         <button
           type="button"
           onClick={() => setActiveTab('form')}
-          className={`flex items-center justify-center gap-2 min-h-[48px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-extrabold transition-all duration-150 active:scale-95 cursor-pointer select-none ${
+          className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-150 active:scale-95 cursor-pointer ${
             activeTab === 'form'
-              ? 'bg-[#1b4332] text-[#e6c566] shadow-md shadow-[#1b4332]/25 ring-1 ring-[#c59b27]/40'
-              : 'text-slate-700 hover:text-slate-900 hover:bg-white/70'
+              ? 'bg-[#1b4332] text-[#e6c566] shadow-md'
+              : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
           }`}
         >
-          <PlusCircle className="w-4 h-4 shrink-0" />
+          <PlusCircle className="w-4 h-4" />
           <span>استمارة رفع نشاط جديد</span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab('tracking')}
-          className={`flex items-center justify-center gap-2 min-h-[48px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-extrabold transition-all duration-150 active:scale-95 cursor-pointer select-none ${
+          className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-150 active:scale-95 cursor-pointer ${
             activeTab === 'tracking'
-              ? 'bg-[#1b4332] text-[#e6c566] shadow-md shadow-[#1b4332]/25 ring-1 ring-[#c59b27]/40'
-              : 'text-slate-700 hover:text-slate-900 hover:bg-white/70'
+              ? 'bg-[#1b4332] text-[#e6c566] shadow-md'
+              : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
           }`}
         >
-          <History className="w-4 h-4 shrink-0" />
+          <History className="w-4 h-4" />
           <span>سجل طلباتي</span>
           <span
-            className={`text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full font-black leading-none ${
+            className={`text-[10px] px-2 py-0.5 rounded-full font-bold leading-none ${
               activeTab === 'tracking'
-                ? 'bg-[#c59b27] text-[#081c15]'
+                ? 'bg-[#c59b27] text-slate-950'
                 : 'bg-slate-300 text-slate-800'
             }`}
           >
@@ -351,23 +344,23 @@ export const EmployeeView: React.FC<Props> = ({
 
       {/* TAB 1: FORM VIEW */}
       {activeTab === 'form' && (
-        <div className="bg-white rounded-3xl p-3.5 sm:p-6 shadow-lg shadow-slate-200/60 border border-slate-200/90 animate-fade-slide-up">
+        <div className="bg-white rounded-3xl p-4 sm:p-5 shadow-lg shadow-slate-200/60 border border-slate-200/90 animate-fade-slide-up">
           {/* Header */}
           <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-[#1b4332]/10 flex items-center justify-center text-[#1b4332] border border-[#1b4332]/20 shrink-0">
+              <div className="w-9 h-9 rounded-2xl bg-[#1b4332]/10 flex items-center justify-center text-[#1b4332] border border-[#1b4332]/20">
                 <PlusCircle className="w-5 h-5 text-[#c59b27]" />
               </div>
               <div>
-                <h2 className="text-xs sm:text-sm font-black text-[#1b4332] leading-tight">
+                <h2 className="text-xs sm:text-sm font-bold text-[#1b4332] leading-tight">
                   استمارة رفع النشاط الرسمية
                 </h2>
-                <p className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5">
+                <p className="text-[10px] text-slate-500">
                   معتمدة للرفع المباشر إلى منصة ارتقاء • الكلية التطبيقية
                 </p>
               </div>
             </div>
-            <span className="text-[10px] bg-emerald-50 text-emerald-800 font-bold px-2.5 py-1 rounded-full border border-emerald-200 shadow-xs shrink-0">
+            <span className="text-[10px] bg-emerald-50 text-emerald-800 font-bold px-2.5 py-1 rounded-full border border-emerald-200 shadow-xs">
               استمارة معتمدة
             </span>
           </div>
@@ -381,8 +374,8 @@ export const EmployeeView: React.FC<Props> = ({
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* GROUP 1: Basic Info & Activity Type (1 Col Mobile, 2 Cols Desktop) */}
-            <div className="border border-slate-200 rounded-2xl p-3 sm:p-4 bg-slate-50/70 space-y-3 shadow-xs">
+            {/* GROUP 1: Basic Info & Activity Type */}
+            <div className="border border-slate-200 rounded-2xl p-3.5 bg-slate-50/60 space-y-3 shadow-xs">
               <div className="flex items-center gap-2 pb-2 border-b border-slate-200/70">
                 <div className="w-5 h-5 rounded-lg bg-[#1b4332] text-white flex items-center justify-center text-[10px] font-bold">
                   1
@@ -393,7 +386,7 @@ export const EmployeeView: React.FC<Props> = ({
                 </h3>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {/* Activity Type */}
                 <div>
                   <label className="block text-[11px] font-bold text-slate-700 mb-1">
@@ -403,7 +396,7 @@ export const EmployeeView: React.FC<Props> = ({
                     <select
                       value={type}
                       onChange={(e) => setType(e.target.value)}
-                      className="w-full min-h-[46px] text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-2 focus:ring-[#c59b27]/20 outline-none appearance-none font-medium cursor-pointer shadow-xs"
+                      className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none appearance-none font-medium cursor-pointer shadow-xs"
                     >
                       {ACTIVITY_TYPES.map((t) => (
                         <option key={t} value={t}>
@@ -426,7 +419,7 @@ export const EmployeeView: React.FC<Props> = ({
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="مثال: دورة أمن المعلومات والأمن السيبراني"
-                    className="w-full min-h-[46px] text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-2 focus:ring-[#c59b27]/20 outline-none font-medium shadow-xs"
+                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none font-medium shadow-xs"
                   />
                 </div>
 
@@ -441,7 +434,7 @@ export const EmployeeView: React.FC<Props> = ({
                     value={presenter}
                     onChange={(e) => setPresenter(e.target.value)}
                     placeholder="مثال: د. محمد بن عبد الله الشمري"
-                    className="w-full min-h-[46px] text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-2 focus:ring-[#c59b27]/20 outline-none font-medium shadow-xs"
+                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none font-medium shadow-xs"
                   />
                 </div>
 
@@ -454,7 +447,7 @@ export const EmployeeView: React.FC<Props> = ({
                     <select
                       value={unit}
                       onChange={(e) => setUnit(e.target.value)}
-                      className="w-full min-h-[46px] text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-2 focus:ring-[#c59b27]/20 outline-none appearance-none font-medium cursor-pointer shadow-xs"
+                      className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none appearance-none font-medium cursor-pointer shadow-xs"
                     >
                       {SUPERVISING_UNITS.map((u) => (
                         <option key={u} value={u}>
@@ -467,7 +460,7 @@ export const EmployeeView: React.FC<Props> = ({
                 </div>
 
                 {/* College Branch */}
-                <div className="md:col-span-2">
+                <div className="sm:col-span-2">
                   <label className="block text-[11px] font-bold text-slate-700 mb-1">
                     الفرع والشطر <span className="text-rose-500">*</span>
                   </label>
@@ -475,7 +468,7 @@ export const EmployeeView: React.FC<Props> = ({
                     <select
                       value={branch}
                       onChange={(e) => setBranch(e.target.value)}
-                      className="w-full min-h-[46px] text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-2 focus:ring-[#c59b27]/20 outline-none appearance-none font-medium cursor-pointer shadow-xs"
+                      className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none appearance-none font-medium cursor-pointer shadow-xs"
                     >
                       {COLLEGE_BRANCHES.map((b) => (
                         <option key={b} value={b}>
@@ -489,8 +482,8 @@ export const EmployeeView: React.FC<Props> = ({
               </div>
             </div>
 
-            {/* GROUP 2: Schedule & Timing (1 Col Mobile, 2 Cols Desktop with Native Mobile Inputs) */}
-            <div className="border border-slate-200 rounded-2xl p-3 sm:p-4 bg-slate-50/70 space-y-3 shadow-xs">
+            {/* GROUP 2: Schedule & Timing */}
+            <div className="border border-slate-200 rounded-2xl p-3.5 bg-slate-50/60 space-y-3 shadow-xs">
               <div className="flex items-center gap-2 pb-2 border-b border-slate-200/70">
                 <div className="w-5 h-5 rounded-lg bg-[#1b4332] text-white flex items-center justify-center text-[10px] font-bold">
                   2
@@ -501,7 +494,7 @@ export const EmployeeView: React.FC<Props> = ({
                 </h3>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {/* Start Date */}
                 <div>
                   <label className="block text-[11px] font-bold text-slate-700 mb-1">
@@ -512,7 +505,7 @@ export const EmployeeView: React.FC<Props> = ({
                     required
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full min-h-[46px] text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-2 focus:ring-[#c59b27]/20 outline-none font-medium shadow-xs"
+                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none font-medium shadow-xs"
                   />
                 </div>
 
@@ -526,48 +519,45 @@ export const EmployeeView: React.FC<Props> = ({
                     required
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full min-h-[46px] text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-2 focus:ring-[#c59b27]/20 outline-none font-medium shadow-xs"
+                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none font-medium shadow-xs"
                   />
                 </div>
 
-                {/* Start Time (Native Time Picker) */}
+                {/* Start Time */}
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-700 mb-1 flex items-center justify-between">
-                    <span>وقت بداية النشاط <span className="text-rose-500">*</span></span>
-                    <span className="text-[10px] text-slate-500 font-semibold">{formatDisplayTime(startTime)}</span>
+                  <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                    وقت بداية النشاط <span className="text-rose-500">*</span>
                   </label>
                   <input
-                    type="time"
+                    type="text"
                     required
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
-                    className="w-full min-h-[46px] text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-2 focus:ring-[#c59b27]/20 outline-none font-medium shadow-xs"
+                    placeholder="مثال: 10:00 ص أو 01:00 م"
+                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none font-medium shadow-xs"
                   />
                 </div>
 
-                {/* Training Hours (Native Number Input with Numeric Keypad) */}
+                {/* Training Hours */}
                 <div>
                   <label className="block text-[11px] font-bold text-slate-700 mb-1">
                     عدد الساعات التدريبية المعتمدة <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="number"
-                    inputMode="numeric"
                     min="1"
                     max="60"
-                    step="1"
                     required
                     value={hours}
                     onChange={(e) => setHours(e.target.value)}
-                    placeholder="مثال: 2"
-                    className="w-full min-h-[46px] text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-2 focus:ring-[#c59b27]/20 outline-none font-medium shadow-xs"
+                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none font-medium shadow-xs"
                   />
                 </div>
               </div>
             </div>
 
-            {/* GROUP 3: Target Audience & Delivery Mode (Smart Dynamic Fields) */}
-            <div className="border border-slate-200 rounded-2xl p-3 sm:p-4 bg-slate-50/70 space-y-3 shadow-xs">
+            {/* GROUP 3: Target Audience & Delivery Mode */}
+            <div className="border border-slate-200 rounded-2xl p-3.5 bg-slate-50/60 space-y-3 shadow-xs">
               <div className="flex items-center gap-2 pb-2 border-b border-slate-200/70">
                 <div className="w-5 h-5 rounded-lg bg-[#1b4332] text-white flex items-center justify-center text-[10px] font-bold">
                   3
@@ -578,7 +568,7 @@ export const EmployeeView: React.FC<Props> = ({
                 </h3>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {/* Target Audience */}
                 <div>
                   <label className="block text-[11px] font-bold text-slate-700 mb-1">
@@ -588,7 +578,7 @@ export const EmployeeView: React.FC<Props> = ({
                     <select
                       value={targetAudience}
                       onChange={(e) => setTargetAudience(e.target.value)}
-                      className="w-full min-h-[46px] text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-2 focus:ring-[#c59b27]/20 outline-none appearance-none font-medium cursor-pointer shadow-xs"
+                      className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none appearance-none font-medium cursor-pointer shadow-xs"
                     >
                       {TARGET_AUDIENCES.map((aud) => (
                         <option key={aud} value={aud}>
@@ -609,7 +599,7 @@ export const EmployeeView: React.FC<Props> = ({
                     <select
                       value={targetGender}
                       onChange={(e) => setTargetGender(e.target.value)}
-                      className="w-full min-h-[46px] text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-2 focus:ring-[#c59b27]/20 outline-none appearance-none font-medium cursor-pointer shadow-xs"
+                      className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none appearance-none font-medium cursor-pointer shadow-xs"
                     >
                       {GENDER_OPTIONS.map((g) => (
                         <option key={g} value={g}>
@@ -620,94 +610,76 @@ export const EmployeeView: React.FC<Props> = ({
                     <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                   </div>
                 </div>
-
-                {/* Delivery Mode Toggle (Full Width) */}
-                <div className="md:col-span-2">
-                  <label className="block text-[11px] font-bold text-slate-700 mb-1.5">
-                    حالة وطريقة التنفيذ <span className="text-rose-500">*</span>
-                  </label>
-                  <div className="grid grid-cols-2 gap-2 bg-slate-200/80 p-1.5 rounded-2xl border border-slate-300/80">
-                    <button
-                      type="button"
-                      onClick={() => setDeliveryMode('عن بعد')}
-                      className={`flex items-center justify-center gap-2 min-h-[44px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all duration-150 active:scale-95 cursor-pointer select-none ${
-                        deliveryMode === 'عن بعد'
-                          ? 'bg-[#1b4332] text-white shadow-sm ring-1 ring-[#c59b27]/40'
-                          : 'text-slate-700 hover:text-slate-900'
-                      }`}
-                    >
-                      <Globe className="w-4 h-4 text-[#e6c566]" />
-                      <span>عن بعد (Online)</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setDeliveryMode('حضوري')}
-                      className={`flex items-center justify-center gap-2 min-h-[44px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all duration-150 active:scale-95 cursor-pointer select-none ${
-                        deliveryMode === 'حضوري'
-                          ? 'bg-[#1b4332] text-white shadow-sm ring-1 ring-[#c59b27]/40'
-                          : 'text-slate-700 hover:text-slate-900'
-                      }`}
-                    >
-                      <MapPin className="w-4 h-4 text-[#c59b27]" />
-                      <span>حضوري (On-Campus)</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* DYNAMIC FIELD: URL shows ONLY for 'عن بعد', completely hidden for 'حضوري' */}
-                {deliveryMode === 'عن بعد' && (
-                  <div className="md:col-span-2 animate-fade-slide-up">
-                    <label className="block text-[11px] sm:text-xs font-bold text-slate-700 mb-1 flex items-center justify-between">
-                      <span className="flex items-center gap-1.5">
-                        <Globe className="w-3.5 h-3.5 text-blue-600" />
-                        <span>رابط النشاط الافتراضي (URL)</span>
-                        <span className="text-rose-500">*</span>
-                      </span>
-                      <span className="text-[10px] text-blue-700 font-semibold bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200">
-                        مطلوب للأنشطة عن بعد
-                      </span>
-                    </label>
-                    <input
-                      type="url"
-                      inputMode="url"
-                      required
-                      value={meetingUrl}
-                      onChange={(e) => setMeetingUrl(e.target.value)}
-                      placeholder="https://blackboard.mu.edu.sa/... أو رابط Microsoft Teams"
-                      className="w-full min-h-[46px] text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-2 focus:ring-[#c59b27]/20 outline-none font-medium text-left ltr shadow-xs placeholder:text-right"
-                    />
-                  </div>
-                )}
-
-                {/* DYNAMIC FIELD: Location shows ONLY for 'حضوري', completely hidden for 'عن بعد' */}
-                {deliveryMode === 'حضوري' && (
-                  <div className="md:col-span-2 animate-fade-slide-up">
-                    <label className="block text-[11px] sm:text-xs font-bold text-slate-700 mb-1 flex items-center justify-between">
-                      <span className="flex items-center gap-1.5">
-                        <MapPin className="w-3.5 h-3.5 text-[#c59b27]" />
-                        <span>موقع النشاط الحضوري (القاعة أو المقر)</span>
-                        <span className="text-rose-500">*</span>
-                      </span>
-                      <span className="text-[10px] text-emerald-800 font-semibold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
-                        مطلوب للأنشطة الحضورية
-                      </span>
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={physicalLocation}
-                      onChange={(e) => setPhysicalLocation(e.target.value)}
-                      placeholder="مثال: مدرج الكلية التطبيقية الرئيسي أو قاعة التدريب 104"
-                      className="w-full min-h-[46px] text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-2 focus:ring-[#c59b27]/20 outline-none font-medium shadow-xs"
-                    />
-                  </div>
-                )}
               </div>
+
+              {/* Delivery Mode Toggle */}
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 mb-1.5">
+                  حالة وطريقة التنفيذ <span className="text-rose-500">*</span>
+                </label>
+                <div className="grid grid-cols-2 gap-2 bg-slate-200/70 p-1 rounded-xl">
+                  <button
+                    type="button"
+                    onClick={() => setDeliveryMode('عن بعد')}
+                    className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-bold transition-all duration-150 active:scale-95 cursor-pointer ${
+                      deliveryMode === 'عن بعد'
+                        ? 'bg-[#1b4332] text-white shadow-sm'
+                        : 'text-slate-700 hover:text-slate-900'
+                    }`}
+                  >
+                    <Globe className="w-3.5 h-3.5 text-[#e6c566]" />
+                    <span>عن بعد (Online)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setDeliveryMode('حضوري')}
+                    className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-bold transition-all duration-150 active:scale-95 cursor-pointer ${
+                      deliveryMode === 'حضوري'
+                        ? 'bg-[#1b4332] text-white shadow-sm'
+                        : 'text-slate-700 hover:text-slate-900'
+                    }`}
+                  >
+                    <MapPin className="w-3.5 h-3.5 text-[#c59b27]" />
+                    <span>حضوري (On-Campus)</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Conditional Input based on Delivery Mode */}
+              {deliveryMode === 'عن بعد' ? (
+                <div className="animate-fade-slide-up">
+                  <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                    رابط النشاط الافتراضي (URL) <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="url"
+                    required
+                    value={meetingUrl}
+                    onChange={(e) => setMeetingUrl(e.target.value)}
+                    placeholder="https://blackboard.mu.edu.sa/... أو رابط Microsoft Teams"
+                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none font-medium text-left ltr shadow-xs"
+                  />
+                </div>
+              ) : (
+                <div className="animate-fade-slide-up">
+                  <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                    موقع النشاط (القاعة أو المقر) <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={physicalLocation}
+                    onChange={(e) => setPhysicalLocation(e.target.value)}
+                    placeholder="مثال: مدرج الكلية التطبيقية الرئيسي أو قاعة التدريب 104"
+                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none font-medium shadow-xs"
+                  />
+                </div>
+              )}
             </div>
 
             {/* GROUP 4: Administrative Approvals & Coordinator */}
-            <div className="border border-slate-200 rounded-2xl p-3 sm:p-4 bg-slate-50/70 space-y-3 shadow-xs">
+            <div className="border border-slate-200 rounded-2xl p-3.5 bg-slate-50/60 space-y-3 shadow-xs">
               <div className="flex items-center gap-2 pb-2 border-b border-slate-200/70">
                 <div className="w-5 h-5 rounded-lg bg-[#1b4332] text-white flex items-center justify-center text-[10px] font-bold">
                   4
@@ -718,7 +690,7 @@ export const EmployeeView: React.FC<Props> = ({
                 </h3>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {/* Partnership Approval */}
                 <div>
                   <label className="block text-[11px] font-bold text-slate-700 mb-1">
@@ -732,7 +704,7 @@ export const EmployeeView: React.FC<Props> = ({
                           e.target.value as 'لا تحتاج إلى موافقة' | 'تتطلب موافقة'
                         )
                       }
-                      className="w-full min-h-[46px] text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-2 focus:ring-[#c59b27]/20 outline-none appearance-none font-medium cursor-pointer shadow-xs"
+                      className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none appearance-none font-medium cursor-pointer shadow-xs"
                     >
                       <option value="لا تحتاج إلى موافقة">لا تحتاج إلى موافقة</option>
                       <option value="تتطلب موافقة">تتطلب موافقة مركز التعاون والشراكات</option>
@@ -757,12 +729,12 @@ export const EmployeeView: React.FC<Props> = ({
                     value={transactionNumber}
                     onChange={(e) => setTransactionNumber(e.target.value)}
                     placeholder="مثال: 44-0982-م"
-                    className="w-full min-h-[46px] text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-2 focus:ring-[#c59b27]/20 outline-none font-medium font-mono shadow-xs"
+                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none font-medium font-mono shadow-xs"
                   />
                 </div>
 
-                {/* Coordinator Name (Full Width on Desktop) */}
-                <div className="md:col-span-2">
+                {/* Coordinator Name */}
+                <div className="sm:col-span-2">
                   <label className="block text-[11px] font-bold text-slate-700 mb-1">
                     اسم منسق النشاط بالكلية <span className="text-rose-500">*</span>
                   </label>
@@ -772,12 +744,12 @@ export const EmployeeView: React.FC<Props> = ({
                     value={coordinatorName}
                     onChange={(e) => setCoordinatorName(e.target.value)}
                     placeholder="الاسم الثلاثي لمنسق الفعالية"
-                    className="w-full min-h-[46px] text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-2 focus:ring-[#c59b27]/20 outline-none font-medium shadow-xs"
+                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none font-medium shadow-xs"
                   />
                 </div>
 
-                {/* Summary & Goals (Full Width on Desktop) */}
-                <div className="md:col-span-2">
+                {/* Summary & Goals */}
+                <div className="sm:col-span-2">
                   <label className="block text-[11px] font-bold text-slate-700 mb-1">
                     ملخص النشاط والأهداف المرجوة <span className="text-rose-500">*</span>
                   </label>
@@ -787,22 +759,20 @@ export const EmployeeView: React.FC<Props> = ({
                     value={summary}
                     onChange={(e) => setSummary(e.target.value)}
                     placeholder="اكتب نبذة مختصرة عن أهداف النشاط ومخرجاته التعليمية والمهارية للطلاب..."
-                    className="w-full text-xs sm:text-sm p-3.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-2 focus:ring-[#c59b27]/20 outline-none resize-none font-medium shadow-xs leading-relaxed"
+                    className="w-full text-xs p-3 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none resize-none font-medium shadow-xs leading-relaxed"
                   />
                 </div>
               </div>
             </div>
 
-            {/* Submit Button (Thumb-Friendly, Min-height 50px+, Active Press State, Sticky on Mobile) */}
-            <div className="sticky bottom-3 sm:static z-20 pt-2 pb-1 bg-white/95 sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none -mx-2 px-2 sm:mx-0 sm:px-0">
-              <button
-                type="submit"
-                className="w-full min-h-[50px] sm:min-h-[52px] bg-gradient-to-r from-[#1b4332] via-[#143728] to-[#081c15] hover:brightness-110 active:scale-[0.98] active:brightness-90 text-[#e6c566] font-black py-3 px-4 rounded-2xl text-xs sm:text-sm flex items-center justify-center gap-2.5 shadow-xl shadow-[#1b4332]/25 transition-all duration-150 cursor-pointer border border-[#c59b27]/40 select-none"
-              >
-                <Send className="w-4 h-4 text-[#e6c566] shrink-0" />
-                <span>إرسال استمارة النشاط للمدير المباشر للاعتماد</span>
-              </button>
-            </div>
+            {/* Submit Button */}
+            <button
+              type="submit"
+              className="w-full bg-gradient-to-r from-[#1b4332] via-[#143728] to-[#0d281e] hover:from-[#143728] hover:to-[#081c15] text-[#e6c566] font-bold py-3.5 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#1b4332]/25 active:scale-95 transition-all duration-150 cursor-pointer border border-[#c59b27]/30"
+            >
+              <Send className="w-4 h-4 text-[#e6c566]" />
+              <span>إرسال استمارة النشاط للمدير المباشر للاعتماد</span>
+            </button>
           </form>
         </div>
       )}
@@ -842,48 +812,35 @@ export const EmployeeView: React.FC<Props> = ({
             </div>
           ) : (
             <div className="space-y-3">
-              {myRequests.map((r, index) => {
-                if (!r) return null;
-                const status = r?.status || 'pending_manager';
+              {myRequests.map((r) => {
                 const borderAccentColor =
-                  status === 'uploaded_irtqaa'
+                  r.status === 'uploaded_irtqaa'
                     ? 'border-r-[#1b4332]'
-                    : status === 'approved_final' || status === 'pending_auditor'
+                    : r.status === 'approved_final' || r.status === 'pending_auditor'
                     ? 'border-r-emerald-500'
-                    : status === 'returned_emp' || status === 'returned_manager'
+                    : r.status === 'returned_emp' || r.status === 'returned_manager'
                     ? 'border-r-rose-500'
                     : 'border-r-[#c59b27]';
 
-                const activityTitle = r?.name || 'نشاط الكلية';
-                const activityType = r?.type || 'نشاط';
-                const activityPresenter = r?.presenter || 'غير محدد';
-                const activityBranch = r?.branch || 'فرع الكلية';
-                const activityDate = r?.startDate || r?.date || 'غير محدد';
-                const activityHours = r?.hours ?? 0;
-                const isOnline = r?.deliveryMode === 'عن بعد';
-                const activityLocation = isOnline
-                  ? 'عن بعد'
-                  : r?.physicalLocation || r?.location || 'حضوري';
-
                 return (
                   <div
-                    key={r?.id !== undefined ? r.id : `req-${index}`}
+                    key={r.id}
                     className={`bg-white p-4 sm:p-5 rounded-3xl shadow-md hover:shadow-xl transition-all duration-200 border border-slate-100 border-r-4 ${borderAccentColor}`}
                   >
                     <div className="flex items-start justify-between gap-2 mb-2.5">
                       <div>
                         <h4 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
-                          <span>{activityTitle}</span>
+                          <span>{r.name}</span>
                           <span className="text-[10px] font-medium text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full">
-                            {activityType}
+                            {r.type}
                           </span>
                         </h4>
                         <p className="text-[11px] text-slate-500 mt-0.5">
-                          {activityPresenter} • <span className="text-slate-700 font-medium">{activityBranch}</span>
+                          {r.presenter} • <span className="text-slate-700 font-medium">{r.branch || 'فرع الكلية'}</span>
                         </p>
                       </div>
                       <div className="shrink-0 text-left">
-                        <StatusBadge status={status} note={r?.note} />
+                        <StatusBadge status={r.status} note={r.note} />
                       </div>
                     </div>
 
@@ -891,28 +848,28 @@ export const EmployeeView: React.FC<Props> = ({
                     <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-[11px] text-slate-600 bg-slate-50/90 p-2.5 rounded-2xl mb-3 border border-slate-100">
                       <span className="flex items-center gap-1">
                         <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                        <span>{activityDate}</span>
+                        <span>{r.startDate || r.date}</span>
                       </span>
                       <span className="flex items-center gap-1">
                         <Clock className="w-3.5 h-3.5 text-slate-400" />
-                        <span>{activityHours} ساعات تدريبية</span>
+                        <span>{r.hours} ساعات تدريبية</span>
                       </span>
                       <span className="flex items-center gap-1">
-                        {isOnline ? (
+                        {r.deliveryMode === 'عن بعد' ? (
                           <Globe className="w-3.5 h-3.5 text-blue-500" />
                         ) : (
                           <MapPin className="w-3.5 h-3.5 text-[#c59b27]" />
                         )}
-                        <span>{activityLocation}</span>
+                        <span>{r.deliveryMode === 'عن بعد' ? 'عن بعد' : (r.physicalLocation || r.location || 'حضوري')}</span>
                       </span>
-                      {r?.transactionNumber && (
+                      {r.transactionNumber && (
                         <span className="text-[10px] bg-slate-200/80 text-slate-800 px-2 py-0.5 rounded-md font-mono">
                           معاملة: {r.transactionNumber}
                         </span>
                       )}
                     </div>
 
-                    {r?.summary && (
+                    {r.summary && (
                       <div className="bg-slate-50/80 p-2.5 rounded-xl text-[11px] text-slate-600 line-clamp-2 italic mb-3 border border-slate-100">
                         {r.summary}
                       </div>
@@ -935,15 +892,15 @@ export const EmployeeView: React.FC<Props> = ({
                                 </span>
                               </div>
                               <p className="text-[10px] text-slate-400 mt-0.5">
-                                تتفعل هذه الخانة فور انتهاء النشاط بتاريخ ({r?.endDate || r?.startDate || r?.date || 'المحدد'})
+                                تتفعل هذه الخانة فور انتهاء النشاط بتاريخ ({r.endDate || r.startDate || r.date})
                               </p>
                             </div>
                           </div>
                           <span className="text-[10px] text-slate-400 hidden sm:inline-block font-mono">
-                            موعد الانتهاء: {r?.endDate || r?.startDate || r?.date || 'المحدد'}
+                            موعد الانتهاء: {r.endDate || r.startDate}
                           </span>
                         </div>
-                      ) : !r?.attendanceSheet ? (
+                      ) : !r.attendanceSheet ? (
                         /* Case 2: النشاط منتهي ولم يتم رفع الكشف بعد */
                         <div className="bg-gradient-to-r from-emerald-50 via-amber-50/40 to-emerald-50 border-2 border-emerald-300/80 rounded-2xl p-3 sm:p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
                           <div>
@@ -969,7 +926,7 @@ export const EmployeeView: React.FC<Props> = ({
                             <span>رفع كشف الحضور</span>
                           </button>
                         </div>
-                      ) : r.attendanceSheet?.status === 'returned' ? (
+                      ) : r.attendanceSheet.status === 'returned' ? (
                         /* Case 3: الكشف أُعيد للموظف مع ملاحظات التعديل */
                         <div className="bg-rose-50/95 border-2 border-rose-300 rounded-2xl p-3.5 space-y-2.5 text-rose-950 shadow-xs animate-fade-slide-up">
                           <div className="flex items-center justify-between">
@@ -989,17 +946,11 @@ export const EmployeeView: React.FC<Props> = ({
                               ملاحظات وسبب الإعادة من مسؤول الرفع:
                             </strong>
                             <p className="leading-relaxed font-semibold text-slate-900">
-                              {r.attendanceSheet?.returnNote || 'يرجى استيفاء وتعديل بيانات كشف الحضور وفق ضوابط منصة ارتقاء.'}
+                              {r.attendanceSheet.returnNote || 'يرجى استيفاء وتعديل بيانات كشف الحضور وفق ضوابط منصة ارتقاء.'}
                             </p>
-                            {r.attendanceSheet?.returnedAt && (
+                            {r.attendanceSheet.returnedAt && (
                               <span className="text-[9px] text-slate-400 block mt-1 font-mono">
-                                تاريخ الإعادة: {(() => {
-                                  try {
-                                    return new Date(r.attendanceSheet.returnedAt).toLocaleString('ar-SA');
-                                  } catch {
-                                    return String(r.attendanceSheet.returnedAt);
-                                  }
-                                })()}
+                                تاريخ الإعادة: {new Date(r.attendanceSheet.returnedAt).toLocaleString('ar-SA')}
                               </span>
                             )}
                           </div>
@@ -1034,7 +985,7 @@ export const EmployeeView: React.FC<Props> = ({
                             </button>
                           </div>
                         </div>
-                      ) : r.attendanceSheet?.status === 'approved' ? (
+                      ) : r.attendanceSheet.status === 'approved' ? (
                         /* Case 4: الكشف معتمد رسمياً والمغلق */
                         <div className="bg-emerald-50/90 border border-emerald-300 rounded-2xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-emerald-950 shadow-xs">
                           <div className="flex items-center gap-2.5">
@@ -1043,7 +994,7 @@ export const EmployeeView: React.FC<Props> = ({
                             </div>
                             <div>
                               <div className="flex items-center gap-2">
-                                <span className="text-xs font-bold text-slate-900">{r.attendanceSheet?.fileName || 'كشف_معتمد.pdf'}</span>
+                                <span className="text-xs font-bold text-slate-900">{r.attendanceSheet.fileName}</span>
                                 <span className="text-[10px] bg-emerald-200 text-emerald-900 font-bold px-2 py-0.5 rounded-full">
                                   معتمد ومغلق رسمياً
                                 </span>
@@ -1081,13 +1032,13 @@ export const EmployeeView: React.FC<Props> = ({
                             </div>
                             <div>
                               <div className="flex items-center gap-2">
-                                <span className="text-xs font-bold text-slate-900">{r.attendanceSheet?.fileName || 'كشف_الحضور.pdf'}</span>
+                                <span className="text-xs font-bold text-slate-900">{r.attendanceSheet.fileName}</span>
                                 <span className="text-[10px] bg-amber-200/80 text-amber-900 font-bold px-2 py-0.5 rounded-full">
                                   بانتظار الاعتماد
                                 </span>
                               </div>
                               <p className="text-[10px] text-slate-600 mt-0.5">
-                                تم رفع الكشف ({r.attendanceSheet?.attendeesCount || 35} حاضر) • بانتظار مراجعة واعتماد مسؤول الرفع لمنصة ارتقاء
+                                تم رفع الكشف ({r.attendanceSheet.attendeesCount || 35} حاضر) • بانتظار مراجعة واعتماد مسؤول الرفع لمنصة ارتقاء
                               </p>
                             </div>
                           </div>
@@ -1131,7 +1082,7 @@ export const EmployeeView: React.FC<Props> = ({
                         <span>عرض تفاصيل الاستمارة والتاريخ الإداري</span>
                       </button>
 
-                      {status === 'returned_emp' && onResubmitRequest && (
+                      {r.status === 'returned_emp' && onResubmitRequest && (
                         <button
                           type="button"
                           onClick={() => onResubmitRequest(r.id)}

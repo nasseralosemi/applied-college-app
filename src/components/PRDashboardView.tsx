@@ -121,26 +121,32 @@ export const PRDashboardView: React.FC<Props> = ({
   const activityTypes = Array.from(new Set(prActivities.map((r) => r.type)));
 
   return (
-    <div className="space-y-4 pb-6 font-['Tajawal',sans-serif]">
-      {/* Standardized View Title & Header Banner (Mobile-Optimized) */}
-      <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-[#1b4332]/10 flex items-center justify-center text-[#1b4332] shrink-0">
-            <Share2 className="w-4 h-4 text-[#c59b27]" />
+    <div className="space-y-4 pb-8 font-['Tajawal',sans-serif] text-right">
+      {/* Title Bar */}
+      <div className="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-2 h-full bg-gradient-to-b from-[#1b4332] via-[#c59b27] to-[#1b4332]" />
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-[#1b4332]/10 text-[#1b4332] flex items-center justify-center shrink-0 border border-[#1b4332]/20">
+            <Share2 className="w-5 h-5 text-[#c59b27]" />
           </div>
           <div>
-            <h2 className="text-xs font-bold text-[#1b4332] leading-tight">
-              لوحة تحكم العلاقات العامة والإعلام
-            </h2>
-            <p className="text-[10px] text-slate-500">
-              إعداد التغريدات الرسمية وتوثيق النشر في حساب الكلية بمنصة X
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-50 text-sky-900 border border-sky-200">
+                العلاقات العامة
+              </span>
+              <h2 className="text-sm sm:text-base font-extrabold text-[#1b4332]">
+                إعداد وتوثيق النشر في حساب الكلية بمنصة X
+              </h2>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              صياغة التغريدات الرسمية للأنشطة المعتمدة وتوثيق الروابط والتغطية الإعلامية
             </p>
           </div>
         </div>
 
-        <span className="text-[10px] bg-slate-900 text-white font-bold px-2 py-0.5 rounded-full font-mono flex items-center gap-1 shrink-0">
+        <span className="text-[10px] bg-slate-900 text-white font-bold px-2.5 py-1 rounded-full font-mono flex items-center gap-1 shrink-0 self-start sm:self-center">
           <span>𝕏</span>
-          <span className="hidden sm:inline">@AppliedCollege_MU</span>
+          <span>@AppliedCollege_MU</span>
         </span>
       </div>
 
@@ -163,6 +169,53 @@ export const PRDashboardView: React.FC<Props> = ({
           )}
         </div>
       )}
+
+      {/* Unified 4-Card KPI Metrics Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-slate-500">المحالة للنشر</span>
+            <div className="w-7 h-7 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
+              <Megaphone className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div className="text-xl sm:text-2xl font-black text-slate-900 mt-1">{totalPr}</div>
+          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">نسخ آلية معتمدة</div>
+        </div>
+
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-slate-500">قيد التجهيز</span>
+            <div className="w-7 h-7 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
+              <Clock className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div className="text-xl sm:text-2xl font-black text-amber-700 mt-1">{pendingPr}</div>
+          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">بانتظار الصياغة والتغريد</div>
+        </div>
+
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-slate-500">تم النشر في X</span>
+            <div className="w-7 h-7 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div className="text-xl sm:text-2xl font-black text-emerald-700 mt-1">{publishedPr}</div>
+          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">تغطية إعلامية مكتملة</div>
+        </div>
+
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-slate-500">نسبة الإنجاز</span>
+            <div className="w-7 h-7 rounded-xl bg-[#1b4332]/10 text-[#1b4332] flex items-center justify-center">
+              <Sparkles className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div className="text-xl sm:text-2xl font-black text-[#1b4332] mt-1">{completionRate}%</div>
+          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">معدل التغطية الإعلامية</div>
+        </div>
+      </div>
 
       {/* Top Segmented Tabs: Status Filter */}
       <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-200/70 rounded-2xl border border-slate-200 shadow-inner">
@@ -204,58 +257,6 @@ export const PRDashboardView: React.FC<Props> = ({
           <span>تم النشر</span>
           <span className="text-[10px] font-mono">({publishedPr})</span>
         </button>
-      </div>
-
-      {/* KPI Cards Grid (Compact 2x2 on Mobile, 4-Cols on Desktop) */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-        <div className="p-3 rounded-2xl bg-white border border-slate-200 shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">المحالة للنشر</span>
-            <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center">
-              <Megaphone className="w-3.5 h-3.5" />
-            </div>
-          </div>
-          <div className="text-xl sm:text-2xl font-black text-slate-900 mt-1">{totalPr}</div>
-          <div className="text-[10px] text-slate-400 mt-0.5 truncate">نسخ آلية معتمدة</div>
-        </div>
-
-        <div className="p-3 rounded-2xl bg-white border border-slate-200 shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-amber-800">قيد التجهيز</span>
-            <div className="w-7 h-7 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center">
-              <Clock className="w-3.5 h-3.5" />
-            </div>
-          </div>
-          <div className="text-xl sm:text-2xl font-black text-amber-700 mt-1">{pendingPr}</div>
-          <div className="text-[10px] text-amber-700 mt-0.5 truncate">بانتظار التغريد</div>
-        </div>
-
-        <div className="p-3 rounded-2xl bg-white border border-slate-200 shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-emerald-800">تم النشر في X</span>
-            <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-            </div>
-          </div>
-          <div className="text-xl sm:text-2xl font-black text-emerald-700 mt-1">{publishedPr}</div>
-          <div className="text-[10px] text-emerald-700 mt-0.5 truncate">تغطية مكتملة</div>
-        </div>
-
-        <div className="p-3 rounded-2xl bg-white border border-slate-200 shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">نسبة الإنجاز</span>
-            <div className="w-7 h-7 rounded-lg bg-[#1b4332]/10 text-[#1b4332] flex items-center justify-center">
-              <Sparkles className="w-3.5 h-3.5" />
-            </div>
-          </div>
-          <div className="text-xl sm:text-2xl font-black text-[#1b4332] mt-1">{completionRate}%</div>
-          <div className="w-full bg-slate-100 h-1.5 rounded-full mt-1.5 overflow-hidden">
-            <div
-              className="bg-[#1b4332] h-full rounded-full transition-all duration-500"
-              style={{ width: `${completionRate}%` }}
-            />
-          </div>
-        </div>
       </div>
 
       {/* Workflow Explanatory Notice */}

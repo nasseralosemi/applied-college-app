@@ -221,25 +221,75 @@ export const ManagerView: React.FC<Props> = ({
   };
 
   return (
-    <div className="space-y-4 pb-6 font-['Tajawal',sans-serif]">
-      {/* View Title & Subtitle */}
-      <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-[#1b4332]/10 flex items-center justify-center text-[#1b4332]">
-            <ClipboardCheck className="w-4 h-4 text-[#c59b27]" />
+    <div className="space-y-4 pb-8 font-['Tajawal',sans-serif] text-right">
+      {/* View Title & Context Banner */}
+      <div className="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-2 h-full bg-gradient-to-b from-[#1b4332] via-[#c59b27] to-[#1b4332]" />
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-[#1b4332]/10 text-[#1b4332] flex items-center justify-center shrink-0 border border-[#1b4332]/20">
+            <ClipboardCheck className="w-5 h-5 text-[#c59b27]" />
           </div>
           <div>
-            <h2 className="text-xs font-bold text-[#1b4332] leading-tight">
-              لوحة تحكم المدير المباشر
-            </h2>
-            <p className="text-[10px] text-slate-500">
-              اعتماد الأنشطة، تتبع مسارات التدقيق، والاطلاع على السجل الإداري
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-900 border border-indigo-200">
+                لوحة المدير المباشر
+              </span>
+              <h2 className="text-sm sm:text-base font-extrabold text-[#1b4332]">
+                مراجعة واعتماد طلبات أنشطة الوحدة
+              </h2>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              اعتماد الأنشطة، التحقق من الجدوى، والإحالة لوحدة التدقيق والاعتماد الأكاديمي
             </p>
           </div>
         </div>
-        <span className="text-[10px] bg-slate-100 text-slate-700 font-bold px-2 py-0.5 rounded-full">
-          إجمالي: {requests.length}
-        </span>
+      </div>
+
+      {/* Unified 4-Card KPI Metrics Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-slate-500">بانتظار موافقتي</span>
+            <div className="w-7 h-7 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
+              <ClipboardCheck className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div className="text-xl sm:text-2xl font-black text-amber-700 mt-1">{pendingRequests.length}</div>
+          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">طلبات جديدة ومُعادة</div>
+        </div>
+
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-slate-500">محالة للتدقيق</span>
+            <div className="w-7 h-7 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
+              <Send className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div className="text-xl sm:text-2xl font-black text-blue-700 mt-1">{requests.filter((r) => r.status === 'pending_auditor').length}</div>
+          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">قيد فحص الضوابط</div>
+        </div>
+
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-slate-500">معتمدة ومكتملة</span>
+            <div className="w-7 h-7 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div className="text-xl sm:text-2xl font-black text-emerald-700 mt-1">{requests.filter((r) => r.status === 'approved_final' || r.status === 'uploaded_irtqaa').length}</div>
+          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">اعتماد نهائي وارتقاء</div>
+        </div>
+
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-slate-500">مسترجعة</span>
+            <div className="w-7 h-7 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center">
+              <RotateCcw className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div className="text-xl sm:text-2xl font-black text-rose-700 mt-1">{returnedRequests.length}</div>
+          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">ملاحظات ومراجعات</div>
+        </div>
       </div>
 
       {/* 1. Interactive Status Tabs (نظام التبويبات التفاعلي) */}

@@ -210,32 +210,74 @@ export const AuditorView: React.FC<Props> = ({
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-4 text-right font-['Tajawal',sans-serif] pb-10">
+    <div className="space-y-4 pb-8 font-['Tajawal',sans-serif] text-right">
       {/* Top Banner */}
-      <div className="bg-white rounded-3xl p-4 sm:p-5 shadow-lg border border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative overflow-hidden">
+      <div className="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-2 h-full bg-gradient-to-b from-[#1b4332] via-[#c59b27] to-[#1b4332]" />
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#1b4332]/10 text-[#1b4332] border border-[#1b4332]/20">
-              الصلاحيات التنفيذية
-            </span>
-            <h2 className="text-base sm:text-lg font-extrabold text-[#1b4332]">
-              لوحة مسؤول التدقيق والاعتماد الإداري
-            </h2>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-[#1b4332]/10 text-[#1b4332] flex items-center justify-center shrink-0 border border-[#1b4332]/20">
+            <Stamp className="w-5 h-5 text-[#c59b27]" />
           </div>
-          <p className="text-xs text-slate-500 mt-1">
-            مراجعة وتعديل حقول الاستمارة، توثيق اعتماد رئيس الكلية، والتوجيه الذكي لمنصة ارتقاء
-          </p>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-50 text-purple-900 border border-purple-200">
+                وحدة التدقيق والاعتماد
+              </span>
+              <h2 className="text-sm sm:text-base font-extrabold text-[#1b4332]">
+                مراجعة وتدقيق معايير الأنشطة والاعتماد الإداري
+              </h2>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              مراجعة وتعديل حقول الاستمارة، توثيق اعتماد رئيس الكلية، والتوجيه لمنصة ارتقاء
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Unified 4-Card KPI Metrics Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-slate-500">بانتظار تدقيقي</span>
+            <div className="w-7 h-7 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
+              <Stamp className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div className="text-xl sm:text-2xl font-black text-amber-700 mt-1">{pendingRequests.length}</div>
+          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">قيد فحص الضوابط</div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="text-right">
-            <span className="text-[10px] text-slate-400 block font-bold">إجمالي الطلبات</span>
-            <span className="text-sm font-extrabold text-[#1b4332]">{requests.length} نشاط</span>
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-slate-500">معتمدة للرفع</span>
+            <div className="w-7 h-7 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+            </div>
           </div>
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#1b4332] to-[#081c15] text-[#e6c566] flex items-center justify-center shadow-md shadow-[#1b4332]/25">
-            <Stamp className="w-5 h-5" />
+          <div className="text-xl sm:text-2xl font-black text-emerald-700 mt-1">{approvedRequests.length}</div>
+          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">تم تحويلها لرافع ارتقاء</div>
+        </div>
+
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-slate-500">اعتماد رئيس الكلية</span>
+            <div className="w-7 h-7 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center">
+              <Award className="w-3.5 h-3.5" />
+            </div>
           </div>
+          <div className="text-xl sm:text-2xl font-black text-purple-700 mt-1">{requests.filter((r) => r.deanApproved || r.status === 'approved_final' || r.status === 'uploaded_irtqaa').length}</div>
+          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">موثقة تنفيذياً</div>
+        </div>
+
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-slate-500">مسترجعة</span>
+            <div className="w-7 h-7 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center">
+              <RotateCcw className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div className="text-xl sm:text-2xl font-black text-rose-700 mt-1">{returnedRequests.length}</div>
+          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">أعيدت للتعديل والملاحظات</div>
         </div>
       </div>
 
