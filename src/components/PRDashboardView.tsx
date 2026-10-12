@@ -56,7 +56,7 @@ export const PRDashboardView: React.FC<Props> = ({
   const totalPr = prActivities.length;
   const pendingPr = prActivities.filter((r) => r.prStatus !== 'published_pr').length;
   const publishedPr = prActivities.filter((r) => r.prStatus === 'published_pr').length;
-  const completionRate = totalPr > 0 ? Math.round((publishedPr / totalPr) * 100) : 100;
+  const completionRate = totalPr > 0 ? Math.round((publishedPr / totalPr) * 100) : 0;
 
   // Filtered list
   const filteredActivities = prActivities.filter((r) => {

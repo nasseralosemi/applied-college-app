@@ -603,12 +603,19 @@ export const AdminDashboardView: React.FC<Props> = ({
             </h3>
 
             <div className="space-y-2">
-              {requests.map((req) => (
-                <div
-                  key={req.id}
-                  onClick={() => setSelectedRequest(req)}
-                  className="p-3 rounded-2xl border border-slate-100 bg-slate-50/60 hover:bg-amber-50/40 hover:border-[#c59b27]/40 flex items-center justify-between gap-2 transition cursor-pointer"
-                >
+              {requests.length === 0 ? (
+                <div className="p-8 text-center text-slate-400 text-xs bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
+                  <Layers className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                  <p className="font-bold text-slate-700">لا توجد أنشطة مسجلة في المنظومة حالياً</p>
+                  <p className="text-[11px] text-slate-400 mt-1">النظام جاهز لاستقبال أول نشاط عبر استمارة التقديم والاعتماد</p>
+                </div>
+              ) : (
+                requests.map((req) => (
+                  <div
+                    key={req.id}
+                    onClick={() => setSelectedRequest(req)}
+                    className="p-3 rounded-2xl border border-slate-100 bg-slate-50/60 hover:bg-amber-50/40 hover:border-[#c59b27]/40 flex items-center justify-between gap-2 transition cursor-pointer"
+                  >
                   <div className="text-right">
                     <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                       <span>{req.name}</span>
@@ -656,7 +663,7 @@ export const AdminDashboardView: React.FC<Props> = ({
                     )}
                   </div>
                 </div>
-              ))}
+              )))}
             </div>
           </div>
         </div>

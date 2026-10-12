@@ -120,6 +120,7 @@ export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
       roleTitle: 'مقدم الطلب (Employee)',
       empNum: '4412098',
       role: 'emp',
+      roleBadge: 'مقدم الطلب',
       icon: User,
       border: 'border-emerald-200/90 hover:border-emerald-400',
       bg: 'bg-emerald-50/50 hover:bg-emerald-50/90',
@@ -131,6 +132,7 @@ export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
       roleTitle: 'المدير المباشر (Manager)',
       empNum: '4412001',
       role: 'manager',
+      roleBadge: 'المدير المباشر',
       icon: Building2,
       border: 'border-indigo-200/90 hover:border-indigo-400',
       bg: 'bg-indigo-50/50 hover:bg-indigo-50/90',
@@ -142,6 +144,7 @@ export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
       roleTitle: 'مدقق الاعتماد (Auditor)',
       empNum: '4412002',
       role: 'auditor',
+      roleBadge: 'مدقق الاعتماد',
       icon: FileCheck2,
       border: 'border-purple-200/90 hover:border-purple-400',
       bg: 'bg-purple-50/50 hover:bg-purple-50/90',
@@ -153,6 +156,7 @@ export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
       roleTitle: 'رافع ارتقاء (Uploader)',
       empNum: '4412003',
       role: 'uploader',
+      roleBadge: 'رافع ارتقاء',
       icon: CheckCircle2,
       border: 'border-teal-200/90 hover:border-teal-400',
       bg: 'bg-teal-50/50 hover:bg-teal-50/90',
@@ -164,6 +168,7 @@ export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
       roleTitle: 'العلاقات العامة (منصة X)',
       empNum: '4412004',
       role: 'pr',
+      roleBadge: 'العلاقات العامة',
       icon: Megaphone,
       border: 'border-sky-200/90 hover:border-sky-400',
       bg: 'bg-sky-50/50 hover:bg-sky-50/90',
@@ -175,6 +180,7 @@ export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
       roleTitle: 'موظف الاعتمادات (ارتقاء)',
       empNum: '4412005',
       role: 'accreditation',
+      roleBadge: 'الاعتمادات',
       icon: Award,
       border: 'border-emerald-300/90 hover:border-emerald-500',
       bg: 'bg-emerald-50/60 hover:bg-emerald-100/80',
@@ -183,9 +189,10 @@ export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
     },
     {
       name: 'سعادة رئيس الكلية التطبيقية',
-      roleTitle: 'الرئاسة والقيادة التنفيذية (Executive)',
+      roleTitle: 'صفحة سعادة رئيس الكلية (الرئاسة والقيادة التنفيذية)',
       empNum: '4412000',
       role: 'dean',
+      roleBadge: 'رئيس الكلية',
       icon: Crown,
       border: 'border-amber-300 hover:border-amber-500',
       bg: 'bg-amber-50/60 hover:bg-amber-100/80',
@@ -376,8 +383,8 @@ export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
                             {acc.name}
                           </span>
                         </div>
-                        <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-white/80 border border-slate-200 shrink-0">
-                          #{acc.empNum}
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-lg border shrink-0 ${acc.textBadge}`}>
+                          {acc.roleBadge}
                         </span>
                       </div>
                       <div className="text-[10px] text-slate-600 truncate pr-6.5">
@@ -413,7 +420,7 @@ export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
                 </span>
               </div>
               <p className="text-[11px] text-slate-600 leading-relaxed">
-                مخصصة لمدير النظام لإدارة المستخدمين، منح وتعديل الصلاحيات، ومتابعة ربط قاعدة البيانات السحابية الحية (Firebase Firestore).
+                مخصصة لمدير النظام لإدارة المستخدمين، منح وتعديل الصلاحيات، وإدارة إعدادات النظام المركزية.
               </p>
             </div>
 
@@ -529,7 +536,7 @@ export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
           <span>•</span>
           <span>منصة ارتقاء الجامعية</span>
           <span>•</span>
-          <span className="text-emerald-700 font-bold">قاعدة بيانات Firebase السحابية</span>
+          <span className="text-emerald-700 font-bold">السحابة اللحظية</span>
         </div>
       </div>
     </div>

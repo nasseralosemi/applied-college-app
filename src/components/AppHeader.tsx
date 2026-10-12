@@ -117,7 +117,7 @@ export const AppHeader: React.FC<Props> = ({
     const completionRate =
       irtqaaActivities.length > 0
         ? Math.round((withAccreditationDoc.length / irtqaaActivities.length) * 100)
-        : 100;
+        : 0;
     stat1 = { val: irtqaaActivities.length, label: 'سجلات ارتقاء المعتمدة' };
     stat2 = { val: withAccreditationDoc.length, label: 'النماذج الموثقة' };
     stat3 = { val: `${completionRate}%`, label: 'نسبة التوثيق' };

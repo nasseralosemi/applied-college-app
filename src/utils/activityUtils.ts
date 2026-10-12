@@ -3,40 +3,45 @@ import { ActivityRequest } from '../types';
 /**
  * Checks if an activity has ended (date is today or in the past).
  */
-export function isActivityEnded(activity: {
+export function isActivityEnded(activity?: {
   endDate?: string;
   startDate?: string;
   date?: string;
 }): boolean {
+  if (!activity) return false;
   const dateStr = activity.endDate || activity.startDate || activity.date;
-  if (!dateStr) return false;
+  if (!dateStr || typeof dateStr !== 'string') return false;
 
-  // Use current local date YYYY-MM-DD
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  const todayStr = `${year}-${month}-${day}`;
+  try {
+    // Use current local date YYYY-MM-DD
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const todayStr = `${year}-${month}-${day}`;
 
-  // If the end date is on or before today, the activity has concluded
-  return dateStr <= todayStr;
+    // If the end date is on or before today, the activity has concluded
+    return dateStr <= todayStr;
+  } catch {
+    return false;
+  }
 }
 
 /**
  * Formats date into Arabic friendly format
  */
 export function formatArabicDate(dateStr?: string): string {
-  if (!dateStr) return '';
+  if (!dateStr || typeof dateStr !== 'string') return '';
   try {
     const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return dateStr;
+    if (isNaN(d.getTime())) return String(dateStr);
     return d.toLocaleDateString('ar-SA', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
     });
   } catch {
-    return dateStr;
+    return String(dateStr);
   }
 }
 
@@ -63,9 +68,11 @@ export const SAMPLE_ATTENDEES: MockAttendee[] = [
 /**
  * Triggers a real browser download for the attendance sheet file
  */
-export function downloadAttendanceSheet(request: ActivityRequest) {
+export function downloadAttendanceSheet(request?: ActivityRequest) {
+  if (!request) return;
   const sheet = request.attendanceSheet;
-  const fileName = sheet?.fileName || `كشف_حضور_${request.name.replace(/\s+/g, '_')}.csv`;
+  const safeName = (request.name || 'نشاط_الكلية').replace(/\s+/g, '_');
+  const fileName = sheet?.fileName || `كشف_حضور_${safeName}.csv`;
 
   // If a base64 / blob URL was saved
   if (sheet?.fileUrl && sheet.fileUrl.startsWith('data:')) {

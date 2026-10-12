@@ -198,7 +198,7 @@ export const DeanExecutiveDashboardView: React.FC<Props> = ({ requests }) => {
             </div>
           </div>
           <div className="text-xl sm:text-2xl font-black text-amber-700 mt-1">
-            {totalActivities > 0 ? Math.round((approvedFinal / totalActivities) * 100) : 100}%
+            {totalActivities > 0 ? Math.round((approvedFinal / totalActivities) * 100) : 0}%
           </div>
           <div className="text-[10px] text-slate-500 mt-0.5">
             {deanApprovedCount} اعتماد رئاسة
@@ -293,37 +293,43 @@ export const DeanExecutiveDashboardView: React.FC<Props> = ({ requests }) => {
               </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-              {Object.entries(branchCounts).map(([branchName, stats]) => {
-                const percent = totalActivities > 0 ? Math.round((stats.count / totalActivities) * 100) : 0;
-                return (
-                  <div
-                    key={branchName}
-                    className="p-3 rounded-xl bg-slate-50/80 border border-slate-200/80 hover:bg-slate-50 transition"
-                  >
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-xs font-bold text-slate-800 truncate">{branchName}</span>
-                      <span className="text-[10px] font-bold text-[#1b4332] bg-white px-2 py-0.5 rounded border border-slate-200">
-                        {percent}%
-                      </span>
-                    </div>
+            {Object.entries(branchCounts).length === 0 ? (
+              <div className="p-6 text-center text-slate-400 text-xs bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+                لا توجد بيانات أنشطة مسجلة للفروع حالياً - جاهز لاستقبال واعتماد أول نشاط
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                {Object.entries(branchCounts).map(([branchName, stats]) => {
+                  const percent = totalActivities > 0 ? Math.round((stats.count / totalActivities) * 100) : 0;
+                  return (
+                    <div
+                      key={branchName}
+                      className="p-3 rounded-xl bg-slate-50/80 border border-slate-200/80 hover:bg-slate-50 transition"
+                    >
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-xs font-bold text-slate-800 truncate">{branchName}</span>
+                        <span className="text-[10px] font-bold text-[#1b4332] bg-white px-2 py-0.5 rounded border border-slate-200">
+                          {percent}%
+                        </span>
+                      </div>
 
-                    <div className="flex items-center justify-between text-[11px] text-slate-500 mb-1">
-                      <span>الأنشطة: <strong className="text-slate-800 font-mono">{stats.count}</strong></span>
-                      <span>الساعات: <strong className="text-emerald-700 font-mono">{stats.hours} س</strong></span>
-                    </div>
+                      <div className="flex items-center justify-between text-[11px] text-slate-500 mb-1">
+                        <span>الأنشطة: <strong className="text-slate-800 font-mono">{stats.count}</strong></span>
+                        <span>الساعات: <strong className="text-emerald-700 font-mono">{stats.hours} س</strong></span>
+                      </div>
 
-                    {/* Progress bar */}
-                    <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-gradient-to-r from-[#1b4332] to-[#c59b27] rounded-full transition-all duration-300"
-                        style={{ width: `${percent}%` }}
-                      />
+                      {/* Progress bar */}
+                      <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-gradient-to-r from-[#1b4332] to-[#c59b27] rounded-full transition-all duration-300"
+                          style={{ width: `${percent}%` }}
+                        />
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -383,28 +389,34 @@ export const DeanExecutiveDashboardView: React.FC<Props> = ({ requests }) => {
               </div>
 
               <div className="space-y-2.5">
-                {Object.entries(typeCounts).map(([type, count]) => {
-                  const percentage = analyticsTotal > 0 ? Math.round((count / analyticsTotal) * 100) : 0;
-                  return (
-                    <div key={type} className="space-y-1">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="font-bold text-slate-800 text-[11px]">{type}</span>
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-slate-400 font-mono text-[10px]">{percentage}%</span>
-                          <span className="font-bold text-[#1b4332] bg-emerald-50 px-1.5 py-0.5 rounded text-[10px] border border-emerald-100">
-                            {count}
-                          </span>
+                {Object.keys(typeCounts).length === 0 ? (
+                  <div className="p-5 text-center text-slate-400 text-xs bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+                    لا توجد مسارات مسجلة حالياً - بانتظار رفع أول نشاط
+                  </div>
+                ) : (
+                  Object.entries(typeCounts).map(([type, count]) => {
+                    const percentage = analyticsTotal > 0 ? Math.round((count / analyticsTotal) * 100) : 0;
+                    return (
+                      <div key={type} className="space-y-1">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-bold text-slate-800 text-[11px]">{type}</span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-slate-400 font-mono text-[10px]">{percentage}%</span>
+                            <span className="font-bold text-[#1b4332] bg-emerald-50 px-1.5 py-0.5 rounded text-[10px] border border-emerald-100">
+                              {count}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                          <div
+                            className="bg-gradient-to-r from-[#1b4332] to-[#c59b27] h-full rounded-full transition-all duration-500"
+                            style={{ width: `${percentage}%` }}
+                          />
                         </div>
                       </div>
-                      <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                        <div
-                          className="bg-gradient-to-r from-[#1b4332] to-[#c59b27] h-full rounded-full transition-all duration-500"
-                          style={{ width: `${percentage}%` }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })
+                )}
               </div>
             </div>
 
@@ -423,29 +435,35 @@ export const DeanExecutiveDashboardView: React.FC<Props> = ({ requests }) => {
               </div>
 
               <div className="space-y-2.5">
-                {Object.entries(branchCounts).map(([branch, data]) => {
-                  const percentage = totalActivities > 0 ? Math.round((data.count / totalActivities) * 100) : 0;
-                  return (
-                    <div key={branch} className="space-y-1">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="font-bold text-slate-800 text-[11px]">{branch}</span>
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-slate-400 font-mono text-[9px]">{data.hours} س</span>
-                          <span className="text-slate-400 font-mono text-[10px]">{percentage}%</span>
-                          <span className="font-bold text-amber-900 bg-amber-50 px-1.5 py-0.5 rounded text-[10px] border border-amber-200">
-                            {data.count}
-                          </span>
+                {Object.keys(branchCounts).length === 0 ? (
+                  <div className="p-5 text-center text-slate-400 text-xs bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+                    لا توجد بيانات مسجلة للفروع حالياً
+                  </div>
+                ) : (
+                  Object.entries(branchCounts).map(([branch, data]) => {
+                    const percentage = totalActivities > 0 ? Math.round((data.count / totalActivities) * 100) : 0;
+                    return (
+                      <div key={branch} className="space-y-1">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-bold text-slate-800 text-[11px]">{branch}</span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-slate-400 font-mono text-[9px]">{data.hours} س</span>
+                            <span className="text-slate-400 font-mono text-[10px]">{percentage}%</span>
+                            <span className="font-bold text-amber-900 bg-amber-50 px-1.5 py-0.5 rounded text-[10px] border border-amber-200">
+                              {data.count}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                          <div
+                            className="bg-gradient-to-r from-amber-600 via-[#c59b27] to-amber-300 h-full rounded-full transition-all duration-500"
+                            style={{ width: `${percentage}%` }}
+                          />
                         </div>
                       </div>
-                      <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                        <div
-                          className="bg-gradient-to-r from-amber-600 via-[#c59b27] to-amber-300 h-full rounded-full transition-all duration-500"
-                          style={{ width: `${percentage}%` }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })
+                )}
               </div>
             </div>
           </div>

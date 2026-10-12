@@ -53,7 +53,8 @@ export const UploadAttendanceModal: React.FC<Props> = ({
   const handleUseSample = () => {
     setIsUsingSample(true);
     setFile(null);
-    setCustomFileName(`كشف_حضور_${request.name.replace(/\s+/g, '_')}_نهائي_معتمد.pdf`);
+    const safeName = (request?.name || 'نشاط_الكلية').replace(/\s+/g, '_');
+    setCustomFileName(`كشف_حضور_${safeName}_نهائي_معتمد.pdf`);
     setError('');
   };
 

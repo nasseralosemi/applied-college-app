@@ -25,36 +25,27 @@ import { AndroidInstallModal } from './components/AndroidInstallModal';
 import { Toast, ToastMessage } from './components/Toast';
 
 export default function App() {
-  // Requests State
+  // Requests State - Clean Empty State (All previous activities cleared for fresh demonstration)
   const [requests, setRequests] = useState<ActivityRequest[]>(() => {
     try {
-      const saved = localStorage.getItem('app_requests');
+      localStorage.removeItem('app_requests_v9');
+      localStorage.removeItem('app_requests_v8');
+      localStorage.removeItem('app_requests_v7');
+      localStorage.removeItem('app_requests_v6');
+      localStorage.removeItem('app_requests');
+      const saved = localStorage.getItem('app_requests_clean_v1');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.map((r: ActivityRequest) => {
-            const initialMatch = INITIAL_REQUESTS.find((init) => init.id === r.id);
-            const accDoc = r.accreditationDocument || initialMatch?.accreditationDocument;
-            const finalAccDoc = accDoc
-              ? {
-                  ...accDoc,
-                  fileUrl: accDoc.fileUrl || initialMatch?.accreditationDocument?.fileUrl,
-                }
-              : undefined;
-            return {
-              ...r,
-              prStatus: r.prStatus || (r.xPlatformPublish ? 'pending_pr' : undefined),
-              attendanceSheet: r.attendanceSheet || initialMatch?.attendanceSheet,
-              accreditationDocument: finalAccDoc,
-            };
-          });
+        if (Array.isArray(parsed)) {
+          return parsed;
         }
       }
     } catch {
       // Fallback
     }
-    return INITIAL_REQUESTS;
+    return [];
   });
+
 
   // Users State (Persisted in localStorage with auto-migration to include official Bayan Al-Tayyar account)
   const [users, setUsers] = useState<SystemUser[]>(() => {
@@ -96,20 +87,23 @@ export default function App() {
     return DEFAULT_USERS;
   });
 
-  // Audit Logs State (Persisted in localStorage)
+  // Audit Logs State (Clean Empty State)
   const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>(() => {
     try {
-      const saved = localStorage.getItem('app_audit_logs_v3');
+      localStorage.removeItem('app_audit_logs_v5');
+      localStorage.removeItem('app_audit_logs_v3');
+      localStorage.removeItem('app_audit_logs');
+      const saved = localStorage.getItem('app_audit_logs_clean_v1');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed)) {
           return parsed;
         }
       }
     } catch {
       // Fallback
     }
-    return INITIAL_AUDIT_LOGS;
+    return [];
   });
 
   // Current authenticated user and role
@@ -136,24 +130,20 @@ export default function App() {
   // Cloud Firestore Real-time Multi-Device Synchronization
   useEffect(() => {
     const unsubRequests = subscribeToRequests((cloudRequests) => {
-      if (cloudRequests && cloudRequests.length > 0) {
-        setRequests(cloudRequests);
-        try {
-          localStorage.setItem('app_requests', JSON.stringify(cloudRequests));
-        } catch (e) {
-          console.error(e);
-        }
+      setRequests(cloudRequests || []);
+      try {
+        localStorage.setItem('app_requests_clean_v1', JSON.stringify(cloudRequests || []));
+      } catch (e) {
+        console.error(e);
       }
     });
 
     const unsubAuditLogs = subscribeToAuditLogs((cloudLogs) => {
-      if (cloudLogs && cloudLogs.length > 0) {
-        setAuditLogs(cloudLogs);
-        try {
-          localStorage.setItem('app_audit_logs_v3', JSON.stringify(cloudLogs));
-        } catch (e) {
-          console.error(e);
-        }
+      setAuditLogs(cloudLogs || []);
+      try {
+        localStorage.setItem('app_audit_logs_clean_v1', JSON.stringify(cloudLogs || []));
+      } catch (e) {
+        console.error(e);
       }
     });
 
@@ -185,7 +175,7 @@ export default function App() {
   // Save requests to localStorage (instant local cache fallback)
   useEffect(() => {
     try {
-      localStorage.setItem('app_requests', JSON.stringify(requests));
+      localStorage.setItem('app_requests_clean_v1', JSON.stringify(requests));
     } catch (e) {
       console.error('Failed to save requests:', e);
     }
@@ -206,12 +196,12 @@ export default function App() {
   // Save audit logs to localStorage
   useEffect(() => {
     try {
-      localStorage.setItem('app_audit_logs_v3', JSON.stringify(auditLogs));
-      localStorage.setItem('app_audit_logs', JSON.stringify(auditLogs));
+      localStorage.setItem('app_audit_logs_clean_v1', JSON.stringify(auditLogs));
     } catch (e) {
       console.error('Failed to save audit logs:', e);
     }
   }, [auditLogs]);
+
 
   const addAuditLog = (
     action: string,

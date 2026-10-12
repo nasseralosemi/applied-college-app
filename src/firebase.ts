@@ -71,36 +71,27 @@ export function subscribeToRequests(
 ): () => void {
   const requestsCol = collection(db, 'requests');
 
-  let hasSeeded = false;
-
   const unsubscribe = onSnapshot(
     requestsCol,
-    async (snapshot) => {
+    (snapshot) => {
       onSyncStatus?.('syncing');
 
-      if (snapshot.empty && !hasSeeded) {
-        hasSeeded = true;
-        console.log('Seeding initial requests to Firestore cloud database...');
-        try {
-          await seedInitialRequests();
-        } catch (e) {
-          console.error('Failed to seed requests to Firestore:', e);
-        }
+      if (snapshot.empty) {
+        onUpdate([]);
+        onSyncStatus?.('connected');
         return;
       }
 
-      if (!snapshot.empty) {
-        const cloudRequests: ActivityRequest[] = [];
-        snapshot.forEach((docSnap) => {
-          const data = docSnap.data() as ActivityRequest;
-          cloudRequests.push(data);
-        });
+      const cloudRequests: ActivityRequest[] = [];
+      snapshot.forEach((docSnap) => {
+        const data = docSnap.data() as ActivityRequest;
+        cloudRequests.push(data);
+      });
 
-        // Sort by ID ascending
-        cloudRequests.sort((a, b) => Number(a.id) - Number(b.id));
-        onUpdate(cloudRequests);
-        onSyncStatus?.('connected');
-      }
+      // Sort by ID ascending
+      cloudRequests.sort((a, b) => Number(a.id) - Number(b.id));
+      onUpdate(cloudRequests);
+      onSyncStatus?.('connected');
     },
     (err) => {
       console.error('Error listening to requests from Firestore:', err);
@@ -110,6 +101,7 @@ export function subscribeToRequests(
 
   return unsubscribe;
 }
+
 
 /**
  * Seed initial requests into Firestore in one batch
@@ -156,33 +148,21 @@ export function subscribeToAuditLogs(
   onUpdate: (logs: AuditLogEntry[]) => void
 ): () => void {
   const logsCol = collection(db, 'audit_logs');
-  let hasSeeded = false;
 
   const unsubscribe = onSnapshot(
     logsCol,
-    async (snapshot) => {
-      if (snapshot.empty && !hasSeeded) {
-        hasSeeded = true;
-        try {
-          const batch = writeBatch(db);
-          INITIAL_AUDIT_LOGS.forEach((l) => {
-            batch.set(doc(db, 'audit_logs', l.id), sanitizeData(l));
-          });
-          await batch.commit();
-        } catch (e) {
-          console.error('Failed to seed audit logs:', e);
-        }
+    (snapshot) => {
+      if (snapshot.empty) {
+        onUpdate([]);
         return;
       }
 
-      if (!snapshot.empty) {
-        const cloudLogs: AuditLogEntry[] = [];
-        snapshot.forEach((docSnap) => {
-          cloudLogs.push(docSnap.data() as AuditLogEntry);
-        });
-        cloudLogs.sort((a, b) => (b.id > a.id ? 1 : -1));
-        onUpdate(cloudLogs);
-      }
+      const cloudLogs: AuditLogEntry[] = [];
+      snapshot.forEach((docSnap) => {
+        cloudLogs.push(docSnap.data() as AuditLogEntry);
+      });
+      cloudLogs.sort((a, b) => (b.id > a.id ? 1 : -1));
+      onUpdate(cloudLogs);
     },
     (err) => {
       console.error('Error listening to audit logs:', err);

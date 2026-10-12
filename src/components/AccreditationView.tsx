@@ -43,7 +43,7 @@ export const AccreditationView: React.FC<Props> = ({ requests }) => {
   const totalAccredited = accreditedActivities.length;
   const withAccreditationDoc = accreditedActivities.filter((r) => r.accreditationDocument).length;
   const documentationRate =
-    totalAccredited > 0 ? Math.round((withAccreditationDoc / totalAccredited) * 100) : 100;
+    totalAccredited > 0 ? Math.round((withAccreditationDoc / totalAccredited) * 100) : 0;
 
   // Filtered List
   const filteredActivities = useMemo(() => {
@@ -207,9 +207,15 @@ export const AccreditationView: React.FC<Props> = ({ requests }) => {
             <div className="w-12 h-12 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center mx-auto mb-2">
               <Award className="w-6 h-6" />
             </div>
-            <h4 className="text-sm font-bold text-slate-800">لا توجد سجلات مطابقة للبحث</h4>
+            <h4 className="text-sm font-bold text-slate-800">
+              {accreditedActivities.length === 0
+                ? 'لا توجد أنشطة معتمدة في منصة ارتقاء حالياً'
+                : 'لا توجد سجلات مطابقة للبحث'}
+            </h4>
             <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-              تأكد من شروط البحث أو قم بإلغاء التصفية لعرض جميع نماذج الأنشطة المعتمدة في أرشيف بيان الطيار.
+              {accreditedActivities.length === 0
+                ? 'ستظهر هنا كافة الأنشطة ونماذج الاعتماد فور اعتمادها ورفعها نهائياً لمنصة ارتقاء.'
+                : 'تأكد من شروط البحث أو قم بإلغاء التصفية لعرض جميع نماذج الأنشطة المعتمدة في الأرشيف.'}
             </p>
           </div>
         ) : (
