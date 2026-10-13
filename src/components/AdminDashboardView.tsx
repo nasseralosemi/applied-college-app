@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { SystemUser, ActivityRequest, UserRole, AuditLogEntry } from '../types';
 import { RequestDetailsModal } from './RequestDetailsModal';
+import { MediaPublishBadge } from './MediaPublishBadge';
 import { EditUserModal } from './EditUserModal';
 import { PasswordResetModal } from './PasswordResetModal';
 import { ExportReportModal } from './ExportReportModal';
@@ -631,6 +632,7 @@ export const AdminDashboardView: React.FC<Props> = ({
                   </div>
 
                   <div className="shrink-0 flex items-center gap-2">
+                    <MediaPublishBadge request={req} />
                     {req.status === 'pending_manager' && (
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200">
                         المدير المباشر
@@ -855,6 +857,7 @@ export const AdminDashboardView: React.FC<Props> = ({
         request={selectedRequest}
         isOpen={Boolean(selectedRequest)}
         onClose={() => setSelectedRequest(null)}
+        viewerRole="admin"
       />
     </div>
   );

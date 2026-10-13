@@ -4,6 +4,9 @@ import { StatusBadge } from './StatusBadge';
 import { RequestDetailsModal } from './RequestDetailsModal';
 import { UploadAttendanceModal } from './UploadAttendanceModal';
 import { AttendancePreviewModal } from './AttendancePreviewModal';
+import { EditActivityModal } from './EditActivityModal';
+import { WorkflowStepper } from './WorkflowStepper';
+import { MediaPublishBadge } from './MediaPublishBadge';
 import { isActivityEnded, downloadAttendanceSheet } from '../utils/activityUtils';
 import {
   PlusCircle,
@@ -28,6 +31,7 @@ import {
   Download,
   AlertTriangle,
   FileCheck,
+  Edit3,
 } from 'lucide-react';
 
 const ACTIVITY_TYPES = [
@@ -83,7 +87,8 @@ const GENDER_OPTIONS = [
 interface Props {
   requests: ActivityRequest[];
   onSubmitRequest: (newReq: Omit<ActivityRequest, 'id' | 'status' | 'note'>) => void;
-  onResubmitRequest?: (id: number) => void;
+  onResubmitRequest?: (id: number, updatedData?: ActivityRequest) => void;
+  onUpdateRequest?: (updatedReq: ActivityRequest) => void;
   onUploadAttendance?: (requestId: number, sheetData: AttendanceSheet) => void;
   currentUserEmpNumber?: string;
 }
@@ -92,13 +97,27 @@ export const EmployeeView: React.FC<Props> = ({
   requests,
   onSubmitRequest,
   onResubmitRequest,
+  onUpdateRequest,
   onUploadAttendance,
   currentUserEmpNumber,
 }) => {
   const [activeTab, setActiveTab] = useState<'form' | 'tracking'>('form');
   const [selectedRequest, setSelectedRequest] = useState<ActivityRequest | null>(null);
+  const [editingRequest, setEditingRequest] = useState<ActivityRequest | null>(null);
+  const [unmodifiedWarningId, setUnmodifiedWarningId] = useState<number | null>(null);
   const [uploadModalRequest, setUploadModalRequest] = useState<ActivityRequest | null>(null);
   const [previewModalRequest, setPreviewModalRequest] = useState<ActivityRequest | null>(null);
+
+  const handleAttemptResubmit = (r: ActivityRequest) => {
+    if (!r.editedAfterReturn) {
+      setUnmodifiedWarningId(r.id);
+      return;
+    }
+    setUnmodifiedWarningId(null);
+    if (onResubmitRequest) {
+      onResubmitRequest(r.id);
+    }
+  };
 
   // Group 1: Basic Info & Activity Type
   const [type, setType] = useState<string>('ورشة عمل');
@@ -839,10 +858,14 @@ export const EmployeeView: React.FC<Props> = ({
                           {r.presenter} • <span className="text-slate-700 font-medium">{r.branch || 'فرع الكلية'}</span>
                         </p>
                       </div>
-                      <div className="shrink-0 text-left">
+                      <div className="shrink-0 flex items-center gap-1.5 flex-wrap justify-end">
+                        <MediaPublishBadge request={r} />
                         <StatusBadge status={r.status} note={r.note} />
                       </div>
                     </div>
+
+                    {/* Stepper لمتابعة مراحل المعاملة الزمني */}
+                    <WorkflowStepper request={r} viewerRole="employee" />
 
                     {/* Summary badges */}
                     <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-[11px] text-slate-600 bg-slate-50/90 p-2.5 rounded-2xl mb-3 border border-slate-100">
@@ -872,6 +895,96 @@ export const EmployeeView: React.FC<Props> = ({
                     {r.summary && (
                       <div className="bg-slate-50/80 p-2.5 rounded-xl text-[11px] text-slate-600 line-clamp-2 italic mb-3 border border-slate-100">
                         {r.summary}
+                      </div>
+                    )}
+
+                    {/* دورة استيفاء الملاحظات عند إرجاع الطلب من المدير المباشر */}
+                    {r.status === 'returned_emp' && (
+                      <div className="bg-rose-50/95 border-2 border-rose-300 rounded-2xl p-3.5 sm:p-4 mb-3 space-y-3 text-rose-950 shadow-xs animate-fade-slide-up">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+                            <span className="text-xs font-black text-rose-900">
+                              تمت إعادة الطلب من المدير المباشر للتعديل والاستيفاء
+                            </span>
+                          </div>
+                          <span
+                            className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
+                              r.editedAfterReturn
+                                ? 'bg-emerald-100 text-emerald-900 border border-emerald-300'
+                                : 'bg-rose-200 text-rose-900'
+                            }`}
+                          >
+                            {r.editedAfterReturn ? 'تم استيفاء التعديل وحفظه' : 'مطلوب التعديل والحفظ'}
+                          </span>
+                        </div>
+
+                        <div className="bg-white/95 p-3 rounded-xl border border-rose-200 text-xs text-slate-800">
+                          <strong className="text-rose-900 block text-[11px] mb-1 font-bold">
+                            ملاحظة وتوجيه المدير المباشر:
+                          </strong>
+                          <p className="leading-relaxed font-bold text-slate-900">
+                            {r.note || 'يرجى مراجعة وتعديل بيانات الاستمارة وإعادة رفعها للاعتماد.'}
+                          </p>
+                        </div>
+
+                        {/* رسالة تنبيه عند محاولة الإعادة قبل تعديل وحفظ الاستمارة */}
+                        {unmodifiedWarningId === r.id && !r.editedAfterReturn && (
+                          <div className="bg-amber-50 border-2 border-amber-300 rounded-xl p-3 text-amber-950 text-xs flex items-start gap-2.5 animate-in fade-in slide-in-from-top-1">
+                            <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                            <div className="space-y-1">
+                              <span className="font-black text-amber-900 block">
+                                تنبيه: يجب تعديل وحفظ بيانات الاستمارة أولاً!
+                              </span>
+                              <p className="text-[11px] text-amber-800 leading-relaxed font-medium">
+                                لم تقم بتعديل بيانات النشاط بعد. يرجى الضغط على زر «تعديل بيانات الاستمارة» أدناه وتصحيح القيمة المطلوبة (مثل عدد الساعات المعتمدة أو اسم النشاط) وحفظ التعديلات أولاً، حتى تتمكن من إعادة رفع الطلب للمدير المباشر.
+                              </p>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* إشعار نجاح الحفظ وجاهزية إعادة الرفع */}
+                        {r.editedAfterReturn && (
+                          <div className="bg-emerald-50 border border-emerald-300 rounded-xl p-2.5 text-xs text-emerald-950 flex items-center gap-2 animate-in fade-in">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                            <span className="font-bold">
+                              تم حفظ التعديلات بنجاح. يمكنك الآن الضغط على زر إعادة الرفع للمدير المباشر.
+                            </span>
+                          </div>
+                        )}
+
+                        <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-rose-200/60">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setUnmodifiedWarningId(null);
+                              setEditingRequest(r);
+                            }}
+                            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#1b4332] via-[#143728] to-[#081c15] text-[#e6c566] text-xs font-bold shadow-md shadow-[#1b4332]/25 active:scale-95 transition-all cursor-pointer border border-[#c59b27]/40"
+                          >
+                            <Edit3 className="w-3.5 h-3.5 text-[#e6c566]" />
+                            <span>تعديل بيانات الاستمارة</span>
+                          </button>
+
+                          {onResubmitRequest && (
+                            <button
+                              type="button"
+                              onClick={() => handleAttemptResubmit(r)}
+                              className={`inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-black shadow-md active:scale-95 transition-all cursor-pointer ${
+                                r.editedAfterReturn
+                                  ? 'bg-[#c59b27] hover:bg-[#b0881e] text-[#081c15] ring-2 ring-emerald-500/50'
+                                  : 'bg-slate-200 hover:bg-slate-300 text-slate-700 border border-slate-300'
+                              }`}
+                            >
+                              <RotateCcw className="w-3.5 h-3.5" />
+                              <span>
+                                {r.editedAfterReturn
+                                  ? 'إعادة الرفع للمدير المباشر (جاهز ✓)'
+                                  : 'إعادة الرفع للمدير المباشر'}
+                              </span>
+                            </button>
+                          )}
+                        </div>
                       </div>
                     )}
 
@@ -1081,17 +1194,6 @@ export const EmployeeView: React.FC<Props> = ({
                         <ExternalLink className="w-3.5 h-3.5 text-[#c59b27]" />
                         <span>عرض تفاصيل الاستمارة والتاريخ الإداري</span>
                       </button>
-
-                      {r.status === 'returned_emp' && onResubmitRequest && (
-                        <button
-                          type="button"
-                          onClick={() => onResubmitRequest(r.id)}
-                          className="text-[11px] bg-[#c59b27] hover:bg-[#b0881e] text-[#081c15] font-bold px-3 py-1.5 rounded-xl active:scale-95 transition-all duration-150 shadow-sm cursor-pointer flex items-center gap-1"
-                        >
-                          <RotateCcw className="w-3 h-3" />
-                          <span>إعادة الرفع للمدير</span>
-                        </button>
-                      )}
                     </div>
                   </div>
                 );
@@ -1106,6 +1208,26 @@ export const EmployeeView: React.FC<Props> = ({
         request={selectedRequest}
         isOpen={Boolean(selectedRequest)}
         onClose={() => setSelectedRequest(null)}
+        viewerRole="emp"
+        onEditRequest={(req) => {
+          setSelectedRequest(null);
+          setEditingRequest(req);
+        }}
+      />
+
+      {/* Edit Activity Modal (للموظف لتعديل بيانات الاستمارة المسترجعة) */}
+      <EditActivityModal
+        isOpen={Boolean(editingRequest)}
+        request={editingRequest}
+        onClose={() => setEditingRequest(null)}
+        mode="employee_resubmit"
+        onSave={(updated) => {
+          if (onUpdateRequest) {
+            onUpdateRequest(updated);
+          }
+          setUnmodifiedWarningId(null);
+          setEditingRequest(null);
+        }}
       />
 
       {/* Upload Attendance Sheet Modal */}

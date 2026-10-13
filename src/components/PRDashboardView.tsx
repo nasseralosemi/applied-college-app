@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ActivityRequest } from '../types';
 import { RequestDetailsModal } from './RequestDetailsModal';
+import { MediaPublishBadge } from './MediaPublishBadge';
 import {
   Share2,
   CheckCircle2,
@@ -20,6 +21,8 @@ import {
   Radio,
   FileText,
   AlertCircle,
+  ExternalLink,
+  Link2,
 } from 'lucide-react';
 
 interface Props {
@@ -28,7 +31,8 @@ interface Props {
     requestId: number,
     prStatus: 'pending_pr' | 'published_pr',
     tweetDraft?: string,
-    prNotes?: string
+    prNotes?: string,
+    coverageUrl?: string
   ) => void;
   isAdminViewing?: boolean;
   onReturnToAdmin?: () => void;
@@ -45,9 +49,10 @@ export const PRDashboardView: React.FC<Props> = ({
   const [selectedTypeFilter, setSelectedTypeFilter] = useState<string>('all');
   const [activeRequestForDetails, setActiveRequestForDetails] = useState<ActivityRequest | null>(null);
 
-  // Per-card editing drafts and copied feedback
+  // Per-card editing drafts, notes, and coverage URLs
   const [editingDrafts, setEditingDrafts] = useState<Record<number, string>>({});
   const [editingNotes, setEditingNotes] = useState<Record<number, string>>({});
+  const [editingUrls, setEditingUrls] = useState<Record<number, string>>({});
   const [copiedId, setCopiedId] = useState<number | null>(null);
 
   // Filter activities sent to PR (where xPlatformPublish is true)
@@ -109,13 +114,15 @@ export const PRDashboardView: React.FC<Props> = ({
     const newStatus = req.prStatus === 'published_pr' ? 'pending_pr' : 'published_pr';
     const draft = editingDrafts[req.id] !== undefined ? editingDrafts[req.id] : (req.prTweetDraft || generateDefaultTweet(req));
     const note = editingNotes[req.id] !== undefined ? editingNotes[req.id] : (req.prNotes || '');
-    onUpdatePrStatus(req.id, newStatus, draft, note);
+    const url = editingUrls[req.id] !== undefined ? editingUrls[req.id] : (req.prCoverageUrl || '');
+    onUpdatePrStatus(req.id, newStatus, draft, note, url);
   };
 
   const handleSaveDraft = (req: ActivityRequest) => {
     const draft = editingDrafts[req.id] !== undefined ? editingDrafts[req.id] : (req.prTweetDraft || generateDefaultTweet(req));
     const note = editingNotes[req.id] !== undefined ? editingNotes[req.id] : (req.prNotes || '');
-    onUpdatePrStatus(req.id, req.prStatus || 'pending_pr', draft, note);
+    const url = editingUrls[req.id] !== undefined ? editingUrls[req.id] : (req.prCoverageUrl || '');
+    onUpdatePrStatus(req.id, req.prStatus || 'pending_pr', draft, note, url);
   };
 
   const activityTypes = Array.from(new Set(prActivities.map((r) => r.type)));
@@ -338,17 +345,7 @@ export const PRDashboardView: React.FC<Props> = ({
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
                         {req.type}
                       </span>
-                      {isPublished ? (
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-600 text-white flex items-center gap-1">
-                          <Check className="w-3 h-3" />
-                          <span>تم النشر في X</span>
-                        </span>
-                      ) : (
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-200 flex items-center gap-1">
-                          <Clock className="w-3 h-3 text-amber-700" />
-                          <span>قيد التجهيز</span>
-                        </span>
-                      )}
+                      <MediaPublishBadge request={req} />
                     </div>
                   </div>
 
@@ -423,24 +420,46 @@ export const PRDashboardView: React.FC<Props> = ({
                       className="w-full text-xs p-2.5 rounded-lg border border-slate-200 bg-white focus:border-[#c59b27] outline-none font-sans leading-relaxed"
                     />
 
-                    {/* PR Note / Publication URL */}
-                    <div>
-                      <input
-                        type="text"
-                        value={
-                          editingNotes[req.id] !== undefined
-                            ? editingNotes[req.id]
-                            : req.prNotes || ''
-                        }
-                        onChange={(e) =>
-                          setEditingNotes({
-                            ...editingNotes,
-                            [req.id]: e.target.value,
-                          })
-                        }
-                        placeholder="ملاحظة أو رابط التغريدة المنشورة (اختياري)..."
-                        className="w-full text-[11px] px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white focus:border-[#c59b27] outline-none"
-                      />
+                    {/* PR Coverage URL & Note */}
+                    <div className="space-y-1.5 pt-1">
+                      <div className="relative">
+                        <input
+                          type="url"
+                          value={
+                            editingUrls[req.id] !== undefined
+                              ? editingUrls[req.id]
+                              : req.prCoverageUrl || ''
+                          }
+                          onChange={(e) =>
+                            setEditingUrls({
+                              ...editingUrls,
+                              [req.id]: e.target.value,
+                            })
+                          }
+                          placeholder="رابط التغريدة المنشورة أو إثبات التغطية في منصة X (URL)..."
+                          className="w-full text-[11px] px-2.5 py-1.5 pl-8 rounded-lg border border-slate-200 bg-white focus:border-[#c59b27] outline-none font-sans"
+                        />
+                        <Link2 className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2" />
+                      </div>
+
+                      <div>
+                        <input
+                          type="text"
+                          value={
+                            editingNotes[req.id] !== undefined
+                              ? editingNotes[req.id]
+                              : req.prNotes || ''
+                          }
+                          onChange={(e) =>
+                            setEditingNotes({
+                              ...editingNotes,
+                              [req.id]: e.target.value,
+                            })
+                          }
+                          placeholder="ملاحظات إضافية حول التغطية الإعلامية (اختياري)..."
+                          className="w-full text-[11px] px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white focus:border-[#c59b27] outline-none font-sans"
+                        />
+                      </div>
                     </div>
                   </div>
 
@@ -452,7 +471,7 @@ export const PRDashboardView: React.FC<Props> = ({
                       className="px-2.5 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold flex items-center gap-1 transition active:scale-95 cursor-pointer"
                     >
                       <Eye className="w-3.5 h-3.5 text-slate-500" />
-                      <span>معاينة الاستمارة</span>
+                      <span>معاينة الاستمارة والتاريخ الإداري</span>
                     </button>
 
                     <div className="flex items-center gap-2">
@@ -498,7 +517,9 @@ export const PRDashboardView: React.FC<Props> = ({
       {activeRequestForDetails && (
         <RequestDetailsModal
           request={activeRequestForDetails}
+          isOpen={!!activeRequestForDetails}
           onClose={() => setActiveRequestForDetails(null)}
+          viewerRole="pr"
         />
       )}
     </div>

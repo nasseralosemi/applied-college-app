@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { ActivityRequest, RequestStatus } from '../types';
 import { RequestDetailsModal } from './RequestDetailsModal';
+import { AttendancePreviewModal } from './AttendancePreviewModal';
 import { StatusBadge } from './StatusBadge';
+import { isActivityEnded } from '../utils/activityUtils';
 import {
   ClipboardCheck,
   Check,
@@ -22,7 +24,13 @@ import {
   CloudUpload,
   AlertCircle,
   FileText,
+  FileCheck,
+  Lock,
+  Eye,
 } from 'lucide-react';
+
+import { WorkflowStepper } from './WorkflowStepper';
+import { MediaPublishBadge } from './MediaPublishBadge';
 
 interface Props {
   requests: ActivityRequest[];
@@ -39,6 +47,7 @@ export const ManagerView: React.FC<Props> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<TabType>('pending');
   const [selectedRequest, setSelectedRequest] = useState<ActivityRequest | null>(null);
+  const [previewSheetRequest, setPreviewSheetRequest] = useState<ActivityRequest | null>(null);
 
   // Filter requests by status categories
   const pendingRequests = requests.filter(
@@ -55,170 +64,6 @@ export const ManagerView: React.FC<Props> = ({
   const returnedRequests = requests.filter(
     (r) => r.status === 'returned_emp' || r.status === 'rejected'
   );
-
-  // Workflow timeline renderer for referred requests
-  const renderWorkflowTimeline = (status: RequestStatus) => {
-    // Milestones:
-    // 1: مقدم الطلب (Submitted)
-    // 2: المدير المباشر (Manager Approval)
-    // 3: التدقيق والاعتماد (Auditor / Dean)
-    // 4: منصة ارتقاء (Irtqaa Upload)
-
-    const isStage1Done = true; // submitted
-    const isStage2Done = true; // manager already approved
-    const isStage3Done = status === 'approved_final' || status === 'uploaded_irtqaa';
-    const isStage3Active = status === 'pending_auditor';
-    const isStage4Done = status === 'uploaded_irtqaa';
-    const isStage4Active = status === 'approved_final';
-
-    let summaryText = 'تمت موافقتك ← قيد التدقيق لدى المراجع';
-    let summaryStyle = 'bg-amber-50 text-amber-900 border-amber-200/90';
-
-    if (status === 'approved_final') {
-      summaryText = 'معتمدة نهائياً ← جاهزة للرفع لمنصة ارتقاء';
-      summaryStyle = 'bg-emerald-50 text-emerald-900 border-emerald-200/90';
-    } else if (status === 'uploaded_irtqaa') {
-      summaryText = 'مكتملة ومرفوعة بنجاح على منصة ارتقاء';
-      summaryStyle = 'bg-[#1b4332]/10 text-[#1b4332] border-[#1b4332]/20';
-    }
-
-    return (
-      <div className="bg-slate-50/90 rounded-xl p-3 border border-slate-200/80 mb-3 space-y-2.5">
-        {/* Timeline Status Chip */}
-        <div
-          className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg border text-[11px] font-bold ${summaryStyle}`}
-        >
-          <div className="flex items-center gap-1.5">
-            <span className="relative flex h-2 w-2">
-              <span
-                className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                  status === 'uploaded_irtqaa'
-                    ? 'bg-emerald-400'
-                    : status === 'approved_final'
-                    ? 'bg-emerald-500'
-                    : 'bg-amber-400'
-                }`}
-              />
-              <span
-                className={`relative inline-flex rounded-full h-2 w-2 ${
-                  status === 'uploaded_irtqaa'
-                    ? 'bg-emerald-600'
-                    : status === 'approved_final'
-                    ? 'bg-emerald-600'
-                    : 'bg-amber-500'
-                }`}
-              />
-            </span>
-            <span>المرحلة الحالية: {summaryText}</span>
-          </div>
-          <ArrowLeft className="w-3.5 h-3.5 opacity-60" />
-        </div>
-
-        {/* Visual Stepper / Timeline */}
-        <div className="pt-1">
-          <div className="relative flex items-center justify-between">
-            {/* Background connecting bar */}
-            <div className="absolute top-1/2 left-4 right-4 -translate-y-1/2 h-1 bg-slate-200 z-0" />
-
-            {/* Active connecting bar */}
-            <div
-              className={`absolute top-1/2 right-4 -translate-y-1/2 h-1 transition-all duration-300 z-0 ${
-                isStage4Done
-                  ? 'w-[calc(100%-2rem)] bg-emerald-600'
-                  : isStage3Done
-                  ? 'w-[70%] bg-emerald-500'
-                  : 'w-[35%] bg-[#1b4332]'
-              }`}
-            />
-
-            {/* Step 1: Submitter */}
-            <div className="relative z-10 flex flex-col items-center">
-              <div className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-bold shadow-xs">
-                <Check className="w-3.5 h-3.5" />
-              </div>
-              <span className="text-[9px] font-medium text-slate-700 mt-1 whitespace-nowrap">
-                تم الرفع
-              </span>
-            </div>
-
-            {/* Step 2: Direct Manager */}
-            <div className="relative z-10 flex flex-col items-center">
-              <div className="w-6 h-6 rounded-full bg-[#1b4332] text-[#e6c566] flex items-center justify-center text-[10px] font-bold shadow-xs ring-2 ring-emerald-100">
-                <Check className="w-3.5 h-3.5" />
-              </div>
-              <span className="text-[9px] font-bold text-[#1b4332] mt-1 whitespace-nowrap">
-                موافقتك ✓
-              </span>
-            </div>
-
-            {/* Step 3: Auditor / College */}
-            <div className="relative z-10 flex flex-col items-center">
-              <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold shadow-xs transition-all ${
-                  isStage3Done
-                    ? 'bg-emerald-600 text-white'
-                    : isStage3Active
-                    ? 'bg-amber-500 text-white ring-4 ring-amber-100 animate-pulse'
-                    : 'bg-slate-200 text-slate-500'
-                }`}
-              >
-                {isStage3Done ? (
-                  <Check className="w-3.5 h-3.5" />
-                ) : isStage3Active ? (
-                  <Clock className="w-3.5 h-3.5" />
-                ) : (
-                  '3'
-                )}
-              </div>
-              <span
-                className={`text-[9px] mt-1 whitespace-nowrap ${
-                  isStage3Active
-                    ? 'font-bold text-amber-800'
-                    : isStage3Done
-                    ? 'font-medium text-slate-700'
-                    : 'text-slate-400'
-                }`}
-              >
-                التدقيق والاعتماد
-              </span>
-            </div>
-
-            {/* Step 4: Irtqaa Platform */}
-            <div className="relative z-10 flex flex-col items-center">
-              <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold shadow-xs transition-all ${
-                  isStage4Done
-                    ? 'bg-[#1b4332] text-[#e6c566] ring-2 ring-[#c59b27]'
-                    : isStage4Active
-                    ? 'bg-emerald-500 text-white ring-4 ring-emerald-100 animate-pulse'
-                    : 'bg-slate-200 text-slate-500'
-                }`}
-              >
-                {isStage4Done ? (
-                  <Check className="w-3.5 h-3.5" />
-                ) : isStage4Active ? (
-                  <CloudUpload className="w-3 h-3" />
-                ) : (
-                  '4'
-                )}
-              </div>
-              <span
-                className={`text-[9px] mt-1 whitespace-nowrap ${
-                  isStage4Done
-                    ? 'font-bold text-[#1b4332]'
-                    : isStage4Active
-                    ? 'font-bold text-emerald-800'
-                    : 'text-slate-400'
-                }`}
-              >
-                منصة ارتقاء
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
 
   return (
     <div className="space-y-4 pb-8 font-['Tajawal',sans-serif] text-right">
@@ -412,15 +257,18 @@ export const ManagerView: React.FC<Props> = ({
                         )}
                       </p>
                     </div>
-                    <span
-                      className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full shrink-0 ${
-                        isReturnedFromAuditor
-                          ? 'bg-amber-50 text-amber-900 border border-amber-300'
-                          : 'bg-amber-50 text-amber-800 border border-amber-200'
-                      }`}
-                    >
-                      {isReturnedFromAuditor ? 'مُعاد من التدقيق' : 'بانتظار موافقتك'}
-                    </span>
+                    <div className="shrink-0 flex items-center gap-1.5 flex-wrap justify-end">
+                      <MediaPublishBadge request={r} />
+                      <span
+                        className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full shrink-0 ${
+                          isReturnedFromAuditor
+                            ? 'bg-amber-50 text-amber-900 border border-amber-300'
+                            : 'bg-amber-50 text-amber-800 border border-amber-200'
+                        }`}
+                      >
+                        {isReturnedFromAuditor ? 'مُعاد من التدقيق' : 'بانتظار موافقتك'}
+                      </span>
+                    </div>
                   </div>
 
                   {isReturnedFromAuditor && r.note && (
@@ -559,11 +407,14 @@ export const ManagerView: React.FC<Props> = ({
                         )}
                       </p>
                     </div>
-                    <StatusBadge status={r.status} note={r.note} />
+                    <div className="shrink-0 flex items-center gap-1.5 flex-wrap justify-end">
+                      <MediaPublishBadge request={r} />
+                      <StatusBadge status={r.status} note={r.note} />
+                    </div>
                   </div>
 
-                  {/* 2. Workflow Status Timeline (سجل سير العمل والتتبع) */}
-                  {renderWorkflowTimeline(r.status)}
+                  {/* 2. Workflow Status Timeline (سجل سير العمل والتتبع - 5 خطوات) */}
+                  <WorkflowStepper request={r} viewerRole="manager" />
 
                   {/* Key Metadata Badges */}
                   <div className="flex flex-wrap gap-2 text-[11px] text-slate-600 bg-slate-50 p-2.5 rounded-xl mb-3">
@@ -592,6 +443,133 @@ export const ManagerView: React.FC<Props> = ({
                         <Building2 className="w-3.5 h-3.5 text-slate-400" />
                         <span>{r.unit}</span>
                       </span>
+                    )}
+                  </div>
+
+                  {/* مرحلة كشف الحضور الختامية (الخطوة الأخيرة) */}
+                  <div className="mb-3">
+                    {!isActivityEnded(r) ? (
+                      <div className="bg-slate-50/90 border border-slate-200/90 rounded-2xl p-3 flex items-center justify-between gap-2 text-slate-600">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-xl bg-slate-200/80 flex items-center justify-center text-slate-400 shrink-0">
+                            <Lock className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-xs font-bold text-slate-700">مرحلة كشف الحضور الختامية (الخطوة الأخيرة)</span>
+                              <span className="text-[9px] bg-slate-200 text-slate-600 font-bold px-1.5 py-0.5 rounded">
+                                غير مفعلة بعد
+                              </span>
+                            </div>
+                            <p className="text-[10px] text-slate-400 mt-0.5">
+                              تتفعل هذه الخانة فور انتهاء فعاليات النشاط بتاريخ ({r.endDate || r.startDate || r.date})
+                            </p>
+                          </div>
+                        </div>
+                        <span className="text-[10px] text-slate-400 hidden sm:inline-block font-mono">
+                          موعد الانتهاء: {r.endDate || r.startDate}
+                        </span>
+                      </div>
+                    ) : !r.attendanceSheet ? (
+                      <div className="bg-amber-50/70 border border-amber-200 rounded-2xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-amber-950">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0 border border-amber-200">
+                            <Clock className="w-4 h-4 text-amber-700" />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-xs font-bold text-slate-900">مرحلة كشف الحضور الختامية (الخطوة الأخيرة)</span>
+                              <span className="text-[10px] bg-amber-100 text-amber-900 font-bold px-2 py-0.5 rounded-full border border-amber-200">
+                                النشاط منتهٍ • بانتظار الرفع
+                              </span>
+                            </div>
+                            <p className="text-[10px] text-slate-600 mt-0.5">
+                              انتهت فعاليات النشاط. بانتظار قيام مقدم النشاط برفع كشف الحضور المعتمد لتوثيق الساعات في السجل المهاري.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ) : r.attendanceSheet.status === 'approved' ? (
+                      <div className="bg-emerald-50/90 border border-emerald-300 rounded-2xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-emerald-950 shadow-xs">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0 border border-emerald-200">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-bold text-slate-900">{r.attendanceSheet.fileName}</span>
+                              <span className="text-[10px] bg-emerald-200 text-emerald-900 font-bold px-2 py-0.5 rounded-full">
+                                كشف معتمد وموثق رسمياً ✓
+                              </span>
+                            </div>
+                            <p className="text-[10px] text-emerald-800 font-medium mt-0.5">
+                              تم قبول واعتماد كشف الحضور ({r.attendanceSheet.attendeesCount || 35} حاضر) • المعاملة موثقة ومغلقة
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setPreviewSheetRequest(r)}
+                          className="text-[11px] text-[#1b4332] bg-white hover:bg-emerald-100/50 border border-slate-200 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1 active:scale-95 transition-all cursor-pointer shadow-xs shrink-0"
+                        >
+                          <Eye className="w-3.5 h-3.5 text-[#c59b27]" />
+                          <span>معاينة كشف الحضور</span>
+                        </button>
+                      </div>
+                    ) : r.attendanceSheet.status === 'returned' ? (
+                      <div className="bg-rose-50/90 border border-rose-300 rounded-2xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-rose-950 shadow-xs">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-xl bg-rose-100 text-rose-800 flex items-center justify-center shrink-0 border border-rose-200">
+                            <AlertCircle className="w-4 h-4 text-rose-600" />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-bold text-slate-900">{r.attendanceSheet.fileName}</span>
+                              <span className="text-[10px] bg-rose-200 text-rose-900 font-bold px-2 py-0.5 rounded-full">
+                                كشف الحضور مُعاد للموظف للتعديل
+                              </span>
+                            </div>
+                            <p className="text-[10px] text-rose-800 mt-0.5">
+                              ملاحظة مسؤول المنصة: {r.attendanceSheet.returnNote || 'مطلوب استيفاء وتعديل بيانات الكشف.'}
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setPreviewSheetRequest(r)}
+                          className="text-[11px] text-slate-700 bg-white hover:bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1 active:scale-95 transition-all cursor-pointer shadow-xs shrink-0"
+                        >
+                          <Eye className="w-3.5 h-3.5 text-slate-500" />
+                          <span>معاينة الكشف</span>
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="bg-amber-50/80 border border-amber-200 rounded-2xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-amber-950 shadow-xs">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0 border border-amber-200">
+                            <FileCheck className="w-4 h-4 text-amber-700" />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-bold text-slate-900">{r.attendanceSheet.fileName}</span>
+                              <span className="text-[10px] bg-amber-200/80 text-amber-900 font-bold px-2 py-0.5 rounded-full">
+                                كشف الحضور قيد التدقيق
+                              </span>
+                            </div>
+                            <p className="text-[10px] text-slate-600 mt-0.5">
+                              تم رفع الكشف ({r.attendanceSheet.attendeesCount || 35} حاضر) • بانتظار مراجعة واعتماد مسؤول الرفع لمنصة ارتقاء
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setPreviewSheetRequest(r)}
+                          className="text-[11px] text-[#1b4332] bg-white hover:bg-amber-100/50 border border-slate-200 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1 active:scale-95 transition-all cursor-pointer shadow-xs shrink-0"
+                        >
+                          <Eye className="w-3.5 h-3.5 text-[#c59b27]" />
+                          <span>معاينة الكشف</span>
+                        </button>
+                      </div>
                     )}
                   </div>
 
@@ -660,9 +638,12 @@ export const ManagerView: React.FC<Props> = ({
                       {r.branch && <span className="text-slate-400">• {r.branch}</span>}
                     </p>
                   </div>
-                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-800 border border-rose-200">
-                    مسترجع للموظف
-                  </span>
+                  <div className="shrink-0 flex items-center gap-1.5 flex-wrap justify-end">
+                    <MediaPublishBadge request={r} />
+                    <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-800 border border-rose-200">
+                      مسترجع للموظف
+                    </span>
+                  </div>
                 </div>
 
                 {/* Reason / Return Note */}
@@ -713,6 +694,14 @@ export const ManagerView: React.FC<Props> = ({
         request={selectedRequest}
         isOpen={Boolean(selectedRequest)}
         onClose={() => setSelectedRequest(null)}
+        viewerRole="manager"
+      />
+
+      {/* 4. Preview Attendance Sheet Modal */}
+      <AttendancePreviewModal
+        isOpen={Boolean(previewSheetRequest)}
+        request={previewSheetRequest}
+        onClose={() => setPreviewSheetRequest(null)}
       />
     </div>
   );

@@ -424,7 +424,9 @@ export const AccreditationView: React.FC<Props> = ({ requests }) => {
       {activeRequestDetails && (
         <RequestDetailsModal
           request={activeRequestDetails}
+          isOpen={!!activeRequestDetails}
           onClose={() => setActiveRequestDetails(null)}
+          viewerRole="accreditation"
         />
       )}
 

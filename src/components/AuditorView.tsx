@@ -73,142 +73,6 @@ export const AuditorView: React.FC<Props> = ({
     (r) => r.status === 'returned_manager' || r.status === 'returned_emp'
   );
 
-  // Workflow Timeline for Auditor
-  const renderWorkflowTimeline = (status: RequestStatus, deanApproved?: boolean) => {
-    const isStage1Done = true;
-    const isStage2Done = true;
-    const isStage3Done =
-      status === 'approved_final' ||
-      status === 'uploaded_irtqaa';
-    const isStage3Active = status === 'pending_auditor';
-    const isStage4Done = status === 'uploaded_irtqaa';
-    const isStage4Active = status === 'approved_final';
-
-    return (
-      <div className="bg-slate-50/90 rounded-2xl p-3 border border-slate-200/80 mb-3 space-y-2 font-['Tajawal',sans-serif]">
-        <div className="pt-1">
-          <div className="relative flex items-center justify-between">
-            <div className="absolute top-1/2 left-4 right-4 -translate-y-1/2 h-1 bg-slate-200 z-0 rounded-full" />
-            <div
-              className="absolute top-1/2 right-4 -translate-y-1/2 h-1 bg-[#1b4332] z-0 transition-all duration-300 rounded-full"
-              style={{
-                width: isStage4Done
-                  ? 'calc(100% - 32px)'
-                  : isStage4Active
-                  ? 'calc(80% - 32px)'
-                  : isStage3Active
-                  ? 'calc(50% - 32px)'
-                  : 'calc(25% - 32px)',
-              }}
-            />
-
-            {/* Step 1 */}
-            <div className="relative z-10 flex flex-col items-center">
-              <div className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold shadow-xs bg-[#1b4332] text-[#e6c566] ring-2 ring-[#c59b27]">
-                <Check className="w-3 h-3" />
-              </div>
-              <span className="text-[8px] sm:text-[9px] mt-1 font-bold text-[#1b4332] whitespace-nowrap">
-                التقديم
-              </span>
-            </div>
-
-            {/* Step 2 */}
-            <div className="relative z-10 flex flex-col items-center">
-              <div className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold shadow-xs bg-[#1b4332] text-[#e6c566] ring-2 ring-[#c59b27]">
-                <Check className="w-3 h-3" />
-              </div>
-              <span className="text-[8px] sm:text-[9px] mt-1 font-bold text-[#1b4332] whitespace-nowrap">
-                المدير
-              </span>
-            </div>
-
-            {/* Step 3 */}
-            <div className="relative z-10 flex flex-col items-center">
-              <div
-                className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold shadow-xs ${
-                  isStage3Done
-                    ? 'bg-[#1b4332] text-[#e6c566] ring-2 ring-[#c59b27]'
-                    : isStage3Active
-                    ? 'bg-amber-500 text-white ring-2 ring-amber-200 animate-pulse'
-                    : 'bg-slate-200 text-slate-500'
-                }`}
-              >
-                {isStage3Done ? (
-                  <Check className="w-3 h-3" />
-                ) : (
-                  <span className="text-[9px]">3</span>
-                )}
-              </div>
-              <span
-                className={`text-[8px] sm:text-[9px] mt-1 whitespace-nowrap ${
-                  isStage3Active
-                    ? 'font-extrabold text-amber-900 underline decoration-amber-400'
-                    : isStage3Done
-                    ? 'font-bold text-[#1b4332]'
-                    : 'text-slate-400'
-                }`}
-              >
-                التدقيق والاعتماد
-              </span>
-            </div>
-
-            {/* Step 4 */}
-            <div className="relative z-10 flex flex-col items-center">
-              <div
-                className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold shadow-xs ${
-                  isStage4Done
-                    ? 'bg-emerald-600 text-white ring-2 ring-emerald-300'
-                    : isStage4Active
-                    ? 'bg-[#1b4332] text-[#e6c566] ring-2 ring-[#c59b27]'
-                    : 'bg-slate-200 text-slate-500'
-                }`}
-              >
-                {isStage4Done ? (
-                  <Check className="w-3 h-3" />
-                ) : (
-                  <CloudUpload className="w-3 h-3" />
-                )}
-              </div>
-              <span
-                className={`text-[8px] sm:text-[9px] mt-1 whitespace-nowrap ${
-                  isStage4Done
-                    ? 'font-extrabold text-emerald-800'
-                    : isStage4Active
-                    ? 'font-bold text-[#1b4332]'
-                    : 'text-slate-400'
-                }`}
-              >
-                رفع ارتقاء
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Status Callout */}
-        <div className="flex items-center justify-between pt-1 border-t border-slate-200/60 text-[10px]">
-          <span className="text-slate-500 font-medium">
-            المرحلة التنفيذية:{' '}
-            <strong className="text-slate-800">
-              {isStage4Done
-                ? 'مكتمل وموثق في ارتقاء'
-                : isStage4Active
-                ? 'معتمد نهائياً وجاهز للرفع'
-                : isStage3Active
-                ? 'قيد التدقيق والاعتماد الإداري'
-                : 'قيد المتابعة'}
-            </strong>
-          </span>
-          {deanApproved && (
-            <span className="text-emerald-800 font-bold bg-emerald-100/80 px-2 py-0.5 rounded-md flex items-center gap-1">
-              <Award className="w-3 h-3 text-emerald-700" />
-              <span>معتمد رسمياً من رئيس الكلية</span>
-            </span>
-          )}
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div className="space-y-4 pb-8 font-['Tajawal',sans-serif] text-right">
       {/* Top Banner */}
@@ -416,9 +280,6 @@ export const AuditorView: React.FC<Props> = ({
                   </div>
                 </div>
 
-                {/* Timeline */}
-                {renderWorkflowTimeline(r.status, r.deanApproved)}
-
                 {/* Badges */}
                 <div className="flex flex-wrap gap-2 text-[11px] text-slate-600 bg-slate-50/90 p-2.5 rounded-2xl mb-3 border border-slate-100">
                   <span className="flex items-center gap-1">
@@ -580,23 +441,13 @@ export const AuditorView: React.FC<Props> = ({
                   <StatusBadge status={r.status} note={r.note} />
                 </div>
 
-                {renderWorkflowTimeline(r.status, r.deanApproved)}
-
-                {/* Dispatch Info Summary */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-2xl text-[11px] mb-3 border border-slate-200/60">
+                {/* Dispatch Info Summary (خالي من تفاصيل النشر الإعلامي) */}
+                <div className="bg-slate-50 p-2.5 rounded-2xl text-[11px] mb-3 border border-slate-200/60 space-y-1.5">
                   <div className="flex items-center gap-1.5">
                     <UserCheck className="w-3.5 h-3.5 text-[#1b4332]" />
                     <span className="text-slate-500">المكلف بالرفع:</span>
                     <strong className="text-slate-800">
                       {r.assignedUploader || 'مسؤول الرفع لمنصة ارتقاء'}
-                    </strong>
-                  </div>
-
-                  <div className="flex items-center gap-1.5">
-                    <Share2 className="w-3.5 h-3.5 text-[#c59b27]" />
-                    <span className="text-slate-500">منصة X:</span>
-                    <strong className={r.xPlatformPublish ? 'text-slate-900' : 'text-slate-500'}>
-                      {r.xPlatformPublish ? 'مطلوب إعلان رسمي في X' : 'بدون إعلان'}
                     </strong>
                   </div>
 
@@ -713,6 +564,7 @@ export const AuditorView: React.FC<Props> = ({
         request={selectedRequest}
         isOpen={!!selectedRequest}
         onClose={() => setSelectedRequest(null)}
+        viewerRole="auditor"
       />
 
       {/* MODAL 2: Form Edit Modal (صلاحية 1) */}

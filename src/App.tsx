@@ -270,22 +270,38 @@ export default function App() {
     showToast('تم حفظ التعديل وتحديثه لدى جميع المستخدمين بنجاح', 'success');
   };
 
-  // Employee: Resubmit returned request
-  const handleResubmit = (id: number) => {
-    const req = requests.find((r) => r.id === id);
-    if (!req) return;
-    const updated = { ...req, status: 'pending_manager' as const, note: '' };
+  // Employee: Resubmit returned request (optionally with updated form data)
+  const handleResubmit = (id: number, updatedReqData?: ActivityRequest) => {
+    const baseReq = requests.find((r) => r.id === id);
+    if (!baseReq && !updatedReqData) return;
+    const current = updatedReqData || baseReq!;
+
+    // Strict validation: Must have been edited and saved before resubmitting
+    if (!updatedReqData && !baseReq?.editedAfterReturn) {
+      showToast(
+        'تنبيه: يجب تعديل وحفظ بيانات الاستمارة أولاً وفق توجيهات المدير المباشر قبل إعادة الرفع.',
+        'warning'
+      );
+      return;
+    }
+
+    const updated: ActivityRequest = {
+      ...current,
+      status: 'pending_manager' as const,
+      note: '',
+      editedAfterReturn: false,
+    };
     setRequests((prev) =>
       prev.map((r) => (r.id === id ? updated : r))
     );
     persistRequest(updated);
     addAuditLog(
-      'إعادة تقديم الطلب بعد استيفاء الملاحظات',
+      'إعادة تقديم الطلب للمدير المباشر بعد استيفاء الملاحظات وتعديل البيانات',
       currentUser?.name || 'مقدم النشاط',
-      req.name || `النشاط #${id}`,
+      updated.name || `النشاط #${id}`,
       'create'
     );
-    showToast('تم حفظ التعديل وتحديثه لدى جميع المستخدمين بنجاح', 'success');
+    showToast('تمت إعادة رفع الطلب المحدث للمدير المباشر بنجاح للاعتماد', 'success');
   };
 
   // Manager: Approve
@@ -316,19 +332,23 @@ export default function App() {
     });
   };
 
-  // Auditor: Update request fields
+  // Auditor / Employee: Update request fields
   const handleUpdateRequest = (updatedReq: ActivityRequest) => {
+    const toSave: ActivityRequest = {
+      ...updatedReq,
+      editedAfterReturn: true,
+    };
     setRequests((prev) =>
-      prev.map((r) => (r.id === updatedReq.id ? updatedReq : r))
+      prev.map((r) => (r.id === toSave.id ? toSave : r))
     );
-    persistRequest(updatedReq);
+    persistRequest(toSave);
     addAuditLog(
       'تعديل وتدقيق حقول استمارة النشاط',
-      currentUser?.name || 'مسؤول التدقيق',
-      updatedReq.name,
+      currentUser?.name || 'مقدم النشاط',
+      toSave.name,
       'user_edit'
     );
-    showToast('تم حفظ التعديل وتحديثه لدى جميع المستخدمين بنجاح', 'success');
+    showToast('تم حفظ التعديلات بنجاح. يمكنك الآن إعادة رفع الطلب للمدير المباشر.', 'success');
   };
 
   // Auditor: Certify Dean approval
@@ -403,12 +423,13 @@ export default function App() {
     showToast('تم حفظ التعديل وتحديثه لدى جميع المستخدمين بنجاح', 'success');
   };
 
-  // PR: Update tweet draft and publication status
+  // PR: Update tweet draft, coverage URL, and publication status
   const handleUpdatePrStatus = (
     requestId: number,
     prStatus: 'pending_pr' | 'published_pr',
     tweetDraft?: string,
-    prNotes?: string
+    prNotes?: string,
+    coverageUrl?: string
   ) => {
     const req = requests.find((r) => r.id === requestId);
     if (!req) return;
@@ -419,6 +440,7 @@ export default function App() {
       prPublishedAt: prStatus === 'published_pr' ? (req.prPublishedAt || nowIso) : undefined,
       prTweetDraft: tweetDraft !== undefined ? tweetDraft : req.prTweetDraft,
       prNotes: prNotes !== undefined ? prNotes : req.prNotes,
+      prCoverageUrl: coverageUrl !== undefined ? coverageUrl : req.prCoverageUrl,
     };
 
     setRequests((prev) =>
@@ -491,7 +513,12 @@ export default function App() {
     if (!req) return;
 
     const newStatus = targetRole === 'emp' ? 'returned_emp' : 'returned_manager';
-    const updated = { ...req, status: newStatus as ActivityRequest['status'], note };
+    const updated: ActivityRequest = {
+      ...req,
+      status: newStatus as ActivityRequest['status'],
+      note,
+      editedAfterReturn: false,
+    };
 
     setRequests((prev) =>
       prev.map((r) => (r.id === requestId ? updated : r))
@@ -601,7 +628,10 @@ export default function App() {
       'approve'
     );
 
-    showToast('تم حفظ التعديل وتحديثه لدى جميع المستخدمين بنجاح', 'success');
+    showToast(
+      'تم قبول واعتماد كشف الحضور وتوثيق المعاملة بنجاح، وانتقلت المعاملة إلى (السجل الكامل).',
+      'success'
+    );
   };
 
   // Uploader: Return attendance sheet to employee with mandatory note
@@ -799,6 +829,7 @@ export default function App() {
               requests={requests}
               onSubmitRequest={handleSubmitRequest}
               onResubmitRequest={handleResubmit}
+              onUpdateRequest={handleUpdateRequest}
               onUploadAttendance={handleUploadAttendance}
               currentUserEmpNumber={currentUser?.employeeNumber}
             />

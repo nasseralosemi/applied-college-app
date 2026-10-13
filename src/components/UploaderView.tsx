@@ -6,6 +6,8 @@ import { AttendancePreviewModal } from './AttendancePreviewModal';
 import { ReturnAttendanceModal } from './ReturnAttendanceModal';
 import { IrtqaaAccreditationModal } from './IrtqaaAccreditationModal';
 import { AccreditationPreviewModal } from './AccreditationPreviewModal';
+import { WorkflowStepper } from './WorkflowStepper';
+import { MediaPublishBadge } from './MediaPublishBadge';
 import { downloadAttendanceSheet, isActivityEnded, downloadAccreditationDocument } from '../utils/activityUtils';
 import {
   CloudUpload,
@@ -54,18 +56,29 @@ export const UploaderView: React.FC<Props> = ({
   const [accreditationUploadRequest, setAccreditationUploadRequest] = useState<ActivityRequest | null>(null);
   const [accreditationPreviewRequest, setAccreditationPreviewRequest] = useState<ActivityRequest | null>(null);
 
-  const readyRequests = requests.filter(
-    (r) => r.status === 'approved_final' || r.status === 'uploaded_irtqaa'
-  );
+  // Helper to check if attendance sheet stage is officially approved & documented
+  const isAttendanceDocumented = (r: ActivityRequest) =>
+    r.attendanceSheet?.status === 'approved' || Boolean(r.isOfficiallyClosed);
+
+  // Tab 1: جاهز للرفع (المعتمدة نهائياً وبانتظار الرفع لمنصة ارتقاء)
   const pendingUploadRequests = requests.filter((r) => r.status === 'approved_final');
-  const uploadedRequests = requests.filter((r) => r.status === 'uploaded_irtqaa');
+
+  // Tab 2: مرفوعة (المعاملات المرفوعة على ارتقاء والتي تنتظر رفع أو اعتماد كشف الحضور والغياب الختامي)
+  const uploadedAwaitingAttendance = requests.filter(
+    (r) => r.status === 'uploaded_irtqaa' && !isAttendanceDocumented(r)
+  );
+
+  // Tab 3: السجل الكامل (المعاملات المكتملة والموثقة نهائياً بعد اعتماد كشف الحضور)
+  const completedDocumentedRequests = requests.filter(
+    (r) => r.status === 'uploaded_irtqaa' && isAttendanceDocumented(r)
+  );
 
   const displayedRequests =
     activeTab === 'ready'
       ? pendingUploadRequests
       : activeTab === 'uploaded'
-      ? uploadedRequests
-      : readyRequests;
+      ? uploadedAwaitingAttendance
+      : completedDocumentedRequests;
 
   return (
     <div className="space-y-4 pb-8 font-['Tajawal',sans-serif] text-right">
@@ -107,24 +120,24 @@ export const UploaderView: React.FC<Props> = ({
 
         <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">رُفعت لارتقاء</span>
-            <div className="w-7 h-7 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+            <span className="text-[11px] font-bold text-slate-500">مرفوعة (تنتظر الكشف)</span>
+            <div className="w-7 h-7 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
               <CloudCheck className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-xl sm:text-2xl font-black text-emerald-700 mt-1">{uploadedRequests.length}</div>
-          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">موثقة بالسجل المهاري</div>
+          <div className="text-xl sm:text-2xl font-black text-amber-700 mt-1">{uploadedAwaitingAttendance.length}</div>
+          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">تنتظر كشف الحضور والغياب</div>
         </div>
 
         <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">كشوف الحضور</span>
-            <div className="w-7 h-7 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
-              <FileCheck2 className="w-3.5 h-3.5" />
+            <span className="text-[11px] font-bold text-slate-500">السجل الكامل</span>
+            <div className="w-7 h-7 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+              <ShieldCheck className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-xl sm:text-2xl font-black text-blue-700 mt-1">{requests.filter((r) => r.attendanceSheet).length}</div>
-          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">كشوف مرفوعة للمراجعة</div>
+          <div className="text-xl sm:text-2xl font-black text-emerald-700 mt-1">{completedDocumentedRequests.length}</div>
+          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">كشف حضور معتمد ومغلق</div>
         </div>
 
         <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
@@ -168,7 +181,7 @@ export const UploaderView: React.FC<Props> = ({
           </span>
         </button>
 
-        {/* Tab 2: مرفوع على ارتقاء */}
+        {/* Tab 2: مرفوعة (المعاملات التي تنتظر رفع كشف الحضور والغياب الختامي) */}
         <button
           type="button"
           onClick={() => setActiveTab('uploaded')}
@@ -186,14 +199,16 @@ export const UploaderView: React.FC<Props> = ({
             className={`text-[10px] px-2 py-0.5 rounded-full font-bold leading-none ${
               activeTab === 'uploaded'
                 ? 'bg-[#c59b27] text-slate-950'
-                : 'bg-emerald-100 text-emerald-900'
+                : uploadedAwaitingAttendance.length > 0
+                ? 'bg-amber-100 text-amber-900'
+                : 'bg-slate-300 text-slate-700'
             }`}
           >
-            {uploadedRequests.length}
+            {uploadedAwaitingAttendance.length}
           </span>
         </button>
 
-        {/* Tab 3: أرشيف الكل */}
+        {/* Tab 3: السجل الكامل (فقط بعد رفع كشف الحضور المعتمد واكتمال التوثيق نهائياً) */}
         <button
           type="button"
           onClick={() => setActiveTab('all')}
@@ -211,10 +226,12 @@ export const UploaderView: React.FC<Props> = ({
             className={`text-[10px] px-2 py-0.5 rounded-full font-bold leading-none ${
               activeTab === 'all'
                 ? 'bg-[#c59b27] text-slate-950'
+                : completedDocumentedRequests.length > 0
+                ? 'bg-emerald-100 text-emerald-900'
                 : 'bg-slate-300 text-slate-700'
             }`}
           >
-            {readyRequests.length}
+            {completedDocumentedRequests.length}
           </span>
         </button>
       </div>
@@ -224,17 +241,27 @@ export const UploaderView: React.FC<Props> = ({
         {displayedRequests.length === 0 ? (
           <div className="bg-white rounded-3xl p-8 text-center border border-slate-100 shadow-sm">
             <div className="w-12 h-12 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center mx-auto mb-2">
-              <CloudUpload className="w-6 h-6" />
+              {activeTab === 'ready' ? (
+                <CloudUpload className="w-6 h-6 text-amber-600" />
+              ) : activeTab === 'uploaded' ? (
+                <FileCheck2 className="w-6 h-6 text-[#1b4332]" />
+              ) : (
+                <ShieldCheck className="w-6 h-6 text-emerald-600" />
+              )}
             </div>
             <p className="text-xs font-bold text-slate-800 mb-1">
               {activeTab === 'ready'
                 ? 'لا توجد طلبات معتمدة بانتظار الرفع حالياً'
                 : activeTab === 'uploaded'
-                ? 'لم يتم رفع أنشطة بعد'
-                : 'لا توجد أنشطة متوفرة'}
+                ? 'لا توجد معاملات مرفوعة تنتظر كشف الحضور والغياب حالياً'
+                : 'لا توجد معاملات مكتملة في السجل الكامل بعد'}
             </p>
-            <p className="text-[11px] text-slate-400">
-              تظهر الأنشطة هنا فور استكمال اعتماد رئيس الكلية ولجنة الضوابط والتوجيه.
+            <p className="text-[11px] text-slate-400 max-w-md mx-auto leading-relaxed">
+              {activeTab === 'ready'
+                ? 'تظهر الأنشطة هنا فور استكمال اعتماد رئيس الكلية ولجنة التدقيق.'
+                : activeTab === 'uploaded'
+                ? 'المعاملات المرفوعة لمنصة ارتقاء التي تنتظر رفع أو تدقيق كشف الحضور والغياب ستبقى ضمن هذا التبويب حتى اكتمال التوثيق.'
+                : 'تنتقل المعاملة إلى السجل الكامل تلقائياً فور رفع كشف الحضور المعتمد واكتمال مرحلة التوثيق نهائياً.'}
             </p>
           </div>
         ) : (
@@ -260,50 +287,30 @@ export const UploaderView: React.FC<Props> = ({
                       {r.branch && <span className="text-slate-400">• {r.branch}</span>}
                     </p>
                   </div>
-                  <StatusBadge status={r.status} note={r.note} />
+                  <div className="shrink-0 flex items-center gap-1.5 flex-wrap justify-end">
+                    <MediaPublishBadge request={r} />
+                    <StatusBadge status={r.status} note={r.note} />
+                  </div>
                 </div>
 
-                {/* Directive & Dispatch Info Bar */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-gradient-to-r from-slate-50 via-amber-50/30 to-slate-50 p-2.5 rounded-2xl text-[11px] mb-3 border border-slate-200/80">
+                {/* Stepper شريط متابعة مراحل المعاملة الزمني */}
+                <WorkflowStepper request={r} viewerRole="uploader" />
+
+                {/* Directive & Dispatch Info Bar (مختصر وغير مزدحم) */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-50/80 p-2.5 rounded-2xl text-[11px] mb-3 border border-slate-200/80">
                   <div className="flex items-center gap-1.5">
                     <UserCheck className="w-3.5 h-3.5 text-[#1b4332]" />
                     <span className="text-slate-500">المكلف بالرفع:</span>
-                    <strong className="text-slate-900">
+                    <strong className="text-slate-900 truncate">
                       {r.assignedUploader || 'موظف الرفع العام لمنصة ارتقاء'}
                     </strong>
                   </div>
 
                   <div className="flex items-center gap-1.5">
                     <Share2 className="w-3.5 h-3.5 text-[#c59b27]" />
-                    <span className="text-slate-500">النشر الإعلامي (X):</span>
-                    {r.xPlatformPublish ? (
-                      <span className="font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md flex items-center gap-1">
-                        <span className="bg-slate-900 text-white text-[9px] font-mono px-1 rounded">X</span>
-                        <span>مطلوب إعلان رسمي</span>
-                      </span>
-                    ) : (
-                      <span className="text-slate-500 bg-slate-200/70 px-2 py-0.5 rounded-md">
-                        بدون إعلان (سجل مهاري فقط)
-                      </span>
-                    )}
+                    <span className="text-slate-500">حالة النشر الإعلامي:</span>
+                    <MediaPublishBadge request={r} />
                   </div>
-
-                  {r.deanApproved && (
-                    <div className="col-span-full pt-1 flex items-center gap-1.5 text-[10px] text-emerald-800 font-bold border-t border-slate-200/60">
-                      <Award className="w-3 h-3 text-emerald-700" />
-                      <span>معتمد إدارياً ورسمياً من سعادة رئيس الكلية</span>
-                      {r.deanApprovalDate && (
-                        <span className="text-slate-500 font-normal">({r.deanApprovalDate})</span>
-                      )}
-                    </div>
-                  )}
-
-                  {r.uploaderInstructions && (
-                    <div className="col-span-full pt-1 border-t border-slate-200/60 text-[10px] text-slate-700 bg-white/70 p-2 rounded-xl">
-                      <strong className="text-[#1b4332] block mb-0.5">تعليمات وإرشادات المدقق:</strong>
-                      <p className="leading-relaxed">{r.uploaderInstructions}</p>
-                    </div>
-                  )}
                 </div>
 
                 {/* Field Badges */}
@@ -359,46 +366,37 @@ export const UploaderView: React.FC<Props> = ({
                   <button
                     type="button"
                     onClick={() => setAccreditationUploadRequest(r)}
-                    className="w-full bg-gradient-to-r from-[#1b4332] via-[#143728] to-[#081c15] text-[#e6c566] font-bold py-3.5 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#1b4332]/25 active:scale-95 transition-all duration-150 cursor-pointer border border-[#c59b27]/30"
+                    className="w-full bg-gradient-to-r from-[#1b4332] via-[#143728] to-[#081c15] text-[#e6c566] font-bold py-3 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md shadow-[#1b4332]/20 active:scale-95 transition-all duration-150 cursor-pointer border border-[#c59b27]/30"
                   >
                     <CloudUpload className="w-4 h-4 text-[#e6c566]" />
-                    <span>تأكيد الرفع والمزامنة في منصة ارتقاء (إرفاق نموذج الاعتماد المطبوع)</span>
+                    <span>تأكيد الرفع والمزامنة في منصة ارتقاء (إرفاق نموذج الاعتماد)</span>
                   </button>
                 ) : (
                   <div className="space-y-3">
-                    {/* Primary Irtqaa Upload Success Banner */}
-                    <div className="flex items-center justify-between bg-emerald-50 text-emerald-900 p-2.5 rounded-2xl text-xs font-bold border border-emerald-200">
-                      <div className="flex items-center gap-1.5">
-                        <CheckCheck className="w-4 h-4 text-emerald-600" />
-                        <span>تم توثيق الساعات في منصة ارتقاء بنجاح ومزامنة الاعتماد</span>
-                      </div>
-                      <span className="text-[10px] bg-emerald-200/60 text-emerald-900 px-2 py-0.5 rounded-md font-mono">
-                        {r.accreditationDocument?.accreditationNumber || `سجل رقم #${r.id}-IRTQ`}
-                      </span>
-                    </div>
-
-                    {/* Attached University Printed Accreditation Form (Bayan Al-Tayyar Archive Sync) */}
-                    {r.accreditationDocument && (
-                      <div className="bg-emerald-50/70 border border-emerald-200/90 rounded-2xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-2xs">
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
-                            <FileCheck2 className="w-4 h-4 text-emerald-700" />
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-xs font-bold text-emerald-950">
-                                نموذج الاعتماد المطبوع (منصة ارتقاء)
-                              </span>
-                              <span className="text-[10px] bg-emerald-200/80 text-emerald-900 font-mono px-1.5 py-0.5 rounded font-bold">
-                                {r.accreditationDocument.accreditationNumber || `IRTQ-${r.id}`}
-                              </span>
-                            </div>
-                            <p className="text-[10px] text-slate-500 mt-0.5">
-                              مُرسل تلقائياً لأرشيف الاعتمادات (أ. بيان الطيار) • {r.accreditationDocument.fileName}
-                            </p>
-                          </div>
+                    {/* Unified Accreditation Info (بدون تكرار الصناديق الخضراء) */}
+                    <div className="bg-emerald-50/80 border border-emerald-200/90 rounded-2xl p-2.5 sm:p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-2xs">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
+                          <CheckCheck className="w-4 h-4 text-emerald-700" />
                         </div>
+                        <div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-xs font-bold text-emerald-950">
+                              تم التوثيق في منصة ارتقاء
+                            </span>
+                            <span className="text-[10px] bg-emerald-200/80 text-emerald-900 font-mono px-1.5 py-0.5 rounded font-bold">
+                              {r.accreditationDocument?.accreditationNumber || `IRTQ-${r.id}`}
+                            </span>
+                          </div>
+                          {r.accreditationDocument && (
+                            <p className="text-[10px] text-slate-500 mt-0.5">
+                              ملف الاعتماد: {r.accreditationDocument.fileName}
+                            </p>
+                          )}
+                        </div>
+                      </div>
 
+                      {r.accreditationDocument && (
                         <div className="flex items-center gap-1.5 self-end sm:self-center shrink-0">
                           <button
                             type="button"
@@ -420,42 +418,37 @@ export const UploaderView: React.FC<Props> = ({
                             <Download className="w-3.5 h-3.5" />
                           </button>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
 
                     {/* مرحلة كشف الحضور الختامية (منصة ارتقاء) */}
-                    <div className="bg-slate-50/90 border-2 border-slate-200 rounded-3xl p-3.5 space-y-3 shadow-xs">
+                    <div className="bg-slate-50/90 border border-slate-200 rounded-2xl p-3 space-y-2.5 shadow-xs">
                       <div className="flex items-center justify-between pb-2 border-b border-slate-200/70">
                         <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-xl bg-[#1b4332]/10 text-[#1b4332] flex items-center justify-center">
-                            <FileCheck2 className="w-4 h-4 text-[#c59b27]" />
+                          <div className="w-6 h-6 rounded-lg bg-[#1b4332]/10 text-[#1b4332] flex items-center justify-center">
+                            <FileCheck2 className="w-3.5 h-3.5 text-[#c59b27]" />
                           </div>
-                          <div>
-                            <h5 className="text-xs font-bold text-[#1b4332]">
-                              مرحلة كشف الحضور الختامية (منصة ارتقاء)
-                            </h5>
-                            <p className="text-[10px] text-slate-500">
-                              تدقيق واعتماد الكشف النهائي أو الإعادة للموظف
-                            </p>
-                          </div>
+                          <h5 className="text-xs font-bold text-[#1b4332]">
+                            كشف الحضور والغياب الختامي
+                          </h5>
                         </div>
 
                         {r.attendanceSheet?.status === 'approved' || r.isOfficiallyClosed ? (
-                          <span className="text-[10px] bg-emerald-100 text-emerald-900 font-bold px-2.5 py-1 rounded-full border border-emerald-300 flex items-center gap-1">
+                          <span className="text-[10px] bg-emerald-100 text-emerald-900 font-bold px-2 py-0.5 rounded-full border border-emerald-300 flex items-center gap-1">
                             <ShieldCheck className="w-3 h-3 text-emerald-600" />
                             <span>معتمد ومغلق رسمياً</span>
                           </span>
                         ) : r.attendanceSheet?.status === 'returned' ? (
-                          <span className="text-[10px] bg-rose-100 text-rose-900 font-bold px-2.5 py-1 rounded-full border border-rose-300 flex items-center gap-1">
+                          <span className="text-[10px] bg-rose-100 text-rose-900 font-bold px-2 py-0.5 rounded-full border border-rose-300 flex items-center gap-1">
                             <RotateCcw className="w-3 h-3 text-rose-600" />
-                            <span>مُعاد للموظف للتعديل</span>
+                            <span>مُعاد للتعديل</span>
                           </span>
                         ) : r.attendanceSheet ? (
-                          <span className="text-[10px] bg-amber-100 text-amber-950 font-bold px-2.5 py-1 rounded-full border border-amber-300 animate-pulse">
+                          <span className="text-[10px] bg-amber-100 text-amber-950 font-bold px-2 py-0.5 rounded-full border border-amber-300 animate-pulse">
                             مرفق وبانتظار الإجراء
                           </span>
                         ) : (
-                          <span className="text-[10px] bg-slate-200 text-slate-600 font-bold px-2.5 py-1 rounded-full">
+                          <span className="text-[10px] bg-slate-200 text-slate-600 font-bold px-2 py-0.5 rounded-full">
                             بانتظار الرفع من الموظف
                           </span>
                         )}
@@ -463,10 +456,10 @@ export const UploaderView: React.FC<Props> = ({
 
                       {/* Display attached attendance sheet info & preview/download buttons */}
                       {r.attendanceSheet ? (
-                        <div className="space-y-3">
-                          <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 bg-white rounded-2xl border border-slate-200">
-                            <div className="flex items-center gap-2.5">
-                              <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center border border-emerald-100 shrink-0">
+                        <div className="space-y-2.5">
+                          <div className="flex flex-wrap items-center justify-between gap-2 p-2 bg-white rounded-xl border border-slate-200">
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-800 flex items-center justify-center border border-emerald-100 shrink-0">
                                 <FileText className="w-4 h-4 text-emerald-700" />
                               </div>
                               <div>
@@ -474,7 +467,7 @@ export const UploaderView: React.FC<Props> = ({
                                   {r.attendanceSheet.fileName}
                                 </span>
                                 <span className="text-[10px] text-slate-500">
-                                  الحجم: {r.attendanceSheet.fileSize || '1.2 MB'} • المسجلون: {r.attendanceSheet.attendeesCount || 35} متدرب
+                                  {r.attendanceSheet.fileSize || '1.2 MB'} • المسجلون: {r.attendanceSheet.attendeesCount || 35} متدرب
                                 </span>
                               </div>
                             </div>
@@ -484,115 +477,90 @@ export const UploaderView: React.FC<Props> = ({
                               <button
                                 type="button"
                                 onClick={() => setPreviewModalRequest(r)}
-                                className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#1b4332] hover:bg-[#143728] text-[#e6c566] rounded-xl text-[11px] font-bold shadow-xs active:scale-95 transition-all cursor-pointer border border-[#c59b27]/30"
+                                className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-[#1b4332] hover:bg-[#143728] text-[#e6c566] rounded-xl text-[11px] font-bold shadow-xs active:scale-95 transition-all cursor-pointer border border-[#c59b27]/30"
                               >
                                 <Eye className="w-3.5 h-3.5" />
-                                <span>معاينة الملف</span>
+                                <span>معاينة</span>
                               </button>
 
                               <button
                                 type="button"
                                 onClick={() => downloadAttendanceSheet(r)}
-                                className="inline-flex items-center gap-1 px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 rounded-xl text-[11px] font-bold border border-slate-200 shadow-xs active:scale-95 transition-all cursor-pointer"
+                                className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-white hover:bg-slate-100 text-slate-700 rounded-xl text-[11px] font-bold border border-slate-200 shadow-xs active:scale-95 transition-all cursor-pointer"
                               >
                                 <Download className="w-3.5 h-3.5 text-slate-500" />
-                                <span>تحميل الملف</span>
+                                <span>تحميل</span>
                               </button>
                             </div>
                           </div>
 
                           {/* Approval or Return Status or Action Buttons */}
                           {r.attendanceSheet.status === 'approved' || r.isOfficiallyClosed ? (
-                            <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border border-emerald-300 text-emerald-950 p-3 rounded-2xl flex items-center justify-between text-xs">
+                            <div className="bg-emerald-50 border border-emerald-300 text-emerald-950 p-2.5 rounded-xl flex items-center justify-between text-xs">
                               <div className="flex items-center gap-2">
-                                <Award className="w-5 h-5 text-emerald-700 shrink-0" />
-                                <div>
-                                  <span className="font-extrabold block">تم قبول واعتماد كشف الحضور رسمياً</span>
-                                  <span className="text-[10px] text-emerald-800">
-                                    تم توثيق النشاط وإغلاق المعاملة رسمياً في سجلات منصة ارتقاء.
-                                  </span>
-                                </div>
+                                <Award className="w-4 h-4 text-emerald-700 shrink-0" />
+                                <span className="font-bold">تم اعتماد كشف الحضور وإغلاق المعاملة رسمياً</span>
                               </div>
-                              <span className="text-[10px] bg-emerald-200/80 text-emerald-900 font-bold px-2 py-0.5 rounded-lg font-mono">
+                              <span className="text-[10px] bg-emerald-200/80 text-emerald-900 font-bold px-2 py-0.5 rounded-md font-mono">
                                 مغلق رسمياً
                               </span>
                             </div>
                           ) : r.attendanceSheet.status === 'returned' ? (
-                            <div className="bg-rose-50 border border-rose-300 text-rose-950 p-3 rounded-2xl space-y-1.5 text-xs">
+                            <div className="bg-rose-50 border border-rose-200 text-rose-950 p-2.5 rounded-xl space-y-1.5 text-xs">
                               <div className="flex items-center justify-between font-bold text-rose-900">
                                 <span className="flex items-center gap-1.5">
-                                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
-                                  <span>تمت إعادة هذا الكشف للموظف مع الملاحظات التالية:</span>
+                                  <AlertCircle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                                  <span>ملاحظة الإعادة للموظف:</span>
                                 </span>
-                                <span className="text-[10px] bg-rose-200 text-rose-900 px-2 py-0.5 rounded-md">
-                                  بانتظار الكشف المحدث
-                                </span>
-                              </div>
-                              <p className="bg-white/95 p-2 rounded-xl border border-rose-200 text-slate-800 text-[11px] leading-relaxed">
-                                {r.attendanceSheet.returnNote}
-                              </p>
-                              <div className="pt-1 flex items-center justify-end">
                                 <button
                                   type="button"
                                   onClick={() => setReturnModalRequest(r)}
                                   className="text-[10px] text-rose-800 hover:underline font-bold"
                                 >
-                                  تحديث ملاحظات الإعادة
+                                  تعديل الملاحظة
                                 </button>
                               </div>
+                              <p className="bg-white/95 p-2 rounded-lg border border-rose-200 text-slate-800 text-[11px] leading-relaxed">
+                                {r.attendanceSheet.returnNote}
+                              </p>
                             </div>
                           ) : (
                             /* خياري التعامل مع الكشف */
-                            <div className="pt-1 space-y-2">
-                              <span className="text-[11px] font-bold text-slate-700 block">
-                                خيارات التعامل مع الكشف:
-                              </span>
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                {/* خيار 1: قبول واعتماد الكشف */}
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    if (onApproveAttendance) {
-                                      onApproveAttendance(r.id);
-                                    }
-                                  }}
-                                  className="w-full bg-gradient-to-r from-emerald-700 to-emerald-800 hover:from-emerald-800 hover:to-emerald-900 text-white font-bold py-2.5 px-3 rounded-2xl text-xs flex items-center justify-center gap-1.5 shadow-md shadow-emerald-700/20 active:scale-95 transition-all cursor-pointer border border-emerald-600"
-                                >
-                                  <CheckCircle className="w-4 h-4 text-emerald-200" />
-                                  <div className="text-right">
-                                    <span className="block leading-tight">قبول واعتماد الكشف</span>
-                                    <span className="text-[9px] text-emerald-200 block font-normal">
-                                      لتوثيق النشاط وإغلاق المعاملة رسمياً
-                                    </span>
-                                  </div>
-                                </button>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-0.5">
+                              {/* خيار 1: قبول واعتماد الكشف */}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (onApproveAttendance) {
+                                    onApproveAttendance(r.id);
+                                  }
+                                }}
+                                className="w-full bg-gradient-to-r from-emerald-700 to-emerald-800 hover:from-emerald-800 hover:to-emerald-900 text-white font-bold py-2 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all cursor-pointer border border-emerald-600"
+                              >
+                                <CheckCircle className="w-4 h-4 text-emerald-200" />
+                                <span>قبول واعتماد الكشف الختامي</span>
+                              </button>
 
-                                {/* خيار 2: إعادة للموظف */}
-                                <button
-                                  type="button"
-                                  onClick={() => setReturnModalRequest(r)}
-                                  className="w-full bg-rose-50 hover:bg-rose-100 text-rose-900 font-bold py-2.5 px-3 rounded-2xl text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer border-2 border-rose-300"
-                                >
-                                  <RotateCcw className="w-4 h-4 text-rose-600" />
-                                  <div className="text-right">
-                                    <span className="block leading-tight">إعادة للموظف</span>
-                                    <span className="text-[9px] text-rose-700 block font-normal">
-                                      تحديد ملاحظات وسبب الإعادة (إجباري)
-                                    </span>
-                                  </div>
-                                </button>
-                              </div>
+                              {/* خيار 2: إعادة للموظف */}
+                              <button
+                                type="button"
+                                onClick={() => setReturnModalRequest(r)}
+                                className="w-full bg-rose-50 hover:bg-rose-100 text-rose-900 font-bold py-2 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer border border-rose-200"
+                              >
+                                <RotateCcw className="w-4 h-4 text-rose-600" />
+                                <span>إعادة للموظف للتعديل</span>
+                              </button>
                             </div>
                           )}
                         </div>
                       ) : (
                         /* لم يقم الموظف برفع الكشف بعد */
-                        <div className="p-3 bg-slate-100/90 rounded-2xl border border-slate-200 text-[11px] text-slate-600 flex items-center gap-2">
-                          <Info className="w-4 h-4 text-slate-500 shrink-0" />
+                        <div className="p-2.5 bg-slate-100/90 rounded-xl border border-slate-200 text-[11px] text-slate-600 flex items-center gap-2">
+                          <Info className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                           <span>
                             {isActivityEnded(r)
-                              ? 'النشاط منتهي • بانتظار قيام مقدم النشاط (الموظف) برفع كشف الحضور الختامي للاعتماد والتوثيق.'
-                              : `النشاط قيد التنفيذ • تتفعل خانة رفع كشف الحضور للموظف فور انتهاء النشاط بتاريخ (${r.endDate || r.startDate}).`}
+                              ? 'النشاط منتهي • بانتظار رفع كشف الحضور من مقدم الطلب.'
+                              : 'النشاط قيد التنفيذ • سيتم رفع الكشف من مقدم الطلب فور انتهاء النشاط.'}
                           </span>
                         </div>
                       )}
@@ -609,6 +577,7 @@ export const UploaderView: React.FC<Props> = ({
         request={selectedRequest}
         isOpen={!!selectedRequest}
         onClose={() => setSelectedRequest(null)}
+        viewerRole="uploader"
       />
 
       {/* Preview Attendance Sheet Modal */}

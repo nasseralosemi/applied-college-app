@@ -3,6 +3,7 @@ import { ActivityRequest } from '../types';
 import { RequestDetailsModal } from './RequestDetailsModal';
 import { ExportReportModal } from './ExportReportModal';
 import { StatusBadge } from './StatusBadge';
+import { MediaPublishBadge } from './MediaPublishBadge';
 import {
   Crown,
   Award,
@@ -18,6 +19,7 @@ import {
   LayoutDashboard,
   FileCheck2,
   Activity,
+  Share2,
 } from 'lucide-react';
 
 interface Props {
@@ -336,6 +338,58 @@ export const DeanExecutiveDashboardView: React.FC<Props> = ({ requests }) => {
               </div>
             )}
           </div>
+
+          {/* Recent Activities & Media Publishing Tracker */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-3">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center">
+                  <Share2 className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-xs font-bold text-slate-900">سجل المعاملات ومتابعة النشر الإعلامي (منصة X)</h3>
+                  <p className="text-[10px] text-slate-400">حالة التغطية الصادرة من وحدة العلاقات العامة والإعلام</p>
+                </div>
+              </div>
+              <span className="text-[10px] bg-slate-100 text-slate-700 font-bold px-2.5 py-1 rounded-full font-mono">
+                {requests.length} معاملة
+              </span>
+            </div>
+
+            <div className="divide-y divide-slate-100">
+              {requests.slice(0, 10).map((req) => (
+                <div
+                  key={req.id}
+                  className="py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 hover:bg-slate-50/70 p-2 rounded-xl transition-all"
+                >
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-xs font-bold text-slate-900">{req.name}</span>
+                      <span className="text-[10px] text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
+                        {req.type}
+                      </span>
+                    </div>
+                    <p className="text-[10px] text-slate-500">
+                      {req.presenter} • {req.branch} • {req.startDate || req.date}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0 self-start sm:self-center">
+                    <MediaPublishBadge request={req} />
+                    <StatusBadge status={req.status} note={req.note} />
+                    <button
+                      type="button"
+                      onClick={() => setActiveRequestForDetails(req)}
+                      className="p-1.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 transition active:scale-95 cursor-pointer"
+                      title="عرض الاستمارة والتغطية الإعلامية"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       )}
 
@@ -532,7 +586,9 @@ export const DeanExecutiveDashboardView: React.FC<Props> = ({ requests }) => {
       {activeRequestForDetails && (
         <RequestDetailsModal
           request={activeRequestForDetails}
+          isOpen={!!activeRequestForDetails}
           onClose={() => setActiveRequestForDetails(null)}
+          viewerRole="dean"
         />
       )}
 

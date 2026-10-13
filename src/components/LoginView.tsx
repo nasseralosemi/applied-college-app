@@ -203,44 +203,60 @@ export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
   ];
 
   return (
-    <div className="relative min-h-[90vh] py-6 sm:py-10 px-3 sm:px-6 flex flex-col items-center justify-center font-['Tajawal',sans-serif]">
-      {/* Ambient Gradient Mesh Background Layers */}
+    <div className="relative min-h-[90vh] py-6 sm:py-10 px-3 sm:px-6 flex flex-col items-center justify-center font-['Tajawal',sans-serif] text-slate-900">
+      {/* Subtle Institutional Geometric Grid Pattern */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-25 -z-10"
+        style={{
+          backgroundImage: `radial-gradient(rgba(197, 155, 39, 0.4) 1px, transparent 1px), radial-gradient(rgba(27, 67, 50, 0.45) 1px, transparent 1px)`,
+          backgroundSize: '30px 30px',
+          backgroundPosition: '0 0, 15px 15px',
+        }}
+      />
+
+      {/* Warm Ambient Radial Gradient Spots (Institutional Olive & Deep Forest) */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[520px] sm:w-[700px] h-[340px] bg-gradient-to-tr from-emerald-200/35 via-teal-100/30 to-[#c59b27]/20 rounded-full blur-3xl opacity-70" />
-        <div className="absolute bottom-10 left-10 w-72 h-72 bg-[#1b4332]/10 rounded-full blur-2xl" />
-        <div className="absolute top-10 right-10 w-72 h-72 bg-[#c59b27]/15 rounded-full blur-2xl" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] sm:w-[900px] h-[550px] bg-[radial-gradient(ellipse_at_center,rgba(197,155,39,0.2)_0%,rgba(27,67,50,0.45)_45%,transparent_75%)] blur-3xl opacity-90" />
+        <div className="absolute top-10 right-10 w-80 h-80 bg-[radial-gradient(circle,rgba(20,55,40,0.6)_0%,transparent_70%)] blur-3xl opacity-80" />
+        <div className="absolute bottom-10 left-10 w-80 h-80 bg-[radial-gradient(circle,rgba(8,28,21,0.9)_0%,transparent_70%)] blur-3xl opacity-90" />
       </div>
 
-      {/* Brand Crest with Glow Effect */}
-      <div className="relative group mb-3">
-        <div className="absolute -inset-2 bg-gradient-to-r from-[#c59b27]/40 via-emerald-500/30 to-[#c59b27]/40 rounded-3xl blur-xl opacity-75 group-hover:opacity-100 transition-all duration-500" />
-        <div className="relative w-20 h-20 sm:w-22 sm:h-22 bg-gradient-to-br from-[#1b4332] via-[#143728] to-[#081c15] rounded-3xl p-2.5 shadow-2xl border-2 border-[#c59b27]/50 flex items-center justify-center transform group-hover:scale-105 transition-transform duration-300">
+      {/* Brand Crest with Enhanced Golden-Green Halo Glow */}
+      <div className="relative group mb-3.5">
+        <div className="absolute -inset-3 bg-gradient-to-r from-[#c59b27]/50 via-emerald-400/40 to-[#c59b27]/50 rounded-3xl blur-2xl opacity-85 group-hover:opacity-100 transition-all duration-500 animate-pulse" />
+        <div className="relative w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-[#1b4332] via-[#143728] to-[#081c15] rounded-3xl p-3 shadow-2xl border-2 border-[#c59b27]/60 flex items-center justify-center transform group-hover:scale-105 transition-transform duration-300">
           <img
             src="/icon.svg"
             alt="شعار الكلية التطبيقية"
-            className="w-full h-full object-contain drop-shadow-md"
+            className="w-full h-full object-contain drop-shadow-lg"
           />
         </div>
       </div>
 
-      {/* Titles */}
-      <div className="text-center mb-6">
-        <div className="inline-flex items-center gap-1.5 text-xs font-extrabold text-[#c59b27] mb-1">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>جامعة المجمعة</span>
+      {/* Titles on Dark Luxury Background */}
+      <div className="text-center mb-6 space-y-1">
+        <div className="inline-flex items-center gap-1.5 text-xs font-black text-[#e6c566] px-3.5 py-1 rounded-full bg-white/10 border border-[#c59b27]/40 shadow-inner backdrop-blur-md">
+          <Sparkles className="w-3.5 h-3.5 text-[#e6c566]" />
+          <span>جامعة المجمعة • الكلية التطبيقية</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-[#1b4332] tracking-tight">
-          الكلية التطبيقية
+        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight drop-shadow-md">
+          منظومة اعتماد وتوثيق الأنشطة
         </h1>
-        <p className="text-xs sm:text-sm text-slate-600 font-medium mt-1 max-w-md mx-auto leading-relaxed">
-          منظومة اعتماد وتوثيق الأنشطة والدورات ومواءمة منصة ارتقاء الجامعية
+        <p className="text-xs sm:text-sm text-emerald-100/90 font-medium max-w-md mx-auto leading-relaxed">
+          بوابة المواءمة المباشرة مع منصة ارتقاء والسجل المهاري الوطني للجامعة
         </p>
       </div>
 
-      {/* Main Glassmorphism Card */}
-      <div className="w-full max-w-xl bg-white/95 backdrop-blur-2xl rounded-3xl p-5 sm:p-8 shadow-[0_20px_60px_-15px_rgba(27,67,50,0.12)] border border-slate-200/80 text-right animate-in fade-in zoom-in-95 duration-300 relative overflow-hidden">
-        {/* Subtle Decorative Golden Corner Line */}
-        <div className="absolute top-0 right-0 left-0 h-1.5 bg-gradient-to-r from-[#1b4332] via-[#c59b27] to-[#1b4332]" />
+      {/* Main Card Wrapper with Ambient Halo Glow (Glassmorphism Shadow) */}
+      <div className="w-full max-w-xl relative group animate-in fade-in zoom-in-95 duration-300">
+        {/* Soft Ambient Glow Halo behind the card */}
+        <div className="absolute -inset-2 bg-gradient-to-r from-[#c59b27]/35 via-emerald-400/25 to-[#c59b27]/35 rounded-[2.5rem] blur-2xl opacity-90 transition-all duration-500 pointer-events-none -z-10" />
+        <div className="absolute -inset-1 bg-gradient-to-b from-[#c59b27]/40 via-transparent to-[#1b4332]/40 rounded-3xl blur-md opacity-80 pointer-events-none -z-10" />
+
+        {/* The Card Itself */}
+        <div className="relative w-full bg-white/98 backdrop-blur-2xl rounded-3xl p-5 sm:p-8 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.65),0_0_45px_rgba(197,155,39,0.2)] border border-[#c59b27]/40 text-right overflow-hidden">
+          {/* Subtle Decorative Golden Corner Line */}
+          <div className="absolute top-0 right-0 left-0 h-1.5 bg-gradient-to-r from-[#1b4332] via-[#c59b27] to-[#1b4332]" />
 
         {/* Tab Switcher */}
         <div className="grid grid-cols-2 p-1 bg-slate-100/90 rounded-2xl mb-6 text-xs font-bold border border-slate-200 shadow-inner">
@@ -524,19 +540,20 @@ export const LoginView: React.FC<Props> = ({ users, onLoginSuccess }) => {
             </div>
           </form>
         )}
+        </div>
       </div>
 
       {/* Footer System Meta */}
-      <div className="mt-6 text-center text-[11px] text-slate-400 space-y-1">
+      <div className="mt-7 text-center text-[11px] text-emerald-200/75 space-y-1 select-none">
         <div>
           جميع الحقوق محفوظة © الكلية التطبيقية - جامعة المجمعة 1448هـ / 2026م
         </div>
-        <div className="flex items-center justify-center gap-2 text-[10px] text-slate-400">
+        <div className="flex items-center justify-center gap-2 text-[10px] text-emerald-300/60">
           <span>بوابة السجل المهاري الوطني</span>
           <span>•</span>
           <span>منصة ارتقاء الجامعية</span>
           <span>•</span>
-          <span className="text-emerald-700 font-bold">السحابة اللحظية</span>
+          <span className="text-[#e6c566] font-bold">السحابة اللحظية المباشرة</span>
         </div>
       </div>
     </div>

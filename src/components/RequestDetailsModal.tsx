@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { ActivityRequest } from '../types';
+import { ActivityRequest, UserRole } from '../types';
 import { StatusBadge } from './StatusBadge';
+import { MediaPublishBadge } from './MediaPublishBadge';
 import { AttendancePreviewModal } from './AttendancePreviewModal';
 import { downloadAttendanceSheet } from '../utils/activityUtils';
 import {
@@ -26,18 +27,25 @@ import {
   Sparkles,
   Download,
   Eye,
+  Edit3,
+  Ban,
+  Link2,
 } from 'lucide-react';
 
 interface Props {
   request: ActivityRequest | null;
   isOpen: boolean;
   onClose: () => void;
+  onEditRequest?: (req: ActivityRequest) => void;
+  viewerRole?: UserRole;
 }
 
 export const RequestDetailsModal: React.FC<Props> = ({
   request,
   isOpen,
   onClose,
+  onEditRequest,
+  viewerRole,
 }) => {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
@@ -89,6 +97,23 @@ export const RequestDetailsModal: React.FC<Props> = ({
             <p className="text-[11px] text-slate-500 mt-1">
               مقدم النشاط: <span className="font-semibold text-slate-700">{request.presenter}</span>
             </p>
+
+            {request.status === 'returned_emp' && (
+              <div className="mt-3 p-3 bg-rose-50 border border-rose-200 rounded-xl space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-rose-900 font-bold text-[11px]">
+                    <AlertTriangle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                    <span>ملاحظة وتوجيه المدير المباشر:</span>
+                  </div>
+                  <span className="text-[9px] bg-rose-200 text-rose-900 font-bold px-2 py-0.5 rounded-full">
+                    مطلوب التعديل
+                  </span>
+                </div>
+                <p className="text-xs font-semibold text-slate-900 bg-white/90 p-2.5 rounded-lg border border-rose-100 leading-relaxed">
+                  "{request.note || 'يرجى استيفاء وتعديل بيانات الاستمارة وفق التوجيهات.'}"
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Group 1: Basic Info & Units */}
@@ -241,7 +266,7 @@ export const RequestDetailsModal: React.FC<Props> = ({
                     </div>
                   )}
 
-                  {request.xPlatformPublish !== undefined && (
+                  {request.xPlatformPublish !== undefined && viewerRole !== 'auditor' && viewerRole !== 'accreditation' && (
                     <div>
                       <span className="text-slate-400 block text-[10px]">النشر في منصة X:</span>
                       <span className={request.xPlatformPublish ? 'font-bold text-slate-900' : 'text-slate-500'}>
@@ -260,6 +285,103 @@ export const RequestDetailsModal: React.FC<Props> = ({
                   </div>
                 )}
               </div>
+            </div>
+          )}
+
+          {/* Group: Media Coverage & PR Publication (وحدة العلاقات العامة والإعلام) - مستبعد تماماً من لوحة المدقق/الاعتماد */}
+          {viewerRole !== 'auditor' && viewerRole !== 'accreditation' && (
+            <div className="space-y-2 border-t border-slate-100 pt-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#1b4332]">
+                  <Share2 className="w-3.5 h-3.5 text-[#c59b27]" />
+                  <span>التغطية والنشر الإعلامي (وحدة العلاقات العامة والإعلام)</span>
+                </div>
+                <MediaPublishBadge request={request} />
+              </div>
+
+              {request.xPlatformPublish ? (
+                <div className="bg-slate-50/90 rounded-2xl p-3 border border-slate-200/80 space-y-2.5 text-xs">
+                  {request.prStatus === 'published_pr' ? (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between bg-emerald-50 text-emerald-950 p-2.5 rounded-xl border border-emerald-200">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <span className="font-bold text-[11px]">
+                            تم توثيق ونشر التغطية الإعلامية في حساب الكلية الرسمي بمنصة X
+                          </span>
+                        </div>
+                        {request.prPublishedAt && (
+                          <span className="text-[10px] text-emerald-800 font-mono">
+                            {request.prPublishedAt.includes('T')
+                              ? new Date(request.prPublishedAt).toLocaleDateString('ar-SA')
+                              : request.prPublishedAt}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Direct link / Proof of Coverage */}
+                      {(request.prCoverageUrl || (request.prNotes && request.prNotes.startsWith('http'))) && (
+                        <div className="p-2.5 bg-white rounded-xl border border-emerald-200 flex items-center justify-between gap-2 shadow-2xs">
+                          <div className="flex items-center gap-2 truncate">
+                            <Globe className="w-4 h-4 text-[#1b4332] shrink-0" />
+                            <div>
+                              <span className="text-xs font-bold text-slate-900 block">
+                                رابط إثبات التغطية والتغريدة الرسمية
+                              </span>
+                              <span className="text-[10px] text-slate-500 font-mono truncate block max-w-[220px] sm:max-w-xs">
+                                {request.prCoverageUrl || request.prNotes}
+                              </span>
+                            </div>
+                          </div>
+                          <a
+                            href={request.prCoverageUrl || request.prNotes}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#1b4332] text-[#e6c566] hover:bg-[#143728] rounded-xl text-xs font-bold active:scale-95 transition-all shadow-xs shrink-0 cursor-pointer"
+                          >
+                            <span>مشاهدة التغريدة</span>
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </a>
+                        </div>
+                      )}
+
+                      {/* Tweet Text Published */}
+                      {request.prTweetDraft && (
+                        <div className="bg-white p-2.5 rounded-xl border border-slate-200">
+                          <span className="text-[10px] font-bold text-slate-500 block mb-1">
+                            نص التغريدة والمادة الإعلامية:
+                          </span>
+                          <p className="text-[11px] text-slate-700 whitespace-pre-line leading-relaxed font-sans bg-slate-50 p-2 rounded-lg border border-slate-100">
+                            {request.prTweetDraft}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* PR Notes if any */}
+                      {request.prNotes && !request.prNotes.startsWith('http') && (
+                        <div className="text-[11px] text-slate-600 bg-white p-2 rounded-xl border border-slate-200">
+                          <strong className="text-slate-800 block mb-0.5 text-[10px]">ملاحظات العلاقات العامة:</strong>
+                          <p>{request.prNotes}</p>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="p-2.5 bg-amber-50/80 rounded-xl border border-amber-200 text-[11px] text-amber-900 flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-amber-600 shrink-0" />
+                      <span>
+                        المعاملة تتطلب إعلاناً رسمياً في منصة X • التغطية قيد التجهيز والنشر حالياً من قِبل وحدة العلاقات العامة والإعلام.
+                      </span>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="p-2.5 bg-rose-50/70 rounded-xl border border-rose-200 text-[11px] text-rose-800 flex items-center gap-2">
+                  <Ban className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                  <span>
+                    هذا النشاط غير مدرج للنشر الإعلامي في منصة X (سجل مهاري فقط).
+                  </span>
+                </div>
+              )}
             </div>
           )}
 
@@ -462,12 +584,72 @@ export const RequestDetailsModal: React.FC<Props> = ({
                   </p>
                 </div>
               </div>
+
+              {/* Milestone 5: Attendance Sheet (مرحلة كشف الحضور الختامية - الخطوة الأخيرة) */}
+              <div className="flex items-start gap-2.5">
+                <div
+                  className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
+                    request.attendanceSheet?.status === 'approved' || request.isOfficiallyClosed
+                      ? 'bg-[#1b4332] text-[#e6c566] ring-2 ring-[#c59b27]'
+                      : request.attendanceSheet?.status === 'pending_review'
+                      ? 'bg-amber-500 text-white ring-2 ring-amber-300 animate-pulse'
+                      : request.status === 'uploaded_irtqaa'
+                      ? 'bg-emerald-100 text-emerald-800 ring-2 ring-emerald-300'
+                      : 'bg-slate-200 text-slate-400'
+                  }`}
+                >
+                  <FileCheck2 className="w-3.5 h-3.5" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-slate-800">5. كشف الحضور والتوثيق الختامي (الخطوة الأخيرة)</span>
+                    <span className="text-[10px] text-slate-500">
+                      {request.attendanceSheet?.status === 'approved' || request.isOfficiallyClosed
+                        ? 'معتمد ومغلق رسمياً'
+                        : request.attendanceSheet?.status === 'pending_review'
+                        ? 'قيد مراجعة الكشف'
+                        : request.attendanceSheet?.status === 'returned'
+                        ? 'مطلوب تعديل الكشف'
+                        : request.status === 'uploaded_irtqaa'
+                        ? 'بانتظار رفع الكشف'
+                        : 'المرحلة الختامية'}
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-slate-500">
+                    {request.attendanceSheet?.status === 'approved' || request.isOfficiallyClosed
+                      ? `تم اعتماد كشف الحضور رسمياً (${request.attendanceSheet?.attendeesCount || ''} حاضر) وتوثيق الساعات بالسجل المهاري.`
+                      : request.attendanceSheet?.status === 'pending_review'
+                      ? 'تم رفع كشف الحضور من قِبل مقدم النشاط وقيد تدقيق مسؤول منصة ارتقاء.'
+                      : request.attendanceSheet?.status === 'returned'
+                      ? `تمت إعادة الكشف للموظف للتعديل: "${request.attendanceSheet.returnNote || ''}"`
+                      : request.status === 'uploaded_irtqaa'
+                      ? 'فور انتهاء فعاليات النشاط، يرفع الموظف كشف الحضور المعتمد لإغلاق المعاملة رسمياً.'
+                      : 'تتفعل هذه المرحلة الختامية فور انتهاء النشاط ورفع كشف الحضور المعتمد.'}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Modal Footer */}
-        <div className="bg-slate-50 p-3.5 border-t border-slate-200/80 flex items-center justify-end">
+        <div className="bg-slate-50 p-3.5 border-t border-slate-200/80 flex items-center justify-between gap-2">
+          {request.status === 'returned_emp' && onEditRequest ? (
+            <button
+              type="button"
+              onClick={() => {
+                onClose();
+                onEditRequest(request);
+              }}
+              className="px-4 py-2.5 bg-gradient-to-r from-[#1b4332] via-[#143728] to-[#081c15] text-[#e6c566] hover:text-white rounded-2xl text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer flex items-center gap-1.5 border border-[#c59b27]/40"
+            >
+              <Edit3 className="w-3.5 h-3.5 text-[#e6c566]" />
+              <span>تعديل بيانات الاستمارة</span>
+            </button>
+          ) : (
+            <div />
+          )}
+
           <button
             type="button"
             onClick={onClose}

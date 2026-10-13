@@ -90,6 +90,7 @@ export interface ActivityRequest {
   summary: string; // ملخص النشاط والأهداف
   status: RequestStatus;
   note: string;
+  editedAfterReturn?: boolean; // تم تعديل وحفظ بيانات الاستمارة بعد الإرجاع من المدير
   submittedAt?: string;
   submittedByEmpNumber?: string;
   // مسار الاعتماد الإداري والتوجيه الذكي
@@ -104,6 +105,7 @@ export interface ActivityRequest {
   prPublishedAt?: string;
   prNotes?: string;
   prTweetDraft?: string;
+  prCoverageUrl?: string; // رابط التغريدة أو إثبات التغطية الإعلامية على منصة X
   // مرحلة كشف الحضور الختامية
   attendanceSheet?: AttendanceSheet;
   isOfficiallyClosed?: boolean; // إغلاق المعاملة رسمياً بعد قبول واعتماد كشف الحضور

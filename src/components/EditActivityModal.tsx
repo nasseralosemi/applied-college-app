@@ -13,7 +13,10 @@ import {
   FileText,
   Briefcase,
   AlertCircle,
+  AlertTriangle,
   Check,
+  Send,
+  RotateCcw,
 } from 'lucide-react';
 
 interface Props {
@@ -21,6 +24,7 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   onSave: (updatedRequest: ActivityRequest) => void;
+  mode?: 'auditor' | 'employee_resubmit';
 }
 
 const ACTIVITY_TYPES = [
@@ -57,6 +61,7 @@ export const EditActivityModal: React.FC<Props> = ({
   isOpen,
   onClose,
   onSave,
+  mode,
 }) => {
   if (!isOpen || !request) return null;
 
@@ -72,9 +77,27 @@ export const EditActivityModal: React.FC<Props> = ({
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const isEmployeeMode = mode === 'employee_resubmit' || request.status === 'returned_emp';
+
+  const prepareData = (): ActivityRequest => {
+    const hoursNum = Number(formData.hours) || 1;
+    return {
+      ...formData,
+      hours: hoursNum,
+      editedAfterReturn: true,
+      date: formData.startDate || formData.date,
+      location:
+        formData.deliveryMode === 'عن بعد'
+          ? formData.meetingUrl?.trim()
+            ? `عن بعد - ${formData.meetingUrl.trim()}`
+            : 'عن بعد'
+          : formData.physicalLocation?.trim() || formData.location || 'حضوري',
+    };
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
+    onSave(prepareData());
     onClose();
   };
 
@@ -93,15 +116,23 @@ export const EditActivityModal: React.FC<Props> = ({
           <div className="flex items-center gap-2">
             <div>
               <div className="flex items-center gap-1.5 justify-end">
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-200">
-                  صلاحية التدقيق
+                <span
+                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                    isEmployeeMode
+                      ? 'bg-rose-100 text-rose-900 border-rose-200'
+                      : 'bg-amber-100 text-amber-900 border-amber-200'
+                  }`}
+                >
+                  {isEmployeeMode ? 'مقدم الطلب • استيفاء الملاحظات' : 'صلاحية التدقيق'}
                 </span>
                 <h3 className="text-sm sm:text-base font-extrabold text-[#1b4332]">
-                  تعديل ومراجعة حقول الاستمارة
+                  {isEmployeeMode ? 'تعديل بيانات الاستمارة المسترجعة' : 'تعديل ومراجعة حقول الاستمارة'}
                 </h3>
               </div>
               <p className="text-[11px] text-slate-500 text-right">
-                تعديل وتصحيح بيانات النشاط قبل الاعتماد والتحويل لمنصة ارتقاء
+                {isEmployeeMode
+                  ? 'تعديل البيانات المطلوبة (مثل الساعات المعتمدة أو اسم النشاط) بناءً على ملاحظة المدير'
+                  : 'تعديل وتصحيح بيانات النشاط قبل الاعتماد والتحويل لمنصة ارتقاء'}
               </p>
             </div>
             <div className="w-9 h-9 rounded-2xl bg-[#1b4332] text-[#e6c566] flex items-center justify-center shadow-md shadow-[#1b4332]/20">
@@ -112,6 +143,29 @@ export const EditActivityModal: React.FC<Props> = ({
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 custom-scrollbar">
+          {/* Prominent Manager Return Note Notice if Returned */}
+          {request.note && isEmployeeMode && (
+            <div className="bg-rose-50 border-2 border-rose-300 rounded-2xl p-3.5 sm:p-4 text-rose-950 space-y-2 shadow-xs animate-in fade-in">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+                  <span className="text-xs font-black text-rose-900">
+                    ملاحظة وتوجيه المدير المباشر للتعديل:
+                  </span>
+                </div>
+                <span className="text-[10px] bg-rose-200 text-rose-900 font-bold px-2.5 py-0.5 rounded-full">
+                  مطلوب الاستيفاء
+                </span>
+              </div>
+              <div className="bg-white/95 p-3 rounded-xl border border-rose-200 text-xs font-bold text-slate-900 leading-relaxed">
+                "{request.note}"
+              </div>
+              <p className="text-[10px] text-rose-700 font-medium">
+                يرجى تعديل الحقول الخاطئة أدناه وفق توجيه المدير أعلاه، ثم حفظ التعديلات وإعادة الرفع.
+              </p>
+            </div>
+          )}
+
           {/* Group 1: Basic Information */}
           <div className="space-y-3 bg-slate-50/70 p-3.5 rounded-2xl border border-slate-200/70">
             <div className="flex items-center gap-1.5 text-xs font-bold text-[#1b4332]">
@@ -413,7 +467,7 @@ export const EditActivityModal: React.FC<Props> = ({
           </div>
 
           {/* Footer Actions */}
-          <div className="pt-2 flex items-center gap-2 border-t border-slate-100">
+          <div className="pt-3 flex items-center gap-2 border-t border-slate-100">
             <button
               type="submit"
               className="flex-1 bg-gradient-to-r from-[#1b4332] via-[#143728] to-[#081c15] text-[#e6c566] font-bold py-3 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#1b4332]/25 active:scale-95 transition-all duration-150 cursor-pointer border border-[#c59b27]/30"
@@ -421,6 +475,7 @@ export const EditActivityModal: React.FC<Props> = ({
               <Save className="w-4 h-4 text-[#e6c566]" />
               <span>حفظ التعديلات في الاستمارة</span>
             </button>
+
             <button
               type="button"
               onClick={onClose}
