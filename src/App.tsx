@@ -795,15 +795,19 @@ export default function App() {
   return (
     <div
       dir="rtl"
-      className="min-h-screen w-full bg-[#f8fafc] flex flex-col text-slate-800 antialiased font-['Tajawal',sans-serif]"
+      className={`min-h-screen w-full flex flex-col antialiased font-['Tajawal',sans-serif] ${
+        currentRole === 'login'
+          ? 'bg-gradient-to-br from-[#04100a] via-[#092218] to-[#030d07] text-white'
+          : 'bg-[#f8fafc] text-slate-800'
+      }`}
     >
       {/* App Container - Unified Wide Layout for all views */}
       <div
         className={`w-full ${
-          currentRole === 'login' ? 'max-w-4xl' : 'max-w-7xl'
-        } mx-auto flex flex-col bg-[#f8fafc] relative shadow-none transition-all duration-200 ${
-          currentRole !== 'login' ? 'h-screen max-h-screen overflow-hidden' : 'min-h-screen'
-        }`}
+          currentRole === 'login'
+            ? 'w-full max-w-full bg-transparent min-h-screen'
+            : 'max-w-7xl mx-auto bg-[#f8fafc] shadow-none h-screen max-h-screen overflow-hidden'
+        } flex flex-col relative transition-all duration-200`}
       >
         {/* In-app Toast */}
         <Toast toast={toast} onClose={() => setToast(null)} />
@@ -819,7 +823,13 @@ export default function App() {
         )}
 
         {/* Scrollable Main Content - Strict Role-Based Access Control (RBAC) */}
-        <main className="flex-1 overflow-y-auto p-4 custom-scrollbar relative">
+        <main
+          className={`flex-1 relative ${
+            currentRole === 'login'
+              ? 'p-0 overflow-y-auto'
+              : 'overflow-y-auto p-4 custom-scrollbar'
+          }`}
+        >
           {currentRole === 'login' && (
             <LoginView users={users} onLoginSuccess={handleLoginSuccess} />
           )}
