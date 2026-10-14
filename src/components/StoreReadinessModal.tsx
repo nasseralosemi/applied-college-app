@@ -90,18 +90,18 @@ npx cap open ios
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/60 backdrop-blur-xs animate-in fade-in" dir="rtl">
-      <div className="bg-white rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col border border-gray-100 overflow-hidden text-right">
+      <div className="bg-white rounded-[32px] shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col border border-gray-100 overflow-hidden text-right">
         {/* Header */}
-        <div className="px-6 py-4 bg-[#1b4332] text-white flex items-center justify-between shrink-0">
+        <div className="px-6 py-4 bg-[#46523B] text-white flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#c59b27] rounded-xl flex items-center justify-center text-[#1b4332] shadow-sm">
+            <div className="w-10 h-10 bg-[#A08D52] rounded-xl flex items-center justify-center text-[#46523B] shadow-sm">
               <Smartphone className="w-6 h-6" />
             </div>
             <div>
               <h3 className="font-extrabold text-base sm:text-lg text-white">
                 مركز التجهيز والنشر على المتاجر
               </h3>
-              <p className="text-xs text-[#e6c566]">
+              <p className="text-xs text-[#C4B688]">
                 Google Play Store & Apple App Store - الكلية التطبيقية
               </p>
             </div>
@@ -122,7 +122,7 @@ npx cap open ios
             onClick={() => setActiveTab('listing')}
             className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition border-b-2 flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
               activeTab === 'listing'
-                ? 'bg-white border-[#1b4332] text-[#1b4332] shadow-xs'
+                ? 'bg-white border-[#46523B] text-[#46523B] shadow-xs'
                 : 'border-transparent text-gray-500 hover:text-gray-800'
             }`}
           >
@@ -135,7 +135,7 @@ npx cap open ios
             onClick={() => setActiveTab('build')}
             className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition border-b-2 flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
               activeTab === 'build'
-                ? 'bg-white border-[#1b4332] text-[#1b4332] shadow-xs'
+                ? 'bg-white border-[#46523B] text-[#46523B] shadow-xs'
                 : 'border-transparent text-gray-500 hover:text-gray-800'
             }`}
           >
@@ -148,7 +148,7 @@ npx cap open ios
             onClick={() => setActiveTab('beta')}
             className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition border-b-2 flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
               activeTab === 'beta'
-                ? 'bg-white border-[#1b4332] text-[#1b4332] shadow-xs'
+                ? 'bg-white border-[#46523B] text-[#46523B] shadow-xs'
                 : 'border-transparent text-gray-500 hover:text-gray-800'
             }`}
           >
@@ -161,7 +161,7 @@ npx cap open ios
             onClick={() => setActiveTab('accounts')}
             className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition border-b-2 flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
               activeTab === 'accounts'
-                ? 'bg-white border-[#1b4332] text-[#1b4332] shadow-xs'
+                ? 'bg-white border-[#46523B] text-[#46523B] shadow-xs'
                 : 'border-transparent text-gray-500 hover:text-gray-800'
             }`}
           >
@@ -177,8 +177,8 @@ npx cap open ios
             <div className="space-y-5">
               {/* Visual Assets Preview */}
               <div className="bg-gray-50 p-4 rounded-2xl border border-gray-200">
-                <h4 className="font-bold text-[#1b4332] text-sm mb-3 flex items-center gap-2">
-                  <Smartphone className="w-4 h-4 text-[#c59b27]" />
+                <h4 className="font-bold text-[#46523B] text-sm mb-3 flex items-center gap-2">
+                  <Smartphone className="w-4 h-4 text-[#A08D52]" />
                   <span>الأصول البصرية والهوية الجاهزة (Visual Assets)</span>
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
@@ -189,7 +189,7 @@ npx cap open ios
                     <a
                       href="/pwa-192x192.png"
                       download="pwa-192x192.png"
-                      className="mt-2 text-[10px] bg-green-50 text-[#1b4332] font-bold px-2 py-1 rounded-lg border border-green-200 flex items-center gap-1 hover:bg-green-100"
+                      className="mt-2 text-[10px] bg-green-50 text-[#46523B] font-bold px-2 py-1 rounded-lg border border-green-200 flex items-center gap-1 hover:bg-green-100"
                     >
                       <Download className="w-3 h-3" />
                       <span>تحميل PNG</span>
@@ -203,7 +203,7 @@ npx cap open ios
                     <a
                       href="/pwa-512x512.png"
                       download="pwa-512x512.png"
-                      className="mt-2 text-[10px] bg-green-50 text-[#1b4332] font-bold px-2 py-1 rounded-lg border border-green-200 flex items-center gap-1 hover:bg-green-100"
+                      className="mt-2 text-[10px] bg-green-50 text-[#46523B] font-bold px-2 py-1 rounded-lg border border-green-200 flex items-center gap-1 hover:bg-green-100"
                     >
                       <Download className="w-3 h-3" />
                       <span>تحميل PNG</span>
@@ -217,7 +217,7 @@ npx cap open ios
                     <a
                       href="/feature-graphic.svg"
                       download="feature-graphic.svg"
-                      className="mt-2 text-[10px] bg-green-50 text-[#1b4332] font-bold px-2 py-1 rounded-lg border border-green-200 flex items-center gap-1 hover:bg-green-100"
+                      className="mt-2 text-[10px] bg-green-50 text-[#46523B] font-bold px-2 py-1 rounded-lg border border-green-200 flex items-center gap-1 hover:bg-green-100"
                     >
                       <Download className="w-3 h-3" />
                       <span>تحميل البانر</span>
@@ -234,14 +234,14 @@ npx cap open ios
                       <a
                         href="/screenshot-mobile.png"
                         download="screenshot-mobile.png"
-                        className="text-[10px] bg-green-50 text-[#1b4332] font-bold px-1.5 py-1 rounded-lg border border-green-200 hover:bg-green-100"
+                        className="text-[10px] bg-green-50 text-[#46523B] font-bold px-1.5 py-1 rounded-lg border border-green-200 hover:bg-green-100"
                       >
                         جوال
                       </a>
                       <a
                         href="/screenshot-desktop.png"
                         download="screenshot-desktop.png"
-                        className="text-[10px] bg-green-50 text-[#1b4332] font-bold px-1.5 py-1 rounded-lg border border-green-200 hover:bg-green-100"
+                        className="text-[10px] bg-green-50 text-[#46523B] font-bold px-1.5 py-1 rounded-lg border border-green-200 hover:bg-green-100"
                       >
                         حاسوب
                       </a>
@@ -259,7 +259,7 @@ npx cap open ios
                     <button
                       type="button"
                       onClick={() => handleCopy('title', appTitle)}
-                      className="text-[11px] text-[#1b4332] font-bold flex items-center gap-1 hover:underline cursor-pointer"
+                      className="text-[11px] text-[#46523B] font-bold flex items-center gap-1 hover:underline cursor-pointer"
                     >
                       {copiedKey === 'title' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                       <span>{copiedKey === 'title' ? 'تم النسخ' : 'نسخ'}</span>
@@ -277,7 +277,7 @@ npx cap open ios
                     <button
                       type="button"
                       onClick={() => handleCopy('short', shortDesc)}
-                      className="text-[11px] text-[#1b4332] font-bold flex items-center gap-1 hover:underline cursor-pointer"
+                      className="text-[11px] text-[#46523B] font-bold flex items-center gap-1 hover:underline cursor-pointer"
                     >
                       {copiedKey === 'short' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                       <span>{copiedKey === 'short' ? 'تم النسخ' : 'نسخ'}</span>
@@ -295,7 +295,7 @@ npx cap open ios
                     <button
                       type="button"
                       onClick={() => handleCopy('full', fullDesc)}
-                      className="text-[11px] text-[#1b4332] font-bold flex items-center gap-1 hover:underline cursor-pointer"
+                      className="text-[11px] text-[#46523B] font-bold flex items-center gap-1 hover:underline cursor-pointer"
                     >
                       {copiedKey === 'full' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                       <span>{copiedKey === 'full' ? 'تم النسخ' : 'نسخ النص'}</span>
@@ -316,7 +316,7 @@ npx cap open ios
                     <button
                       type="button"
                       onClick={() => handleCopy('privacy', privacyPolicy)}
-                      className="text-[11px] text-[#1b4332] font-bold flex items-center gap-1 hover:underline cursor-pointer"
+                      className="text-[11px] text-[#46523B] font-bold flex items-center gap-1 hover:underline cursor-pointer"
                     >
                       {copiedKey === 'privacy' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                       <span>{copiedKey === 'privacy' ? 'تم النسخ' : 'نسخ السياسة'}</span>
@@ -344,14 +344,14 @@ npx cap open ios
               {/* Android Keystore Section */}
               <div className="bg-white p-4 rounded-2xl border border-gray-200">
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-bold text-[#1b4332] text-xs flex items-center gap-2">
+                  <h4 className="font-bold text-[#46523B] text-xs flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-green-500"></span>
                     <span>1. إنشاء مفتاح التوقيع الرقمي الآمن (Android Keystore):</span>
                   </h4>
                   <button
                     type="button"
                     onClick={() => handleCopy('keystore', keystoreCommand)}
-                    className="text-[11px] text-[#1b4332] font-bold flex items-center gap-1 hover:underline cursor-pointer"
+                    className="text-[11px] text-[#46523B] font-bold flex items-center gap-1 hover:underline cursor-pointer"
                   >
                     {copiedKey === 'keystore' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                     <span>{copiedKey === 'keystore' ? 'تم النسخ' : 'نسخ الأمر'}</span>
@@ -365,14 +365,14 @@ npx cap open ios
               {/* Android AAB Build Section */}
               <div className="bg-white p-4 rounded-2xl border border-gray-200">
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-bold text-[#1b4332] text-xs flex items-center gap-2">
+                  <h4 className="font-bold text-[#46523B] text-xs flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-green-500"></span>
                     <span>2. بناء حزمة الإنتاج بصيغة AAB (Android App Bundle):</span>
                   </h4>
                   <button
                     type="button"
                     onClick={() => handleCopy('aab', androidBuildCommand)}
-                    className="text-[11px] text-[#1b4332] font-bold flex items-center gap-1 hover:underline cursor-pointer"
+                    className="text-[11px] text-[#46523B] font-bold flex items-center gap-1 hover:underline cursor-pointer"
                   >
                     {copiedKey === 'aab' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                     <span>{copiedKey === 'aab' ? 'تم النسخ' : 'نسخ الأوامر'}</span>
@@ -389,14 +389,14 @@ npx cap open ios
               {/* iOS Xcode Section */}
               <div className="bg-white p-4 rounded-2xl border border-gray-200">
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-bold text-[#1b4332] text-xs flex items-center gap-2">
+                  <h4 className="font-bold text-[#46523B] text-xs flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-blue-500"></span>
                     <span>3. متطلبات وبناء Apple App Store عبر Xcode:</span>
                   </h4>
                   <button
                     type="button"
                     onClick={() => handleCopy('ios', iosBuildCommand)}
-                    className="text-[11px] text-[#1b4332] font-bold flex items-center gap-1 hover:underline cursor-pointer"
+                    className="text-[11px] text-[#46523B] font-bold flex items-center gap-1 hover:underline cursor-pointer"
                   >
                     {copiedKey === 'ios' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                     <span>{copiedKey === 'ios' ? 'تم النسخ' : 'نسخ الخطوات'}</span>
@@ -418,7 +418,7 @@ npx cap open ios
             <div className="space-y-4">
               {/* Google Play Beta */}
               <div className="bg-white p-4 rounded-2xl border border-gray-200">
-                <h4 className="font-bold text-[#1b4332] text-sm mb-2 flex items-center gap-2">
+                <h4 className="font-bold text-[#46523B] text-sm mb-2 flex items-center gap-2">
                   <span className="w-3 h-3 rounded-full bg-green-500"></span>
                   <span>أ) مسار الاختبار في Google Play Console (Internal / Closed Testing)</span>
                 </h4>
@@ -439,7 +439,7 @@ npx cap open ios
 
               {/* Apple TestFlight */}
               <div className="bg-white p-4 rounded-2xl border border-gray-200">
-                <h4 className="font-bold text-[#1b4332] text-sm mb-2 flex items-center gap-2">
+                <h4 className="font-bold text-[#46523B] text-sm mb-2 flex items-center gap-2">
                   <span className="w-3 h-3 rounded-full bg-blue-500"></span>
                   <span>ب) مسار الاختبار في Apple TestFlight</span>
                 </h4>
@@ -464,7 +464,7 @@ npx cap open ios
           {activeTab === 'accounts' && (
             <div className="space-y-4">
               <div className="p-3.5 bg-green-50 border border-green-200 rounded-2xl">
-                <h4 className="font-bold text-[#1b4332] text-xs mb-1">
+                <h4 className="font-bold text-[#46523B] text-xs mb-1">
                   متطلبات الحسابات الرسمية للربط والتسليم:
                 </h4>
                 <p className="text-xs text-gray-600">
@@ -509,7 +509,7 @@ npx cap open ios
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2 bg-[#1b4332] hover:bg-[#143728] text-[#e6c566] font-bold rounded-xl text-xs transition shadow-sm cursor-pointer"
+            className="px-5 py-2 bg-[#46523B] hover:bg-[#384230] text-[#C4B688] font-bold rounded-xl text-xs transition shadow-sm cursor-pointer"
           >
             إغلاق
           </button>

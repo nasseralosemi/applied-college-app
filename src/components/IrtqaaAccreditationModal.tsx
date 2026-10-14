@@ -124,14 +124,14 @@ export const IrtqaaAccreditationModal: React.FC<Props> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in font-['Tajawal',sans-serif]">
       <div
         dir="rtl"
-        className="bg-white rounded-3xl shadow-2xl border border-slate-100 w-full max-w-xl max-h-[92vh] overflow-y-auto flex flex-col text-right animate-scale-up"
+        className="bg-white rounded-[32px] shadow-2xl border border-slate-100 w-full max-w-xl max-h-[92vh] overflow-y-auto flex flex-col text-right animate-scale-up"
       >
         {/* Modal Header */}
-        <div className="bg-gradient-to-l from-[#1b4332] via-[#143728] to-[#081c15] text-white p-4 sm:p-5 rounded-t-3xl relative overflow-hidden shrink-0">
-          <div className="absolute top-0 right-0 w-2 h-full bg-[#c59b27]" />
+        <div className="bg-gradient-to-l from-[#46523B] via-[#384230] to-[#2A3324] text-white p-4 sm:p-5 rounded-t-3xl relative overflow-hidden shrink-0">
+          <div className="absolute top-0 right-0 w-2 h-full bg-[#A08D52]" />
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#c59b27] to-[#e6c566] text-[#081c15] flex items-center justify-center font-bold shadow-md shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#A08D52] to-[#C4B688] text-[#2A3324] flex items-center justify-center font-bold shadow-md shrink-0">
                 <FileCheck2 className="w-5 h-5" />
               </div>
               <div>
@@ -171,7 +171,7 @@ export const IrtqaaAccreditationModal: React.FC<Props> = ({
           <div className="bg-slate-50 rounded-2xl p-3 border border-slate-200 space-y-2">
             <div className="flex items-center justify-between text-xs">
               <span className="font-bold text-slate-900 flex items-center gap-1.5">
-                <span className="bg-[#1b4332] text-white px-2 py-0.5 rounded-md text-[10px] font-mono">
+                <span className="bg-[#46523B] text-white px-2 py-0.5 rounded-md text-[10px] font-mono">
                   #{request.id}
                 </span>
                 <span>{request.name}</span>
@@ -204,7 +204,7 @@ export const IrtqaaAccreditationModal: React.FC<Props> = ({
             </label>
 
             {/* Upload Dropzone */}
-            <div className="relative border-2 border-dashed border-slate-300 hover:border-[#1b4332] rounded-2xl p-4 sm:p-5 text-center bg-slate-50/60 hover:bg-slate-50 transition-all group">
+            <div className="relative border-2 border-dashed border-slate-300 hover:border-[#46523B] rounded-2xl p-4 sm:p-5 text-center bg-slate-50/60 hover:bg-slate-50 transition-all group">
               <input
                 type="file"
                 id="accreditation-file-input"
@@ -215,8 +215,8 @@ export const IrtqaaAccreditationModal: React.FC<Props> = ({
 
               {!selectedFile ? (
                 <div className="flex flex-col items-center justify-center space-y-2">
-                  <div className="w-12 h-12 rounded-2xl bg-[#1b4332]/10 text-[#1b4332] flex items-center justify-center group-hover:scale-105 transition-transform">
-                    <UploadCloud className="w-6 h-6 text-[#1b4332]" />
+                  <div className="w-12 h-12 rounded-2xl bg-[#46523B]/10 text-[#46523B] flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <UploadCloud className="w-6 h-6 text-[#46523B]" />
                   </div>
                   <div className="text-xs font-bold text-slate-800">
                     اسحب وأفلت صورة النموذج هنا أو اضغط للاستعراض
@@ -285,9 +285,9 @@ export const IrtqaaAccreditationModal: React.FC<Props> = ({
               <button
                 type="button"
                 onClick={handleUseSampleDocument}
-                className="text-[11px] font-bold text-[#1b4332] hover:text-[#c59b27] bg-[#1b4332]/5 hover:bg-[#1b4332]/10 px-2.5 py-1 rounded-lg border border-[#1b4332]/20 flex items-center gap-1.5 transition active:scale-95 cursor-pointer"
+                className="text-[11px] font-bold text-[#46523B] hover:text-[#A08D52] bg-[#46523B]/5 hover:bg-[#46523B]/10 px-2.5 py-1 rounded-lg border border-[#46523B]/20 flex items-center gap-1.5 transition active:scale-95 cursor-pointer"
               >
-                <Sparkles className="w-3.5 h-3.5 text-[#c59b27]" />
+                <Sparkles className="w-3.5 h-3.5 text-[#A08D52]" />
                 <span>إرفاق نموذج ارتقاء المعتمد (النموذج الرسمي)</span>
               </button>
             </div>
@@ -304,7 +304,7 @@ export const IrtqaaAccreditationModal: React.FC<Props> = ({
                 value={accreditationNumber}
                 onChange={(e) => setAccreditationNumber(e.target.value)}
                 placeholder="مثال: IRTQ-2026-104"
-                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#1b4332] font-mono text-left"
+                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#46523B] font-mono text-left"
                 dir="ltr"
               />
             </div>
@@ -331,7 +331,7 @@ export const IrtqaaAccreditationModal: React.FC<Props> = ({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="أي ملاحظات حول اعتماد الساعات أو ختم النموذج..."
-              className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#1b4332] resize-none"
+              className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#46523B] resize-none"
             />
           </div>
 
@@ -358,11 +358,11 @@ export const IrtqaaAccreditationModal: React.FC<Props> = ({
               disabled={isSubmitting || !selectedFile}
               className={`px-5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 shadow-md transition-all active:scale-95 cursor-pointer ${
                 selectedFile
-                  ? 'bg-gradient-to-r from-[#1b4332] via-[#143728] to-[#081c15] text-[#e6c566] hover:shadow-lg border border-[#c59b27]/30'
+                  ? 'bg-gradient-to-r from-[#46523B] via-[#384230] to-[#2A3324] text-[#C4B688] hover:shadow-lg border border-[#A08D52]/30'
                   : 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
               }`}
             >
-              <CheckCircle2 className="w-4 h-4 text-[#e6c566]" />
+              <CheckCircle2 className="w-4 h-4 text-[#C4B688]" />
               <span>{isSubmitting ? 'جارٍ المزامنة والإرسال...' : 'تأكيد الرفع والمزامنة وإرسال النسخة لبيان الطيار'}</span>
             </button>
           </div>

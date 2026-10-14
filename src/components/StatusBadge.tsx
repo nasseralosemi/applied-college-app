@@ -81,8 +81,8 @@ export const StatusBadge: React.FC<Props> = ({ status, note }) => {
       );
     case 'uploaded_irtqaa':
       return (
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold bg-gradient-to-r from-[#1b4332]/20 via-[#1b4332]/15 to-[#c59b27]/25 text-[#1b4332] border border-[#c59b27]/50 shadow-xs shadow-[#1b4332]/10 backdrop-blur-xs">
-          <CloudUpload className="w-3 h-3 text-[#1b4332]" />
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold bg-gradient-to-r from-[#46523B]/20 via-[#46523B]/15 to-[#A08D52]/25 text-[#46523B] border border-[#A08D52]/50 shadow-xs shadow-[#46523B]/10 backdrop-blur-xs">
+          <CloudUpload className="w-3 h-3 text-[#46523B]" />
           <span>مرفوع على منصة ارتقاء</span>
         </span>
       );

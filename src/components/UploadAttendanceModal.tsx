@@ -121,11 +121,11 @@ export const UploadAttendanceModal: React.FC<Props> = ({
       aria-modal="true"
       className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200"
     >
-      <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-200 overflow-hidden text-right font-['Tajawal',sans-serif] animate-fade-slide-up">
+      <div className="bg-white w-full max-w-lg rounded-[32px] shadow-2xl border border-slate-200 overflow-hidden text-right font-['Tajawal',sans-serif] animate-fade-slide-up">
         {/* Header */}
-        <div className="bg-gradient-to-r from-[#1b4332] via-[#143728] to-[#081c15] text-white p-4 sm:p-5 flex items-center justify-between border-b border-[#c59b27]/30">
+        <div className="bg-gradient-to-r from-[#46523B] via-[#384230] to-[#2A3324] text-white p-4 sm:p-5 flex items-center justify-between border-b border-[#A08D52]/30">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#c59b27]/20 border border-[#c59b27]/50 flex items-center justify-center text-[#e6c566] shadow-sm">
+            <div className="w-10 h-10 rounded-2xl bg-[#A08D52]/20 border border-[#A08D52]/50 flex items-center justify-center text-[#C4B688] shadow-sm">
               {isReupload ? <RotateCcw className="w-5 h-5 text-amber-300" /> : <UploadCloud className="w-5 h-5" />}
             </div>
             <div>
@@ -133,7 +133,7 @@ export const UploadAttendanceModal: React.FC<Props> = ({
                 <h3 className="text-sm sm:text-base font-extrabold leading-tight">
                   {isReupload ? 'إعادة رفع كشف الحضور المحدث' : 'رفع كشف الحضور الختامي للنشاط'}
                 </h3>
-                <span className="text-[10px] bg-[#c59b27] text-slate-950 font-bold px-2 py-0.5 rounded-full">
+                <span className="text-[10px] bg-[#A08D52] text-slate-950 font-bold px-2 py-0.5 rounded-full">
                   الكلية التطبيقية
                 </span>
               </div>
@@ -155,7 +155,7 @@ export const UploadAttendanceModal: React.FC<Props> = ({
         <form onSubmit={handleSubmit} className="p-5 space-y-4 max-h-[85vh] overflow-y-auto custom-scrollbar">
           {/* Activity Target Details */}
           <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 text-xs space-y-1">
-            <span className="text-[10px] font-bold text-[#1b4332] block">النشاط المنتهي:</span>
+            <span className="text-[10px] font-bold text-[#46523B] block">النشاط المنتهي:</span>
             <h4 className="font-extrabold text-slate-900 text-sm">{request.name}</h4>
             <div className="flex flex-wrap items-center gap-2 text-[11px] text-slate-500 pt-1">
               <span>تاريخ الانتهاء: {request.endDate || request.startDate || request.date}</span>
@@ -204,10 +204,10 @@ export const UploadAttendanceModal: React.FC<Props> = ({
 
             <div
               onClick={() => fileInputRef.current?.click()}
-              className={`border-2 border-dashed rounded-3xl p-5 text-center cursor-pointer transition-all duration-200 ${
+              className={`border-2 border-dashed rounded-[32px] p-5 text-center cursor-pointer transition-all duration-200 ${
                 file || isUsingSample
                   ? 'border-emerald-500 bg-emerald-50/50'
-                  : 'border-slate-300 hover:border-[#1b4332] bg-slate-50/70 hover:bg-slate-100/70'
+                  : 'border-slate-300 hover:border-[#46523B] bg-slate-50/70 hover:bg-slate-100/70'
               }`}
             >
               {file || isUsingSample ? (
@@ -227,7 +227,7 @@ export const UploadAttendanceModal: React.FC<Props> = ({
                       e.stopPropagation();
                       fileInputRef.current?.click();
                     }}
-                    className="text-[11px] text-[#1b4332] hover:underline font-bold"
+                    className="text-[11px] text-[#46523B] hover:underline font-bold"
                   >
                     تغيير الملف المحدد
                   </button>
@@ -235,7 +235,7 @@ export const UploadAttendanceModal: React.FC<Props> = ({
               ) : (
                 <div className="space-y-2">
                   <div className="w-12 h-12 bg-slate-200/80 text-slate-500 rounded-2xl flex items-center justify-center mx-auto">
-                    <UploadCloud className="w-6 h-6 text-[#1b4332]" />
+                    <UploadCloud className="w-6 h-6 text-[#46523B]" />
                   </div>
                   <p className="text-xs font-bold text-slate-800">
                     انقر هنا لاختيار ملف كشف الحضور من جهازك
@@ -257,7 +257,7 @@ export const UploadAttendanceModal: React.FC<Props> = ({
                 <button
                   type="button"
                   onClick={handleUseSample}
-                  className="text-[10px] bg-[#1b4332] hover:bg-[#143728] text-[#e6c566] font-bold px-3 py-1 rounded-xl transition-all shadow-xs cursor-pointer"
+                  className="text-[10px] bg-[#46523B] hover:bg-[#384230] text-[#C4B688] font-bold px-3 py-1 rounded-xl transition-all shadow-xs cursor-pointer"
                 >
                   استخدام نموذج الكشف المعتمد
                 </button>
@@ -278,7 +278,7 @@ export const UploadAttendanceModal: React.FC<Props> = ({
               value={attendeesCount}
               onChange={(e) => setAttendeesCount(Number(e.target.value))}
               placeholder="مثال: 35"
-              className="w-full text-xs px-3.5 py-2.5 rounded-2xl border border-slate-300 bg-white focus:border-[#c59b27] focus:ring-2 focus:ring-[#c59b27]/30 outline-none font-bold text-slate-900 shadow-xs"
+              className="w-full text-xs px-3.5 py-2.5 rounded-2xl border border-slate-300 bg-white focus:border-[#A08D52] focus:ring-2 focus:ring-[#A08D52]/30 outline-none font-bold text-slate-900 shadow-xs"
             />
             <span className="text-[10px] text-slate-400 mt-1 block">
               سيتم رصد هذا العدد رسمياً في إحصائيات تقارير النشاط ومنصة ارتقاء.
@@ -297,7 +297,7 @@ export const UploadAttendanceModal: React.FC<Props> = ({
 
             <button
               type="submit"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-[#1b4332] via-[#143728] to-[#081c15] text-[#e6c566] text-xs font-bold shadow-lg shadow-[#1b4332]/25 active:scale-95 transition-all cursor-pointer border border-[#c59b27]/30"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-[#46523B] via-[#384230] to-[#2A3324] text-[#C4B688] text-xs font-bold shadow-lg shadow-[#46523B]/25 active:scale-95 transition-all cursor-pointer border border-[#A08D52]/30"
             >
               <UploadCloud className="w-4 h-4" />
               <span>{isReupload ? 'إرسال الكشف المحدث لمسؤول الرفع' : 'تأكيد رفع كشف الحضور للاعتماد'}</span>

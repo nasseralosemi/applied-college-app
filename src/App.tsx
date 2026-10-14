@@ -23,31 +23,30 @@ import { ReturnNoteModal } from './components/ReturnNoteModal';
 import { StoreReadinessModal } from './components/StoreReadinessModal';
 import { AndroidInstallModal } from './components/AndroidInstallModal';
 import { Toast, ToastMessage } from './components/Toast';
+import { BottomNav, NavTabKey } from './components/BottomNav';
+import { SidebarNav } from './components/SidebarNav';
+import { NotificationsView } from './components/NotificationsView';
+import { ProfileView } from './components/ProfileView';
+import { ExportReportModal } from './components/ExportReportModal';
 
 export default function App() {
-  // Requests State - Clean Empty State (All previous activities cleared for fresh demonstration)
+  // Requests State - with mock data fallback (INITIAL_REQUESTS)
   const [requests, setRequests] = useState<ActivityRequest[]>(() => {
     try {
-      localStorage.removeItem('app_requests_v9');
-      localStorage.removeItem('app_requests_v8');
-      localStorage.removeItem('app_requests_v7');
-      localStorage.removeItem('app_requests_v6');
-      localStorage.removeItem('app_requests');
-      const saved = localStorage.getItem('app_requests_clean_v1');
+      const saved = localStorage.getItem('app_requests_clean_v2');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
+        if (Array.isArray(parsed) && parsed.length > 0) {
           return parsed;
         }
       }
     } catch {
       // Fallback
     }
-    return [];
+    return INITIAL_REQUESTS;
   });
 
-
-  // Users State (Persisted in localStorage with auto-migration to include official Bayan Al-Tayyar account)
+  // Users State (Persisted in localStorage with auto-migration to include all default university accounts)
   const [users, setUsers] = useState<SystemUser[]>(() => {
     try {
       const saved = localStorage.getItem('app_users_v6');
@@ -87,32 +86,72 @@ export default function App() {
     return DEFAULT_USERS;
   });
 
-  // Audit Logs State (Clean Empty State)
+  // Audit Logs State - with mock data fallback (INITIAL_AUDIT_LOGS)
   const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>(() => {
     try {
-      localStorage.removeItem('app_audit_logs_v5');
-      localStorage.removeItem('app_audit_logs_v3');
-      localStorage.removeItem('app_audit_logs');
-      const saved = localStorage.getItem('app_audit_logs_clean_v1');
+      const saved = localStorage.getItem('app_audit_logs_clean_v2');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
+        if (Array.isArray(parsed) && parsed.length > 0) {
           return parsed;
         }
       }
     } catch {
       // Fallback
     }
-    return [];
+    return INITIAL_AUDIT_LOGS;
   });
 
-  // Current authenticated user and role
-  const [currentUser, setCurrentUser] = useState<SystemUser | null>(null);
-  const [currentRole, setCurrentRole] = useState<UserRole>('login');
+  // Current authenticated user and role - fallback to Auditor (DEFAULT_USERS[2]) so main dashboard layout renders immediately with mock data
+  const [currentUser, setCurrentUser] = useState<SystemUser | null>(() => {
+    try {
+      const savedUser = localStorage.getItem('app_current_user_v2');
+      if (savedUser) {
+        const parsed = JSON.parse(savedUser);
+        if (parsed && parsed.id && parsed.role) return parsed;
+      }
+    } catch {}
+    // Default fallback to Auditor (وائل العفيصان - مدقق المنظومة والاعتماد) to display main dashboard layout with mock data as fallback
+    return DEFAULT_USERS[2];
+  });
+
+  const [currentRole, setCurrentRole] = useState<UserRole>(() => {
+    try {
+      const savedRole = localStorage.getItem('app_current_role_v2');
+      if (savedRole && savedRole !== 'login') return savedRole as UserRole;
+    } catch {}
+    // Default fallback to Auditor role to display main dashboard layout with mock data as fallback
+    return 'auditor';
+  });
 
   const [toast, setToast] = useState<ToastMessage | null>(null);
   const [isStoreModalOpen, setIsStoreModalOpen] = useState<boolean>(false);
   const [isAndroidModalOpen, setIsAndroidModalOpen] = useState<boolean>(false);
+  const [isExportReportOpen, setIsExportReportOpen] = useState<boolean>(false);
+  const [currentNavTab, setCurrentNavTab] = useState<NavTabKey>('home');
+
+  const unreadNotificationCount = requests.filter((r) => {
+    if (currentRole === 'emp') {
+      return r.status === 'returned_emp' || r.attendanceSheet?.status === 'returned';
+    }
+    if (currentRole === 'manager') {
+      return r.status === 'pending_manager' || r.status === 'returned_manager';
+    }
+    if (currentRole === 'auditor') {
+      return r.status === 'pending_auditor';
+    }
+    if (currentRole === 'uploader') {
+      return r.status === 'approved_final' || r.attendanceSheet?.status === 'pending_review';
+    }
+    if (currentRole === 'pr') {
+      return r.xPlatformPublish && r.prStatus !== 'published_pr';
+    }
+    return false;
+  }).length;
+
+  const handleSelectNavTab = (tab: NavTabKey) => {
+    setCurrentNavTab(tab);
+  };
 
   // Return modal state
   const [returnModalState, setReturnModalState] = useState<{
@@ -130,20 +169,24 @@ export default function App() {
   // Cloud Firestore Real-time Multi-Device Synchronization
   useEffect(() => {
     const unsubRequests = subscribeToRequests((cloudRequests) => {
-      setRequests(cloudRequests || []);
-      try {
-        localStorage.setItem('app_requests_clean_v1', JSON.stringify(cloudRequests || []));
-      } catch (e) {
-        console.error(e);
+      if (cloudRequests && cloudRequests.length > 0) {
+        setRequests(cloudRequests);
+        try {
+          localStorage.setItem('app_requests_clean_v2', JSON.stringify(cloudRequests));
+        } catch (e) {
+          console.error(e);
+        }
       }
     });
 
     const unsubAuditLogs = subscribeToAuditLogs((cloudLogs) => {
-      setAuditLogs(cloudLogs || []);
-      try {
-        localStorage.setItem('app_audit_logs_clean_v1', JSON.stringify(cloudLogs || []));
-      } catch (e) {
-        console.error(e);
+      if (cloudLogs && cloudLogs.length > 0) {
+        setAuditLogs(cloudLogs);
+        try {
+          localStorage.setItem('app_audit_logs_clean_v2', JSON.stringify(cloudLogs));
+        } catch (e) {
+          console.error(e);
+        }
       }
     });
 
@@ -175,7 +218,7 @@ export default function App() {
   // Save requests to localStorage (instant local cache fallback)
   useEffect(() => {
     try {
-      localStorage.setItem('app_requests_clean_v1', JSON.stringify(requests));
+      localStorage.setItem('app_requests_clean_v2', JSON.stringify(requests));
     } catch (e) {
       console.error('Failed to save requests:', e);
     }
@@ -196,7 +239,7 @@ export default function App() {
   // Save audit logs to localStorage
   useEffect(() => {
     try {
-      localStorage.setItem('app_audit_logs_clean_v1', JSON.stringify(auditLogs));
+      localStorage.setItem('app_audit_logs_clean_v2', JSON.stringify(auditLogs));
     } catch (e) {
       console.error('Failed to save audit logs:', e);
     }
@@ -237,6 +280,11 @@ export default function App() {
   const handleLoginSuccess = (user: SystemUser) => {
     setCurrentUser(user);
     setCurrentRole(user.role);
+    setCurrentNavTab('home');
+    try {
+      localStorage.setItem('app_current_role_v2', user.role);
+      localStorage.setItem('app_current_user_v2', JSON.stringify(user));
+    } catch {}
     showToast(`مرحباً بك د./أ. ${user.name}! تم الدخول بنجاح`, 'success');
   };
 
@@ -244,6 +292,11 @@ export default function App() {
   const handleLogout = () => {
     setCurrentUser(null);
     setCurrentRole('login');
+    setCurrentNavTab('home');
+    try {
+      localStorage.setItem('app_current_role_v2', 'login');
+      localStorage.removeItem('app_current_user_v2');
+    } catch {}
     showToast('تم تسجيل الخروج بنجاح والعودة لشاشة الدخول', 'info');
   };
 
@@ -779,136 +832,196 @@ export default function App() {
     showToast('تم حفظ التعديل وتحديثه لدى جميع المستخدمين بنجاح', 'info');
   };
 
-  // Dynamic user profile for AppHeader
-  const currentProfile: UserProfile | null = currentUser
-    ? {
-        name: currentUser.name,
-        roleTitle: ROLE_PROFILES[currentUser.role]?.roleTitle || 'عضو الكلية',
-        roleBadge: ROLE_PROFILES[currentUser.role]?.roleBadge || 'معتمد',
-        avatarText: currentUser.name.split(' ').slice(0, 2).map((w) => w[0]).join(' ') || 'ع',
-        employeeNumber: currentUser.employeeNumber,
-        department: currentUser.department,
-        roleKey: currentUser.role,
-      }
-    : null;
+  // Dynamic user profile for AppHeader with safe role fallback to prevent blank screen
+  const effectiveUser: SystemUser =
+    currentUser ||
+    (currentRole !== 'login'
+      ? users.find((u) => u.role === currentRole) ||
+        DEFAULT_USERS.find((u) => u.role === currentRole) ||
+        DEFAULT_USERS[2]
+      : DEFAULT_USERS[2]);
+
+  const safeRole = (effectiveUser?.role && ROLE_PROFILES[effectiveUser.role as Exclude<UserRole, 'login'>]
+    ? effectiveUser.role
+    : 'auditor') as Exclude<UserRole, 'login'>;
+  const safeProfileInfo = ROLE_PROFILES[safeRole] || ROLE_PROFILES.auditor;
+  const userName = effectiveUser?.name || safeProfileInfo.name || 'وائل العفيصان';
+
+  const currentProfile: UserProfile = {
+    name: userName,
+    roleTitle: safeProfileInfo.roleTitle || 'مدقق المنظومة والاعتماد',
+    roleBadge: safeProfileInfo.roleBadge || 'معتمد',
+    avatarText: userName.split(' ').slice(0, 2).map((w) => w[0] || '').join(' ') || 'ع',
+    employeeNumber: effectiveUser?.employeeNumber || safeProfileInfo.employeeNumber || '4412002',
+    department: effectiveUser?.department || safeProfileInfo.department || 'إدارة الكلية التطبيقية',
+    roleKey: safeRole,
+  };
 
   return (
     <div
       dir="rtl"
-      className={`min-h-screen w-full flex flex-col antialiased font-['Tajawal',sans-serif] ${
-        currentRole === 'login'
-          ? 'bg-gradient-to-br from-[#04100a] via-[#092218] to-[#030d07] text-white'
-          : 'bg-[#f8fafc] text-slate-800'
-      }`}
+      className="min-h-screen w-full flex bg-[#FAF9F6] text-slate-800 antialiased font-['Tajawal',sans-serif]"
     >
-      {/* App Container - Unified Wide Layout for all views */}
-      <div
-        className={`w-full ${
-          currentRole === 'login'
-            ? 'w-full max-w-full bg-transparent min-h-screen'
-            : 'max-w-7xl mx-auto bg-[#f8fafc] shadow-none h-screen max-h-screen overflow-hidden'
-        } flex flex-col relative transition-all duration-200`}
-      >
-        {/* In-app Toast */}
-        <Toast toast={toast} onClose={() => setToast(null)} />
+      {/* In-app Toast Notifications */}
+      <Toast toast={toast} onClose={() => setToast(null)} />
 
-        {/* Header (Hidden in Login View) - Dedicated Logout is the single return path */}
-        {currentRole !== 'login' && currentProfile && (
-          <AppHeader
-            profile={currentProfile}
-            onLogout={handleLogout}
-            requests={requests}
-            onOpenAndroidInstall={() => setIsAndroidModalOpen(true)}
-          />
-        )}
-
-        {/* Scrollable Main Content - Strict Role-Based Access Control (RBAC) */}
-        <main
-          className={`flex-1 relative ${
-            currentRole === 'login'
-              ? 'p-0 overflow-y-auto'
-              : 'overflow-y-auto p-4 custom-scrollbar'
-          }`}
-        >
-          {currentRole === 'login' && (
-            <LoginView users={users} onLoginSuccess={handleLoginSuccess} />
-          )}
-
-          {currentRole === 'emp' && (
-            <EmployeeView
+      {currentRole === 'login' ? (
+        <div className="w-full min-h-screen bg-[#FAF9F6]">
+          <LoginView users={users} onLoginSuccess={handleLoginSuccess} />
+        </div>
+      ) : (
+        <div className="w-full min-h-screen flex flex-row relative overflow-hidden bg-[#FAF9F6]">
+          {/* Desktop Responsive Sidebar Nav (transforms from bottom nav on desktop screens) */}
+          {currentProfile && (
+            <SidebarNav
+              currentTab={currentNavTab}
+              onSelectTab={handleSelectNavTab}
+              currentRole={currentRole}
+              profile={currentProfile}
               requests={requests}
-              onSubmitRequest={handleSubmitRequest}
-              onResubmitRequest={handleResubmit}
-              onUpdateRequest={handleUpdateRequest}
-              onUploadAttendance={handleUploadAttendance}
-              currentUserEmpNumber={currentUser?.employeeNumber}
+              onLogout={handleLogout}
+              onOpenAndroidInstall={() => setIsAndroidModalOpen(true)}
+              unreadNotificationCount={unreadNotificationCount}
             />
           )}
 
-          {currentRole === 'manager' && (
-            <ManagerView
-              requests={requests}
-              onApprove={handleManagerApprove}
-              onReturnClick={handleManagerReturnClick}
-            />
-          )}
+          {/* Main App Container */}
+          <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden bg-[#FAF9F6] relative">
+            {/* Top Header */}
+            {currentProfile && (
+              <AppHeader
+                profile={currentProfile}
+                onLogout={handleLogout}
+                requests={requests}
+                onOpenAndroidInstall={() => setIsAndroidModalOpen(true)}
+              />
+            )}
 
-          {currentRole === 'auditor' && (
-            <AuditorView
-              requests={requests}
-              onUpdateRequest={handleUpdateRequest}
-              onDeanApprove={handleDeanApprove}
-              onFinalApproveWithDispatch={handleAuditorFinalApproveWithDispatch}
-              onReturnClick={handleAuditorReturn}
-            />
-          )}
+            {/* Scrollable Main Views Area */}
+            <main className="flex-1 overflow-y-auto px-3 sm:px-6 pt-1 pb-28 md:pb-8 custom-scrollbar bg-[#FAF9F6]">
+              <div className="max-w-7xl mx-auto w-full">
+                {/* 1. Notifications Center View */}
+                {currentNavTab === 'notifications' ? (
+                  <NotificationsView
+                    requests={requests}
+                    currentUser={currentUser}
+                    currentRole={currentRole}
+                  />
+                ) : currentNavTab === 'profile' ? (
+                  /* 2. Employee Profile View (Current user data only, strictly secured) */
+                  <ProfileView
+                    currentUser={currentUser}
+                    profile={currentProfile}
+                    currentRole={currentRole}
+                    onLogout={handleLogout}
+                    onOpenAndroidInstall={() => setIsAndroidModalOpen(true)}
+                  />
+                ) : (
+                  /* 3. Role-Based Dashboard & Activities Queue (Strict RBAC) */
+                  <>
+                    {currentRole === 'emp' && (
+                      <EmployeeView
+                        requests={requests}
+                        onSubmitRequest={handleSubmitRequest}
+                        onResubmitRequest={handleResubmit}
+                        onUpdateRequest={handleUpdateRequest}
+                        onUploadAttendance={handleUploadAttendance}
+                        currentUserEmpNumber={currentUser?.employeeNumber}
+                        activeNavTab={currentNavTab}
+                      />
+                    )}
 
-          {currentRole === 'uploader' && (
-            <UploaderView
-              requests={requests}
-              onConfirmUpload={handleConfirmUpload}
-              onApproveAttendance={handleApproveAttendance}
-              onReturnAttendance={handleReturnAttendance}
-            />
-          )}
+                    {currentRole === 'manager' && (
+                      <ManagerView
+                        requests={requests}
+                        onApprove={handleManagerApprove}
+                        onReturnClick={handleManagerReturnClick}
+                      />
+                    )}
 
-          {/* PR Dashboard (Direct PR User) */}
-          {currentRole === 'pr' && (
-            <PRDashboardView
-              requests={requests}
-              onUpdatePrStatus={handleUpdatePrStatus}
-            />
-          )}
+                    {currentRole === 'auditor' && (
+                      <AuditorView
+                        requests={requests}
+                        onUpdateRequest={handleUpdateRequest}
+                        onDeanApprove={handleDeanApprove}
+                        onFinalApproveWithDispatch={handleAuditorFinalApproveWithDispatch}
+                        onReturnClick={handleAuditorReturn}
+                        activeNavTab={currentNavTab}
+                      />
+                    )}
 
-          {/* Dean Executive Dashboard (Direct Dean User) */}
-          {currentRole === 'dean' && (
-            <DeanExecutiveDashboardView
-              requests={requests}
-            />
-          )}
+                    {currentRole === 'uploader' && (
+                      <UploaderView
+                        requests={requests}
+                        onConfirmUpload={handleConfirmUpload}
+                        onApproveAttendance={handleApproveAttendance}
+                        onReturnAttendance={handleReturnAttendance}
+                      />
+                    )}
 
-          {/* Accreditation & Archive View (Bayan Al-Tayyar) */}
-          {currentRole === 'accreditation' && (
-            <AccreditationView
-              requests={requests}
-            />
-          )}
+                    {/* PR Dashboard (Direct PR User) */}
+                    {currentRole === 'pr' && (
+                      <PRDashboardView
+                        requests={requests}
+                        onUpdatePrStatus={handleUpdatePrStatus}
+                      />
+                    )}
 
-          {currentRole === 'admin' && (
-            <AdminDashboardView
-              users={users}
+                    {/* Dean Executive Dashboard (Direct Dean User) */}
+                    {currentRole === 'dean' && (
+                      <DeanExecutiveDashboardView
+                        requests={requests}
+                      />
+                    )}
+
+                    {/* Accreditation & Archive View (Bayan Al-Tayyar) */}
+                    {currentRole === 'accreditation' && (
+                      <AccreditationView
+                        requests={requests}
+                      />
+                    )}
+
+                    {currentRole === 'admin' && (
+                      <AdminDashboardView
+                        users={users}
+                        requests={requests}
+                        auditLogs={auditLogs}
+                        onAddUser={handleAddUser}
+                        onUpdateUser={handleUpdateUser}
+                        onUpdateUserRole={handleUpdateUserRole}
+                        onToggleUserStatus={handleToggleUserStatus}
+                        onResetUserPassword={handleResetUserPassword}
+                        onDeleteUser={handleDeleteUser}
+                      />
+                    )}
+
+                    {/* Universal safe fallback for any unrecognized role: guarantees full Bento Grid dashboard always appears */}
+                    {!['emp', 'manager', 'auditor', 'uploader', 'pr', 'dean', 'accreditation', 'admin'].includes(currentRole) && (
+                      <AuditorView
+                        requests={requests}
+                        onUpdateRequest={handleUpdateRequest}
+                        onDeanApprove={handleDeanApprove}
+                        onFinalApproveWithDispatch={handleAuditorFinalApproveWithDispatch}
+                        onReturnClick={handleAuditorReturn}
+                        activeNavTab={currentNavTab === 'activities' ? 'activities' : 'home'}
+                      />
+                    )}
+                  </>
+                )}
+              </div>
+            </main>
+
+            {/* Mobile Fixed Bottom Nav (Native smartphone app feel) */}
+            <BottomNav
+              currentTab={currentNavTab}
+              onSelectTab={handleSelectNavTab}
+              currentRole={currentRole}
               requests={requests}
-              auditLogs={auditLogs}
-              onAddUser={handleAddUser}
-              onUpdateUser={handleUpdateUser}
-              onUpdateUserRole={handleUpdateUserRole}
-              onToggleUserStatus={handleToggleUserStatus}
-              onResetUserPassword={handleResetUserPassword}
-              onDeleteUser={handleDeleteUser}
+              unreadNotificationCount={unreadNotificationCount}
             />
-          )}
-        </main>
-      </div>
+          </div>
+        </div>
+      )}
 
       {/* Return Note Modal Dialog */}
       <ReturnNoteModal
@@ -935,6 +1048,16 @@ export default function App() {
       <AndroidInstallModal
         isOpen={isAndroidModalOpen}
         onClose={() => setIsAndroidModalOpen(false)}
+      />
+
+      {/* Export Report Modal */}
+      <ExportReportModal
+        isOpen={isExportReportOpen}
+        onClose={() => {
+          setIsExportReportOpen(false);
+          setCurrentNavTab('home');
+        }}
+        requests={requests}
       />
     </div>
   );

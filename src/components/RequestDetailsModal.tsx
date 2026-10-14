@@ -57,11 +57,11 @@ export const RequestDetailsModal: React.FC<Props> = ({
       aria-modal="true"
       className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/65 backdrop-blur-md animate-in fade-in duration-200"
     >
-      <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-200/90 max-h-[92vh] flex flex-col overflow-hidden text-right font-['Tajawal',sans-serif] animate-fade-slide-up">
+      <div className="bg-white w-full max-w-lg rounded-[32px] shadow-2xl border border-slate-200/90 max-h-[92vh] flex flex-col overflow-hidden text-right font-['Tajawal',sans-serif] animate-fade-slide-up">
         {/* Modal Header */}
-        <div className="bg-gradient-to-r from-[#1b4332] via-[#143728] to-[#081c15] text-white p-4 sm:p-5 flex items-center justify-between border-b border-[#c59b27]/30">
+        <div className="bg-gradient-to-r from-[#46523B] via-[#384230] to-[#2A3324] text-white p-4 sm:p-5 flex items-center justify-between border-b border-[#A08D52]/30">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-2xl bg-[#c59b27]/25 border border-[#c59b27]/50 flex items-center justify-center text-[#e6c566] shadow-sm">
+            <div className="w-9 h-9 rounded-2xl bg-[#A08D52]/25 border border-[#A08D52]/50 flex items-center justify-center text-[#C4B688] shadow-sm">
               <FileText className="w-4 h-4" />
             </div>
             <div>
@@ -86,7 +86,7 @@ export const RequestDetailsModal: React.FC<Props> = ({
           {/* Status & Title Banner */}
           <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-3">
             <div className="flex items-start justify-between gap-2 mb-2">
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#1b4332]/10 text-[#1b4332] border border-[#1b4332]/20">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#46523B]/10 text-[#46523B] border border-[#46523B]/20">
                 {request.type}
               </span>
               <StatusBadge status={request.status} note={request.note} />
@@ -118,8 +118,8 @@ export const RequestDetailsModal: React.FC<Props> = ({
 
           {/* Group 1: Basic Info & Units */}
           <div className="space-y-2 border-t border-slate-100 pt-3">
-            <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#1b4332]">
-              <Building2 className="w-3.5 h-3.5 text-[#c59b27]" />
+            <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#46523B]">
+              <Building2 className="w-3.5 h-3.5 text-[#A08D52]" />
               <span>1. البيانات الأساسية والوحدة المشرفة</span>
             </div>
             <div className="grid grid-cols-2 gap-2 bg-slate-50/70 p-2.5 rounded-xl text-[11px]">
@@ -144,8 +144,8 @@ export const RequestDetailsModal: React.FC<Props> = ({
 
           {/* Group 2: Schedule & Timing */}
           <div className="space-y-2 border-t border-slate-100 pt-3">
-            <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#1b4332]">
-              <Calendar className="w-3.5 h-3.5 text-[#c59b27]" />
+            <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#46523B]">
+              <Calendar className="w-3.5 h-3.5 text-[#A08D52]" />
               <span>2. التوقيت والمواعيد والساعات</span>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-slate-50/70 p-2.5 rounded-xl text-[11px]">
@@ -163,15 +163,15 @@ export const RequestDetailsModal: React.FC<Props> = ({
               </div>
               <div>
                 <span className="text-slate-400 block text-[10px]">الساعات التدريبية:</span>
-                <span className="font-bold text-[#1b4332]">{request.hours} ساعات</span>
+                <span className="font-bold text-[#46523B]">{request.hours} ساعات</span>
               </div>
             </div>
           </div>
 
           {/* Group 3: Audience & Delivery Mode */}
           <div className="space-y-2 border-t border-slate-100 pt-3">
-            <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#1b4332]">
-              <Users className="w-3.5 h-3.5 text-[#c59b27]" />
+            <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#46523B]">
+              <Users className="w-3.5 h-3.5 text-[#A08D52]" />
               <span>3. المستهدفين وحالة التنفيذ</span>
             </div>
             <div className="bg-slate-50/70 p-2.5 rounded-xl text-[11px] space-y-2">
@@ -218,8 +218,8 @@ export const RequestDetailsModal: React.FC<Props> = ({
 
           {/* Group 4: Administrative & Summary */}
           <div className="space-y-2 border-t border-slate-100 pt-3">
-            <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#1b4332]">
-              <FileCheck2 className="w-3.5 h-3.5 text-[#c59b27]" />
+            <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#46523B]">
+              <FileCheck2 className="w-3.5 h-3.5 text-[#A08D52]" />
               <span>4. الموافقات والارتباطات الإدارية وملخص النشاط</span>
             </div>
             <div className="bg-slate-50/70 p-2.5 rounded-xl text-[11px] space-y-2">
@@ -245,8 +245,8 @@ export const RequestDetailsModal: React.FC<Props> = ({
           {/* Group: Administrative Dispatch & Directives (إن وجدت) */}
           {(request.deanApproved || request.assignedUploader || request.uploaderInstructions) && (
             <div className="space-y-2 border-t border-slate-100 pt-3">
-              <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#1b4332]">
-                <Award className="w-3.5 h-3.5 text-[#c59b27]" />
+              <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#46523B]">
+                <Award className="w-3.5 h-3.5 text-[#A08D52]" />
                 <span>مسار الاعتماد الإداري والتوجيه التنفيذي</span>
               </div>
               <div className="bg-gradient-to-r from-slate-50 via-amber-50/30 to-slate-50 p-2.5 rounded-xl text-[11px] space-y-2 border border-slate-200/80">
@@ -292,8 +292,8 @@ export const RequestDetailsModal: React.FC<Props> = ({
           {viewerRole !== 'auditor' && viewerRole !== 'accreditation' && (
             <div className="space-y-2 border-t border-slate-100 pt-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#1b4332]">
-                  <Share2 className="w-3.5 h-3.5 text-[#c59b27]" />
+                <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#46523B]">
+                  <Share2 className="w-3.5 h-3.5 text-[#A08D52]" />
                   <span>التغطية والنشر الإعلامي (وحدة العلاقات العامة والإعلام)</span>
                 </div>
                 <MediaPublishBadge request={request} />
@@ -323,7 +323,7 @@ export const RequestDetailsModal: React.FC<Props> = ({
                       {(request.prCoverageUrl || (request.prNotes && request.prNotes.startsWith('http'))) && (
                         <div className="p-2.5 bg-white rounded-xl border border-emerald-200 flex items-center justify-between gap-2 shadow-2xs">
                           <div className="flex items-center gap-2 truncate">
-                            <Globe className="w-4 h-4 text-[#1b4332] shrink-0" />
+                            <Globe className="w-4 h-4 text-[#46523B] shrink-0" />
                             <div>
                               <span className="text-xs font-bold text-slate-900 block">
                                 رابط إثبات التغطية والتغريدة الرسمية
@@ -337,7 +337,7 @@ export const RequestDetailsModal: React.FC<Props> = ({
                             href={request.prCoverageUrl || request.prNotes}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#1b4332] text-[#e6c566] hover:bg-[#143728] rounded-xl text-xs font-bold active:scale-95 transition-all shadow-xs shrink-0 cursor-pointer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#46523B] text-[#C4B688] hover:bg-[#384230] rounded-xl text-xs font-bold active:scale-95 transition-all shadow-xs shrink-0 cursor-pointer"
                           >
                             <span>مشاهدة التغريدة</span>
                             <ExternalLink className="w-3.5 h-3.5" />
@@ -389,8 +389,8 @@ export const RequestDetailsModal: React.FC<Props> = ({
           {request.attendanceSheet && (
             <div className="space-y-2 border-t border-slate-100 pt-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#1b4332]">
-                  <FileCheck2 className="w-3.5 h-3.5 text-[#c59b27]" />
+                <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#46523B]">
+                  <FileCheck2 className="w-3.5 h-3.5 text-[#A08D52]" />
                   <span>مرحلة كشف الحضور الختامية (منصة ارتقاء)</span>
                 </div>
                 <span
@@ -428,7 +428,7 @@ export const RequestDetailsModal: React.FC<Props> = ({
                     <button
                       type="button"
                       onClick={() => setIsPreviewOpen(true)}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#1b4332] text-[#e6c566] rounded-xl text-[10px] font-bold active:scale-95 transition-all shadow-xs cursor-pointer"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#46523B] text-[#C4B688] rounded-xl text-[10px] font-bold active:scale-95 transition-all shadow-xs cursor-pointer"
                     >
                       <Eye className="w-3 h-3" />
                       <span>معاينة الكشف</span>
@@ -456,8 +456,8 @@ export const RequestDetailsModal: React.FC<Props> = ({
 
           {/* Group 5: Administrative Lifecycle & Audit Trail */}
           <div className="space-y-2 border-t border-slate-100 pt-3">
-            <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#1b4332]">
-              <History className="w-3.5 h-3.5 text-[#c59b27]" />
+            <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#46523B]">
+              <History className="w-3.5 h-3.5 text-[#A08D52]" />
               <span>5. السجل والتاريخ الإداري لسير المعاملة</span>
             </div>
             <div className="bg-slate-50/70 p-3 rounded-xl text-[11px] space-y-2.5 border border-slate-200/70">
@@ -485,7 +485,7 @@ export const RequestDetailsModal: React.FC<Props> = ({
                       ? 'bg-amber-100 text-amber-800 ring-2 ring-amber-200'
                       : request.status === 'returned_emp' || request.status === 'rejected'
                       ? 'bg-rose-100 text-rose-800'
-                      : 'bg-[#1b4332] text-[#e6c566]'
+                      : 'bg-[#46523B] text-[#C4B688]'
                   }`}
                 >
                   {request.status === 'pending_manager' || request.status === 'returned_manager' ? (
@@ -556,7 +556,7 @@ export const RequestDetailsModal: React.FC<Props> = ({
                 <div
                   className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
                     request.status === 'uploaded_irtqaa'
-                      ? 'bg-[#1b4332] text-[#e6c566] ring-2 ring-[#c59b27]'
+                      ? 'bg-[#46523B] text-[#C4B688] ring-2 ring-[#A08D52]'
                       : request.status === 'approved_final'
                       ? 'bg-emerald-100 text-emerald-800 ring-2 ring-emerald-300'
                       : 'bg-slate-200 text-slate-400'
@@ -590,7 +590,7 @@ export const RequestDetailsModal: React.FC<Props> = ({
                 <div
                   className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
                     request.attendanceSheet?.status === 'approved' || request.isOfficiallyClosed
-                      ? 'bg-[#1b4332] text-[#e6c566] ring-2 ring-[#c59b27]'
+                      ? 'bg-[#46523B] text-[#C4B688] ring-2 ring-[#A08D52]'
                       : request.attendanceSheet?.status === 'pending_review'
                       ? 'bg-amber-500 text-white ring-2 ring-amber-300 animate-pulse'
                       : request.status === 'uploaded_irtqaa'
@@ -641,9 +641,9 @@ export const RequestDetailsModal: React.FC<Props> = ({
                 onClose();
                 onEditRequest(request);
               }}
-              className="px-4 py-2.5 bg-gradient-to-r from-[#1b4332] via-[#143728] to-[#081c15] text-[#e6c566] hover:text-white rounded-2xl text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer flex items-center gap-1.5 border border-[#c59b27]/40"
+              className="px-4 py-2.5 bg-gradient-to-r from-[#46523B] via-[#384230] to-[#2A3324] text-[#C4B688] hover:text-white rounded-2xl text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer flex items-center gap-1.5 border border-[#A08D52]/40"
             >
-              <Edit3 className="w-3.5 h-3.5 text-[#e6c566]" />
+              <Edit3 className="w-3.5 h-3.5 text-[#C4B688]" />
               <span>تعديل بيانات الاستمارة</span>
             </button>
           ) : (

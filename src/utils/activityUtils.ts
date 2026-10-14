@@ -132,11 +132,11 @@ export function generateAccreditationSampleImage(
   <defs>
     <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#dfb13c"/>
-      <stop offset="50%" stop-color="#c59b27"/>
+      <stop offset="50%" stop-color="#A08D52"/>
       <stop offset="100%" stop-color="#997415"/>
     </linearGradient>
     <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1b4332"/>
+      <stop offset="0%" stop-color="#46523B"/>
       <stop offset="100%" stop-color="#081c15"/>
     </linearGradient>
     <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
@@ -149,41 +149,41 @@ export function generateAccreditationSampleImage(
   <rect width="800" height="1100" fill="url(#grid)"/>
 
   <!-- Ornate Outer Border -->
-  <rect x="25" y="25" width="750" height="1050" fill="none" stroke="#1b4332" stroke-width="4" rx="16"/>
-  <rect x="35" y="35" width="730" height="1030" fill="none" stroke="#c59b27" stroke-width="1.5" stroke-dasharray="6 3" rx="12"/>
+  <rect x="25" y="25" width="750" height="1050" fill="none" stroke="#46523B" stroke-width="4" rx="16"/>
+  <rect x="35" y="35" width="730" height="1030" fill="none" stroke="#A08D52" stroke-width="1.5" stroke-dasharray="6 3" rx="12"/>
 
   <!-- Header Banner -->
   <g transform="translate(60, 60)">
-    <text x="680" y="30" text-anchor="end" font-size="16" font-weight="900" fill="#1b4332">المملكة العربية السعودية</text>
+    <text x="680" y="30" text-anchor="end" font-size="16" font-weight="900" fill="#46523B">المملكة العربية السعودية</text>
     <text x="680" y="55" text-anchor="end" font-size="14" font-weight="bold" fill="#334155">وزارة التعليم - جامعة المجمعة</text>
-    <text x="680" y="78" text-anchor="end" font-size="13" font-weight="bold" fill="#c59b27">الكلية التطبيقية</text>
+    <text x="680" y="78" text-anchor="end" font-size="13" font-weight="bold" fill="#A08D52">الكلية التطبيقية</text>
 
     <!-- University Crest Emblem -->
-    <circle cx="340" cy="45" r="34" fill="url(#greenGrad)" stroke="#c59b27" stroke-width="2"/>
-    <circle cx="340" cy="45" r="28" fill="none" stroke="#e6c566" stroke-width="1" stroke-dasharray="3 2"/>
-    <text x="340" y="42" text-anchor="middle" font-size="10" font-weight="bold" fill="#e6c566">جامعة المجمعة</text>
+    <circle cx="340" cy="45" r="34" fill="url(#greenGrad)" stroke="#A08D52" stroke-width="2"/>
+    <circle cx="340" cy="45" r="28" fill="none" stroke="#C4B688" stroke-width="1" stroke-dasharray="3 2"/>
+    <text x="340" y="42" text-anchor="middle" font-size="10" font-weight="bold" fill="#C4B688">جامعة المجمعة</text>
     <text x="340" y="56" text-anchor="middle" font-size="8" font-weight="bold" fill="#ffffff">الكلية التطبيقية</text>
 
     <!-- Meta Details on Left -->
     <text x="0" y="28" text-anchor="start" font-size="11" font-weight="bold" fill="#64748b">رقم الاعتماد: <tspan fill="#0f172a" font-family="monospace">${accNum}</tspan></text>
     <text x="0" y="50" text-anchor="start" font-size="11" font-weight="bold" fill="#64748b">التاريخ: <tspan fill="#0f172a">${dateStr}</tspan></text>
-    <text x="0" y="72" text-anchor="start" font-size="11" font-weight="bold" fill="#1b4332">المنصة: منصة ارتقاء الجامعية</text>
+    <text x="0" y="72" text-anchor="start" font-size="11" font-weight="bold" fill="#46523B">المنصة: منصة ارتقاء الجامعية</text>
   </g>
 
   <!-- Divider Line -->
-  <line x1="60" y1="165" x2="740" y2="165" stroke="#1b4332" stroke-width="2"/>
-  <line x1="60" y1="170" x2="740" y2="170" stroke="#c59b27" stroke-width="1"/>
+  <line x1="60" y1="165" x2="740" y2="165" stroke="#46523B" stroke-width="2"/>
+  <line x1="60" y1="170" x2="740" y2="170" stroke="#A08D52" stroke-width="1"/>
 
   <!-- Title Pill -->
-  <rect x="180" y="195" width="440" height="48" rx="24" fill="url(#greenGrad)" stroke="#c59b27" stroke-width="2"/>
-  <text x="400" y="226" text-anchor="middle" font-size="18" font-weight="900" fill="#e6c566">نموذج اعتماد وتوثيق نشاط مهاري مطبوع</text>
+  <rect x="180" y="195" width="440" height="48" rx="24" fill="url(#greenGrad)" stroke="#A08D52" stroke-width="2"/>
+  <text x="400" y="226" text-anchor="middle" font-size="18" font-weight="900" fill="#C4B688">نموذج اعتماد وتوثيق نشاط مهاري مطبوع</text>
   <text x="400" y="270" text-anchor="middle" font-size="12" font-weight="bold" fill="#64748b">وثيقة أصلية ممسوحة ضوئياً من منصة السجل المهاري الوطني (ارتقاء)</text>
 
   <!-- Activity Information Card -->
   <g transform="translate(60, 300)">
     <rect width="680" height="340" rx="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
     <rect width="680" height="40" rx="14" fill="#f8fafc"/>
-    <text x="650" y="26" text-anchor="end" font-size="14" font-weight="900" fill="#1b4332">بيانات النشاط المعتمد في السجل المهاري</text>
+    <text x="650" y="26" text-anchor="end" font-size="14" font-weight="900" fill="#46523B">بيانات النشاط المعتمد في السجل المهاري</text>
 
     <!-- Field 1: Name -->
     <text x="650" y="75" text-anchor="end" font-size="11" font-weight="bold" fill="#64748b">اسم النشاط / الفعالية:</text>
@@ -192,7 +192,7 @@ export function generateAccreditationSampleImage(
 
     <!-- Field 2: Hours & Branch -->
     <text x="650" y="150" text-anchor="end" font-size="11" font-weight="bold" fill="#64748b">الساعات المعتمدة:</text>
-    <text x="650" y="176" text-anchor="end" font-size="15" font-weight="900" fill="#1b4332">${hours} ساعات تدريبية معتمدة</text>
+    <text x="650" y="176" text-anchor="end" font-size="15" font-weight="900" fill="#46523B">${hours} ساعات تدريبية معتمدة</text>
 
     <text x="320" y="150" text-anchor="end" font-size="11" font-weight="bold" fill="#64748b">المقر / الفرع:</text>
     <text x="320" y="176" text-anchor="end" font-size="14" font-weight="bold" fill="#0f172a">${branch}</text>
@@ -215,12 +215,12 @@ export function generateAccreditationSampleImage(
   <g transform="translate(60, 680)">
     <!-- Stamp -->
     <g transform="translate(480, 70) rotate(-8)">
-      <circle cx="0" cy="0" r="68" fill="none" stroke="#1b4332" stroke-width="3" stroke-dasharray="8 4"/>
-      <circle cx="0" cy="0" r="60" fill="none" stroke="#c59b27" stroke-width="1.5"/>
-      <text x="0" y="-36" text-anchor="middle" font-size="11" font-weight="900" fill="#1b4332">جامعة المجمعة</text>
-      <text x="0" y="-18" text-anchor="middle" font-size="9" font-weight="bold" fill="#1b4332">الكلية التطبيقية</text>
-      <polygon points="0,-10 6,4 -8,-3 8,-3 -6,4" fill="#c59b27"/>
-      <text x="0" y="16" text-anchor="middle" font-size="12" font-weight="900" fill="#1b4332">معتمد وموثق</text>
+      <circle cx="0" cy="0" r="68" fill="none" stroke="#46523B" stroke-width="3" stroke-dasharray="8 4"/>
+      <circle cx="0" cy="0" r="60" fill="none" stroke="#A08D52" stroke-width="1.5"/>
+      <text x="0" y="-36" text-anchor="middle" font-size="11" font-weight="900" fill="#46523B">جامعة المجمعة</text>
+      <text x="0" y="-18" text-anchor="middle" font-size="9" font-weight="bold" fill="#46523B">الكلية التطبيقية</text>
+      <polygon points="0,-10 6,4 -8,-3 8,-3 -6,4" fill="#A08D52"/>
+      <text x="0" y="16" text-anchor="middle" font-size="12" font-weight="900" fill="#46523B">معتمد وموثق</text>
       <text x="0" y="32" text-anchor="middle" font-size="9" font-weight="bold" fill="#047857">منصة ارتقاء الوطنية</text>
       <text x="0" y="46" text-anchor="middle" font-size="8" font-family="monospace" fill="#64748b">${accNum}</text>
     </g>
@@ -228,8 +228,8 @@ export function generateAccreditationSampleImage(
     <!-- Signatures Section -->
     <g transform="translate(100, 40)">
       <text x="120" y="20" text-anchor="middle" font-size="12" font-weight="bold" fill="#64748b">مسؤول الاعتمادات والتوثيق</text>
-      <text x="120" y="55" text-anchor="middle" font-size="15" font-weight="900" fill="#1b4332">أ. بيان الطيار</text>
-      <path d="M 50 68 Q 120 80 190 65 Q 150 95 80 75" fill="none" stroke="#1b4332" stroke-width="2"/>
+      <text x="120" y="55" text-anchor="middle" font-size="15" font-weight="900" fill="#46523B">أ. بيان الطيار</text>
+      <path d="M 50 68 Q 120 80 190 65 Q 150 95 80 75" fill="none" stroke="#46523B" stroke-width="2"/>
     </g>
 
     <g transform="translate(100, 150)">

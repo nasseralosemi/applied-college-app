@@ -50,7 +50,7 @@ export const ReturnAttendanceModal: React.FC<Props> = ({
       aria-modal="true"
       className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200"
     >
-      <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-200 overflow-hidden text-right font-['Tajawal',sans-serif] animate-fade-slide-up">
+      <div className="bg-white w-full max-w-lg rounded-[32px] shadow-2xl border border-slate-200 overflow-hidden text-right font-['Tajawal',sans-serif] animate-fade-slide-up">
         {/* Header */}
         <div className="bg-gradient-to-r from-rose-900 via-rose-800 to-amber-950 text-white p-4 sm:p-5 flex items-center justify-between border-b border-rose-700/40">
           <div className="flex items-center gap-3">

@@ -108,12 +108,12 @@ export const AccreditationPreviewModal: React.FC<Props> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in font-['Tajawal',sans-serif]">
       <div
         dir="rtl"
-        className="bg-white rounded-3xl shadow-2xl border border-slate-700/30 w-full max-w-4xl max-h-[95vh] flex flex-col text-right animate-scale-up overflow-hidden"
+        className="bg-white rounded-[32px] shadow-2xl border border-slate-700/30 w-full max-w-4xl max-h-[95vh] flex flex-col text-right animate-scale-up overflow-hidden"
       >
         {/* Top Header & Actions Toolbar */}
-        <div className="bg-gradient-to-l from-[#1b4332] via-[#143728] to-[#081c15] text-white p-3.5 sm:p-4 flex items-center justify-between gap-3 shrink-0">
+        <div className="bg-gradient-to-l from-[#46523B] via-[#384230] to-[#2A3324] text-white p-3.5 sm:p-4 flex items-center justify-between gap-3 shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#c59b27] to-[#e6c566] text-[#081c15] flex items-center justify-center font-bold shadow-md shrink-0">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#A08D52] to-[#C4B688] text-[#2A3324] flex items-center justify-center font-bold shadow-md shrink-0">
               <FileImage className="w-5 h-5" />
             </div>
             <div>
@@ -175,7 +175,7 @@ export const AccreditationPreviewModal: React.FC<Props> = ({
             <button
               type="button"
               onClick={handleDownloadImage}
-              className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#c59b27] via-[#dfb13c] to-[#e6c566] hover:brightness-105 text-slate-950 text-xs font-black flex items-center gap-1.5 shadow-md active:scale-95 transition cursor-pointer"
+              className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#A08D52] via-[#dfb13c] to-[#C4B688] hover:brightness-105 text-slate-950 text-xs font-black flex items-center gap-1.5 shadow-md active:scale-95 transition cursor-pointer"
             >
               <Download className="w-4 h-4 text-slate-950" />
               <span>تحميل الصورة</span>
@@ -210,7 +210,7 @@ export const AccreditationPreviewModal: React.FC<Props> = ({
         <div className="p-3 sm:p-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
           <div className="flex flex-wrap items-center gap-3 text-slate-600 text-[11px]">
             <span className="flex items-center gap-1 font-bold text-slate-900">
-              <FileImage className="w-4 h-4 text-[#1b4332]" />
+              <FileImage className="w-4 h-4 text-[#46523B]" />
               <span className="truncate max-w-[220px]">{fileName}</span>
             </span>
             <span className="text-slate-400">•</span>
@@ -223,9 +223,9 @@ export const AccreditationPreviewModal: React.FC<Props> = ({
             <button
               type="button"
               onClick={handleDownloadImage}
-              className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-[#1b4332] hover:bg-[#143728] text-[#e6c566] font-bold text-xs flex items-center justify-center gap-2 shadow-sm active:scale-95 transition cursor-pointer"
+              className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-[#46523B] hover:bg-[#384230] text-[#C4B688] font-bold text-xs flex items-center justify-center gap-2 shadow-sm active:scale-95 transition cursor-pointer"
             >
-              <Download className="w-4 h-4 text-[#e6c566]" />
+              <Download className="w-4 h-4 text-[#C4B688]" />
               <span>تنزيل الصورة إلى الجهاز الآن</span>
             </button>
 

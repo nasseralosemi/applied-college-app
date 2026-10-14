@@ -110,7 +110,7 @@ export const DispatchApprovalModal: React.FC<Props> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-md animate-fade-slide-up font-['Tajawal',sans-serif]">
-      <div className="bg-white rounded-3xl shadow-2xl max-w-xl w-full max-h-[92vh] flex flex-col border border-slate-100 overflow-hidden text-right">
+      <div className="bg-white rounded-[32px] shadow-2xl max-w-xl w-full max-h-[92vh] flex flex-col border border-slate-100 overflow-hidden text-right">
         {/* Header */}
         <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-slate-50 via-amber-50/40 to-slate-50">
           <button
@@ -126,7 +126,7 @@ export const DispatchApprovalModal: React.FC<Props> = ({
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-200">
                   الخطوة النهائية
                 </span>
-                <h3 className="text-sm sm:text-base font-extrabold text-[#1b4332]">
+                <h3 className="text-sm sm:text-base font-extrabold text-[#46523B]">
                   التوجيه الذكي وتعيين المسؤول المختص
                 </h3>
               </div>
@@ -134,7 +134,7 @@ export const DispatchApprovalModal: React.FC<Props> = ({
                 اعتماد النشاط وتوجيهه للمسؤول الميداني للرفع إلى منصة ارتقاء
               </p>
             </div>
-            <div className="w-9 h-9 rounded-2xl bg-[#1b4332] text-[#e6c566] flex items-center justify-center shadow-md shadow-[#1b4332]/25">
+            <div className="w-9 h-9 rounded-2xl bg-[#46523B] text-[#C4B688] flex items-center justify-center shadow-md shadow-[#46523B]/25">
               <Send className="w-4 h-4" />
             </div>
           </div>
@@ -173,8 +173,8 @@ export const DispatchApprovalModal: React.FC<Props> = ({
           {/* Section 1: Select Assignee (قائمة اختيار الموظف المكلف بالرفع) */}
           <div className="space-y-2 bg-slate-50/70 p-3.5 rounded-2xl border border-slate-200/80">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-[#1b4332]">
-                <UserCheck className="w-4 h-4 text-[#c59b27]" />
+              <div className="flex items-center gap-1.5 text-xs font-bold text-[#46523B]">
+                <UserCheck className="w-4 h-4 text-[#A08D52]" />
                 <span>1. الموظف المكلف بالرفع لمنصة ارتقاء (Select Assignee)</span>
               </div>
               <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100/80 px-2 py-0.5 rounded-full flex items-center gap-1">
@@ -197,7 +197,7 @@ export const DispatchApprovalModal: React.FC<Props> = ({
                     key={assignee.id}
                     className={`flex items-start gap-2.5 p-2.5 rounded-xl border cursor-pointer active:scale-95 transition-all duration-150 ${
                       isSelected
-                        ? 'bg-white border-[#1b4332] shadow-sm ring-1 ring-[#1b4332]'
+                        ? 'bg-white border-[#46523B] shadow-sm ring-1 ring-[#46523B]'
                         : 'bg-white/60 border-slate-200 hover:bg-white hover:border-slate-300'
                     }`}
                   >
@@ -206,13 +206,13 @@ export const DispatchApprovalModal: React.FC<Props> = ({
                       name="assignee"
                       checked={isSelected}
                       onChange={() => setAssignedUploader(assignee.title)}
-                      className="mt-0.5 accent-[#1b4332] cursor-pointer"
+                      className="mt-0.5 accent-[#46523B] cursor-pointer"
                     />
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
                         <span
                           className={`text-xs font-bold ${
-                            isSelected ? 'text-[#1b4332]' : 'text-slate-800'
+                            isSelected ? 'text-[#46523B]' : 'text-slate-800'
                           }`}
                         >
                           {assignee.title}
@@ -235,8 +235,8 @@ export const DispatchApprovalModal: React.FC<Props> = ({
 
           {/* Section 2: Media & X Platform Toggle (خيارات النشر الإعلامي) */}
           <div className="space-y-2.5 bg-slate-50/70 p-3.5 rounded-2xl border border-slate-200/80">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-[#1b4332]">
-              <Share2 className="w-4 h-4 text-[#c59b27]" />
+            <div className="flex items-center gap-1.5 text-xs font-bold text-[#46523B]">
+              <Share2 className="w-4 h-4 text-[#A08D52]" />
               <span>2. خيارات النشر والتغطية الإعلامية (منصة X)</span>
             </div>
 
@@ -262,12 +262,12 @@ export const DispatchApprovalModal: React.FC<Props> = ({
                 type="button"
                 onClick={() => setXPlatformPublish(!xPlatformPublish)}
                 className={`w-14 h-8 flex items-center rounded-full p-1 transition-all duration-200 cursor-pointer ${
-                  xPlatformPublish ? 'bg-[#1b4332] justify-start' : 'bg-slate-300 justify-end'
+                  xPlatformPublish ? 'bg-[#46523B] justify-start' : 'bg-slate-300 justify-end'
                 }`}
               >
                 <div className="bg-white w-6 h-6 rounded-full shadow-md transform transition-all duration-200 flex items-center justify-center">
                   {xPlatformPublish ? (
-                    <span className="text-[10px] font-bold text-[#1b4332]">✓</span>
+                    <span className="text-[10px] font-bold text-[#46523B]">✓</span>
                   ) : (
                     <span className="text-[10px] font-bold text-slate-400">✕</span>
                   )}
@@ -292,8 +292,8 @@ export const DispatchApprovalModal: React.FC<Props> = ({
 
           {/* Section 3: Instructions & Notes (مربع التعليمات والتوجيهات) */}
           <div className="space-y-2 bg-slate-50/70 p-3.5 rounded-2xl border border-slate-200/80">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-[#1b4332]">
-              <FileEdit className="w-4 h-4 text-[#c59b27]" />
+            <div className="flex items-center gap-1.5 text-xs font-bold text-[#46523B]">
+              <FileEdit className="w-4 h-4 text-[#A08D52]" />
               <span>3. التعليمات والتوجيهات للموظف المكلف بالرفع (Notes)</span>
             </div>
 
@@ -302,7 +302,7 @@ export const DispatchApprovalModal: React.FC<Props> = ({
               onChange={(e) => setUploaderInstructions(e.target.value)}
               rows={3}
               placeholder="اكتب أية تعليمات إضافية للموظف المكلف (مثلاً: التحقق من كشف الحضور، مطابقة الساعات، إلخ)..."
-              className="w-full text-xs p-3 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] outline-none"
+              className="w-full text-xs p-3 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] outline-none"
             />
 
             <div>
@@ -332,9 +332,9 @@ export const DispatchApprovalModal: React.FC<Props> = ({
           <div className="pt-2 flex items-center gap-2 border-t border-slate-100">
             <button
               type="submit"
-              className="flex-1 bg-gradient-to-r from-[#1b4332] via-[#143728] to-[#081c15] text-[#e6c566] font-bold py-3.5 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#1b4332]/25 active:scale-95 transition-all duration-150 cursor-pointer border border-[#c59b27]/30"
+              className="flex-1 bg-gradient-to-r from-[#46523B] via-[#384230] to-[#2A3324] text-[#C4B688] font-bold py-3.5 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#46523B]/25 active:scale-95 transition-all duration-150 cursor-pointer border border-[#A08D52]/30"
             >
-              <Send className="w-4 h-4 text-[#e6c566]" />
+              <Send className="w-4 h-4 text-[#C4B688]" />
               <span>تأكيد الاعتماد النهائي وتوجيه الطلب</span>
             </button>
             <button

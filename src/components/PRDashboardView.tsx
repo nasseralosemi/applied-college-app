@@ -129,99 +129,124 @@ export const PRDashboardView: React.FC<Props> = ({
 
   return (
     <div className="space-y-4 pb-8 font-['Tajawal',sans-serif] text-right">
-      {/* Title Bar */}
-      <div className="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-2 h-full bg-gradient-to-b from-[#1b4332] via-[#c59b27] to-[#1b4332]" />
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-[#1b4332]/10 text-[#1b4332] flex items-center justify-center shrink-0 border border-[#1b4332]/20">
-            <Share2 className="w-5 h-5 text-[#c59b27]" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-50 text-sky-900 border border-sky-200">
-                العلاقات العامة
-              </span>
-              <h2 className="text-sm sm:text-base font-extrabold text-[#1b4332]">
-                إعداد وتوثيق النشر في حساب الكلية بمنصة X
-              </h2>
+      {/* Bento Grid Header & PR Filter Tiles */}
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+        {/* Bento Hero Tile: Spans 2 cols on mobile, 4 cols on desktop */}
+        <div className="col-span-2 md:col-span-4 lg:col-span-4 bg-white/90 backdrop-blur-md rounded-[32px] p-4 sm:p-5 border border-[#46523B]/12 shadow-[0_8px_24px_rgba(70,82,59,0.04)] relative overflow-hidden flex flex-col justify-between">
+          <div className="absolute top-0 right-0 w-2 h-full bg-gradient-to-b from-[#46523B] via-[#A08D52] to-[#46523B]" />
+          
+          <div className="flex items-center justify-between gap-3 mb-2">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-2xl bg-[#46523B] text-[#A08D52] flex items-center justify-center shrink-0 border border-[#A08D52]/40 shadow-xs">
+                <Share2 className="w-5 h-5 text-[#A08D52]" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-sky-50 text-sky-900 border border-sky-200">
+                    العلاقات العامة
+                  </span>
+                  <span className="text-[10px] font-bold text-[#A08D52]">
+                    التغطية والنشر الإعلامي
+                  </span>
+                </div>
+                <h2 className="text-sm sm:text-base font-black text-[#46523B] mt-0.5">
+                  منظومة نشر فعاليات الكلية في منصة 𝕏
+                </h2>
+              </div>
             </div>
-            <p className="text-xs text-slate-500 mt-0.5">
-              صياغة التغريدات الرسمية للأنشطة المعتمدة وتوثيق الروابط والتغطية الإعلامية
-            </p>
+
+            <span className="text-[10px] bg-slate-900 text-white font-bold px-2.5 py-1 rounded-full font-mono flex items-center gap-1 shrink-0 self-start sm:self-center">
+              <span>𝕏</span>
+              <span>@AppliedCollege_MU</span>
+            </span>
+          </div>
+
+          <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+            <span className="text-slate-500 font-medium">معدل التغطية الإعلامية المكتملة:</span>
+            <div className="flex items-center gap-2">
+              <span className="font-mono font-black text-[#46523B]">{completionRate}%</span>
+              <span className="text-slate-400">({publishedPr} من {totalPr})</span>
+            </div>
           </div>
         </div>
 
-        <span className="text-[10px] bg-slate-900 text-white font-bold px-2.5 py-1 rounded-full font-mono flex items-center gap-1 shrink-0 self-start sm:self-center">
-          <span>𝕏</span>
-          <span>@AppliedCollege_MU</span>
-        </span>
-      </div>
-
-      {/* Admin Quick Access Bar (If opened from admin view) */}
-      {isAdminViewing && (
-        <div className="p-2.5 rounded-xl bg-gradient-to-r from-[#1b4332] to-[#081c15] text-[#e6c566] border border-[#c59b27]/40 shadow-xs flex items-center justify-between gap-2 text-xs">
-          <div className="flex items-center gap-2 truncate">
-            <Megaphone className="w-4 h-4 text-[#e6c566] shrink-0" />
-            <span className="font-bold truncate text-[11px]">معاينة إدارية لوحدة العلاقات العامة</span>
-          </div>
-          {onReturnToAdmin && (
-            <button
-              type="button"
-              onClick={onReturnToAdmin}
-              className="px-2.5 py-1 rounded-lg bg-[#e6c566] text-[#1b4332] text-[10px] font-black flex items-center gap-1 active:scale-95 transition-all cursor-pointer shrink-0"
-            >
-              <span>لوحة المدير</span>
-              <ArrowRight className="w-3 h-3 rotate-180" />
-            </button>
-          )}
-        </div>
-      )}
-
-      {/* Unified 4-Card KPI Metrics Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
-        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+        {/* Bento Interactive Tile 1: المحالة للنشر */}
+        <button
+          type="button"
+          onClick={() => setSelectedStatusFilter('all')}
+          className={`col-span-1 p-3.5 rounded-[28px] text-right flex flex-col justify-between transition-all cursor-pointer select-none border group ${
+            selectedStatusFilter === 'all'
+              ? 'bg-[#46523B] text-white border-[#A08D52] shadow-md ring-2 ring-[#A08D52]/30'
+              : 'bg-white text-slate-700 border-[#46523B]/10 shadow-[0_4px_16px_rgba(70,82,59,0.03)] hover:border-[#46523B]/30'
+          }`}
+        >
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">المحالة للنشر</span>
-            <div className="w-7 h-7 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
+            <span className={`text-[11px] font-bold ${selectedStatusFilter === 'all' ? 'text-white' : 'text-slate-500'}`}>
+              كل المعاملات
+            </span>
+            <div className={`w-7 h-7 rounded-xl flex items-center justify-center ${selectedStatusFilter === 'all' ? 'bg-white/20 text-[#A08D52]' : 'bg-blue-50 text-blue-700'}`}>
               <Megaphone className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-xl sm:text-2xl font-black text-slate-900 mt-1">{totalPr}</div>
-          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">نسخ آلية معتمدة</div>
-        </div>
+          <div className={`text-2xl font-black mt-2 ${selectedStatusFilter === 'all' ? 'text-white' : 'text-slate-900'}`}>
+            {totalPr}
+          </div>
+          <span className={`text-[10px] mt-1 ${selectedStatusFilter === 'all' ? 'text-white/80' : 'text-slate-400'}`}>
+            عرض الكل ←
+          </span>
+        </button>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+        {/* Bento Interactive Tile 2: قيد التجهيز */}
+        <button
+          type="button"
+          onClick={() => setSelectedStatusFilter('pending')}
+          className={`col-span-1 p-3.5 rounded-[28px] text-right flex flex-col justify-between transition-all cursor-pointer select-none border group ${
+            selectedStatusFilter === 'pending'
+              ? 'bg-[#46523B] text-white border-[#A08D52] shadow-md ring-2 ring-[#A08D52]/30'
+              : 'bg-white text-slate-700 border-[#46523B]/10 shadow-[0_4px_16px_rgba(70,82,59,0.03)] hover:border-amber-400'
+          }`}
+        >
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">قيد التجهيز</span>
-            <div className="w-7 h-7 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
+            <span className={`text-[11px] font-bold ${selectedStatusFilter === 'pending' ? 'text-amber-200' : 'text-slate-500'}`}>
+              قيد التجهيز
+            </span>
+            <div className={`w-7 h-7 rounded-xl flex items-center justify-center ${selectedStatusFilter === 'pending' ? 'bg-white/20 text-[#A08D52]' : 'bg-amber-50 text-amber-700'}`}>
               <Clock className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-xl sm:text-2xl font-black text-amber-700 mt-1">{pendingPr}</div>
-          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">بانتظار الصياغة والتغريد</div>
-        </div>
+          <div className={`text-2xl font-black mt-2 ${selectedStatusFilter === 'pending' ? 'text-white' : 'text-amber-700'}`}>
+            {pendingPr}
+          </div>
+          <span className={`text-[10px] mt-1 ${selectedStatusFilter === 'pending' ? 'text-amber-200' : 'text-slate-400'}`}>
+            بانتظار الصياغة ←
+          </span>
+        </button>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+        {/* Bento Interactive Tile 3: تم النشر */}
+        <button
+          type="button"
+          onClick={() => setSelectedStatusFilter('published')}
+          className={`col-span-1 p-3.5 rounded-[28px] text-right flex flex-col justify-between transition-all cursor-pointer select-none border group ${
+            selectedStatusFilter === 'published'
+              ? 'bg-[#46523B] text-white border-[#A08D52] shadow-md ring-2 ring-[#A08D52]/30'
+              : 'bg-white text-slate-700 border-[#46523B]/10 shadow-[0_4px_16px_rgba(70,82,59,0.03)] hover:border-emerald-400'
+          }`}
+        >
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">تم النشر في X</span>
-            <div className="w-7 h-7 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+            <span className={`text-[11px] font-bold ${selectedStatusFilter === 'published' ? 'text-emerald-200' : 'text-slate-500'}`}>
+              تم النشر في 𝕏
+            </span>
+            <div className={`w-7 h-7 rounded-xl flex items-center justify-center ${selectedStatusFilter === 'published' ? 'bg-white/20 text-emerald-300' : 'bg-emerald-50 text-emerald-700'}`}>
               <CheckCircle2 className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-xl sm:text-2xl font-black text-emerald-700 mt-1">{publishedPr}</div>
-          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">تغطية إعلامية مكتملة</div>
-        </div>
-
-        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">نسبة الإنجاز</span>
-            <div className="w-7 h-7 rounded-xl bg-[#1b4332]/10 text-[#1b4332] flex items-center justify-center">
-              <Sparkles className="w-3.5 h-3.5" />
-            </div>
+          <div className={`text-2xl font-black mt-2 ${selectedStatusFilter === 'published' ? 'text-white' : 'text-emerald-700'}`}>
+            {publishedPr}
           </div>
-          <div className="text-xl sm:text-2xl font-black text-[#1b4332] mt-1">{completionRate}%</div>
-          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">معدل التغطية الإعلامية</div>
-        </div>
+          <span className={`text-[10px] mt-1 ${selectedStatusFilter === 'published' ? 'text-emerald-200' : 'text-slate-400'}`}>
+            تغطية مكتملة ←
+          </span>
+        </button>
       </div>
 
       {/* Top Segmented Tabs: Status Filter */}
@@ -231,7 +256,7 @@ export const PRDashboardView: React.FC<Props> = ({
           onClick={() => setSelectedStatusFilter('all')}
           className={`flex items-center justify-center gap-1 py-2 px-2 rounded-xl text-xs font-bold transition-all duration-150 active:scale-95 cursor-pointer ${
             selectedStatusFilter === 'all'
-              ? 'bg-[#1b4332] text-[#e6c566] shadow-sm'
+              ? 'bg-[#46523B] text-[#C4B688] shadow-sm'
               : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
           }`}
         >
@@ -270,7 +295,7 @@ export const PRDashboardView: React.FC<Props> = ({
       <div className="p-3 rounded-2xl bg-emerald-50/80 border border-emerald-200/80 text-right flex items-start gap-2.5 text-xs">
         <Radio className="w-3.5 h-3.5 text-emerald-700 shrink-0 mt-0.5 animate-pulse" />
         <p className="text-[11px] text-emerald-950 leading-relaxed">
-          <strong className="text-[#1b4332]">المسار الآلي المعتمد:</strong> عند تفعيل خيار «النشر في حساب الكلية منصة إكس» أثناء الاعتماد النهائي، يتم إرسال نسخة آلية لهذه اللوحة لتجهيز التغريدة وتوثيق تاريخ النشر.
+          <strong className="text-[#46523B]">المسار الآلي المعتمد:</strong> عند تفعيل خيار «النشر في حساب الكلية منصة إكس» أثناء الاعتماد النهائي، يتم إرسال نسخة آلية لهذه اللوحة لتجهيز التغريدة وتوثيق تاريخ النشر.
         </p>
       </div>
 
@@ -282,7 +307,7 @@ export const PRDashboardView: React.FC<Props> = ({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="بحث بالنشاط، المقدم، أو الوحدة..."
-            className="w-full pl-3 pr-8 py-2 rounded-xl border border-slate-200 text-xs bg-slate-50 focus:bg-white focus:border-[#c59b27] outline-none"
+            className="w-full pl-3 pr-8 py-2 rounded-xl border border-slate-200 text-xs bg-slate-50 focus:bg-white focus:border-[#A08D52] outline-none"
           />
           <Search className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-2.5" />
         </div>
@@ -349,7 +374,7 @@ export const PRDashboardView: React.FC<Props> = ({
                     </div>
                   </div>
 
-                  <h3 className="text-xs sm:text-sm font-extrabold text-[#1b4332] leading-snug">
+                  <h3 className="text-xs sm:text-sm font-extrabold text-[#46523B] leading-snug">
                     {req.name}
                   </h3>
                 </div>
@@ -358,24 +383,24 @@ export const PRDashboardView: React.FC<Props> = ({
                 <div className="p-3 sm:p-4 space-y-3">
                   <div className="grid grid-cols-2 gap-2 text-[11px] bg-slate-50 p-2.5 rounded-xl border border-slate-100">
                     <div className="flex items-center gap-1.5 truncate">
-                      <Users className="w-3.5 h-3.5 text-[#1b4332] shrink-0" />
+                      <Users className="w-3.5 h-3.5 text-[#46523B] shrink-0" />
                       <span className="text-slate-700 truncate">{req.presenter}</span>
                     </div>
 
                     <div className="flex items-center gap-1.5 truncate">
-                      <Building2 className="w-3.5 h-3.5 text-[#1b4332] shrink-0" />
+                      <Building2 className="w-3.5 h-3.5 text-[#46523B] shrink-0" />
                       <span className="text-slate-700 truncate">{req.branch}</span>
                     </div>
 
                     <div className="flex items-center gap-1.5">
-                      <Calendar className="w-3.5 h-3.5 text-[#1b4332] shrink-0" />
+                      <Calendar className="w-3.5 h-3.5 text-[#46523B] shrink-0" />
                       <span className="text-slate-600 font-mono text-[10px]">
                         {req.startDate} ({req.startTime})
                       </span>
                     </div>
 
                     <div className="flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 text-[#1b4332] shrink-0" />
+                      <MapPin className="w-3.5 h-3.5 text-[#46523B] shrink-0" />
                       <span className="text-slate-600 text-[10px] truncate">
                         {req.deliveryMode} ({req.hours} س)
                       </span>
@@ -392,7 +417,7 @@ export const PRDashboardView: React.FC<Props> = ({
                       <button
                         type="button"
                         onClick={() => handleCopyTweet(req.id, currentDraft)}
-                        className="text-[10px] font-bold text-[#1b4332] bg-white border border-slate-200 px-2 py-1 rounded-lg hover:bg-slate-100 flex items-center gap-1 cursor-pointer active:scale-95"
+                        className="text-[10px] font-bold text-[#46523B] bg-white border border-slate-200 px-2 py-1 rounded-lg hover:bg-slate-100 flex items-center gap-1 cursor-pointer active:scale-95"
                       >
                         {copiedId === req.id ? (
                           <>
@@ -417,7 +442,7 @@ export const PRDashboardView: React.FC<Props> = ({
                           [req.id]: e.target.value,
                         })
                       }
-                      className="w-full text-xs p-2.5 rounded-lg border border-slate-200 bg-white focus:border-[#c59b27] outline-none font-sans leading-relaxed"
+                      className="w-full text-xs p-2.5 rounded-lg border border-slate-200 bg-white focus:border-[#A08D52] outline-none font-sans leading-relaxed"
                     />
 
                     {/* PR Coverage URL & Note */}
@@ -437,7 +462,7 @@ export const PRDashboardView: React.FC<Props> = ({
                             })
                           }
                           placeholder="رابط التغريدة المنشورة أو إثبات التغطية في منصة X (URL)..."
-                          className="w-full text-[11px] px-2.5 py-1.5 pl-8 rounded-lg border border-slate-200 bg-white focus:border-[#c59b27] outline-none font-sans"
+                          className="w-full text-[11px] px-2.5 py-1.5 pl-8 rounded-lg border border-slate-200 bg-white focus:border-[#A08D52] outline-none font-sans"
                         />
                         <Link2 className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2" />
                       </div>
@@ -457,7 +482,7 @@ export const PRDashboardView: React.FC<Props> = ({
                             })
                           }
                           placeholder="ملاحظات إضافية حول التغطية الإعلامية (اختياري)..."
-                          className="w-full text-[11px] px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white focus:border-[#c59b27] outline-none font-sans"
+                          className="w-full text-[11px] px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white focus:border-[#A08D52] outline-none font-sans"
                         />
                       </div>
                     </div>
@@ -489,7 +514,7 @@ export const PRDashboardView: React.FC<Props> = ({
                         className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition active:scale-95 cursor-pointer shadow-xs ${
                           isPublished
                             ? 'bg-slate-200 text-slate-800 hover:bg-slate-300'
-                            : 'bg-[#1b4332] text-[#e6c566] hover:bg-[#143728]'
+                            : 'bg-[#46523B] text-[#C4B688] hover:bg-[#384230]'
                         }`}
                       >
                         {isPublished ? (

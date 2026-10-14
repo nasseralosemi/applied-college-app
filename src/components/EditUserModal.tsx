@@ -98,15 +98,15 @@ export const EditUserModal: React.FC<Props> = ({
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150 font-['Tajawal',sans-serif]">
-      <div className="bg-white rounded-3xl w-full max-w-lg p-5 sm:p-6 shadow-2xl border border-slate-100 text-right max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-[32px] w-full max-w-lg p-5 sm:p-6 shadow-2xl border border-slate-100 text-right max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 mb-4">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#1b4332] to-[#081c15] text-[#e6c566] flex items-center justify-center font-bold shadow-md shadow-[#1b4332]/20">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#46523B] to-[#2A3324] text-[#C4B688] flex items-center justify-center font-bold shadow-md shadow-[#46523B]/20">
               <User className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-sm font-extrabold text-[#1b4332]">
+              <h3 className="text-sm font-extrabold text-[#46523B]">
                 تعديل بيانات المستخدم
               </h3>
               <p className="text-[11px] text-slate-500">
@@ -134,7 +134,7 @@ export const EditUserModal: React.FC<Props> = ({
           {/* 1. الاسم الثلاثي */}
           <div>
             <label className="block text-xs font-bold text-slate-800 mb-1 flex items-center gap-1.5">
-              <User className="w-3.5 h-3.5 text-[#1b4332]" />
+              <User className="w-3.5 h-3.5 text-[#46523B]" />
               <span>الاسم الثلاثي أو الكامل *</span>
             </label>
             <input
@@ -143,7 +143,7 @@ export const EditUserModal: React.FC<Props> = ({
               onChange={(e) => setName(e.target.value)}
               placeholder="مثال: عبدالرحمن الطوالة أو ناصر العصيمي"
               required
-              className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50/70 focus:bg-white focus:border-[#c59b27] focus:ring-2 focus:ring-[#c59b27]/20 outline-none transition font-medium"
+              className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50/70 focus:bg-white focus:border-[#A08D52] focus:ring-2 focus:ring-[#A08D52]/20 outline-none transition font-medium"
             />
           </div>
 
@@ -151,7 +151,7 @@ export const EditUserModal: React.FC<Props> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-bold text-slate-800 mb-1 flex items-center gap-1.5">
-                <Hash className="w-3.5 h-3.5 text-[#1b4332]" />
+                <Hash className="w-3.5 h-3.5 text-[#46523B]" />
                 <span>الرقم الوظيفي *</span>
               </label>
               <input
@@ -160,13 +160,13 @@ export const EditUserModal: React.FC<Props> = ({
                 onChange={(e) => setEmployeeNumber(e.target.value)}
                 placeholder="مثال: 4412098"
                 required
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50/70 focus:bg-white focus:border-[#c59b27] focus:ring-2 focus:ring-[#c59b27]/20 outline-none transition font-mono font-bold"
+                className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50/70 focus:bg-white focus:border-[#A08D52] focus:ring-2 focus:ring-[#A08D52]/20 outline-none transition font-mono font-bold"
               />
             </div>
 
             <div>
               <label className="block text-xs font-bold text-slate-800 mb-1 flex items-center gap-1.5">
-                <Mail className="w-3.5 h-3.5 text-[#1b4332]" />
+                <Mail className="w-3.5 h-3.5 text-[#46523B]" />
                 <span>البريد الإلكتروني الجامعي</span>
               </label>
               <input
@@ -174,7 +174,7 @@ export const EditUserModal: React.FC<Props> = ({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@mu.edu.sa"
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50/70 focus:bg-white focus:border-[#c59b27] focus:ring-2 focus:ring-[#c59b27]/20 outline-none transition font-mono text-left"
+                className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50/70 focus:bg-white focus:border-[#A08D52] focus:ring-2 focus:ring-[#A08D52]/20 outline-none transition font-mono text-left"
                 dir="ltr"
               />
             </div>
@@ -183,7 +183,7 @@ export const EditUserModal: React.FC<Props> = ({
           {/* 3. الوحدة التنظيمية / القسم */}
           <div>
             <label className="block text-xs font-bold text-slate-800 mb-1 flex items-center gap-1.5">
-              <Building className="w-3.5 h-3.5 text-[#1b4332]" />
+              <Building className="w-3.5 h-3.5 text-[#46523B]" />
               <span>الوحدة التنظيمية / القسم الإداري *</span>
             </label>
             <div className="space-y-1.5">
@@ -193,7 +193,7 @@ export const EditUserModal: React.FC<Props> = ({
                 onChange={(e) => setDepartment(e.target.value)}
                 placeholder="مثال: قسم تقنية المعلومات"
                 required
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50/70 focus:bg-white focus:border-[#c59b27] focus:ring-2 focus:ring-[#c59b27]/20 outline-none transition font-medium"
+                className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50/70 focus:bg-white focus:border-[#A08D52] focus:ring-2 focus:ring-[#A08D52]/20 outline-none transition font-medium"
               />
               <div className="flex flex-wrap gap-1">
                 {COMMON_DEPARTMENTS.slice(0, 4).map((d) => (
@@ -213,13 +213,13 @@ export const EditUserModal: React.FC<Props> = ({
           {/* 4. الفرع */}
           <div>
             <label className="block text-xs font-bold text-slate-800 mb-1 flex items-center gap-1.5">
-              <MapPin className="w-3.5 h-3.5 text-[#1b4332]" />
+              <MapPin className="w-3.5 h-3.5 text-[#46523B]" />
               <span>الفرع *</span>
             </label>
             <select
               value={branch}
               onChange={(e) => setBranch(e.target.value)}
-              className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50/70 focus:bg-white focus:border-[#c59b27] focus:ring-2 focus:ring-[#c59b27]/20 outline-none transition font-medium"
+              className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50/70 focus:bg-white focus:border-[#A08D52] focus:ring-2 focus:ring-[#A08D52]/20 outline-none transition font-medium"
             >
               {COMMON_BRANCHES.map((b) => (
                 <option key={b} value={b}>
@@ -233,9 +233,9 @@ export const EditUserModal: React.FC<Props> = ({
           <div className="flex items-center gap-2 pt-3 border-t border-slate-100">
             <button
               type="submit"
-              className="flex-1 bg-gradient-to-r from-[#1b4332] to-[#143728] hover:from-[#143728] hover:to-[#081c15] text-[#e6c566] font-extrabold py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-md shadow-[#1b4332]/25 cursor-pointer active:scale-95"
+              className="flex-1 bg-gradient-to-r from-[#46523B] to-[#384230] hover:from-[#384230] hover:to-[#2A3324] text-[#C4B688] font-extrabold py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-md shadow-[#46523B]/25 cursor-pointer active:scale-95"
             >
-              <Check className="w-4 h-4 text-[#e6c566]" />
+              <Check className="w-4 h-4 text-[#C4B688]" />
               <span>حفظ التعديلات</span>
             </button>
             <button

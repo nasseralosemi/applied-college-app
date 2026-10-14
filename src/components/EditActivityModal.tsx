@@ -103,7 +103,7 @@ export const EditActivityModal: React.FC<Props> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-md animate-fade-slide-up font-['Tajawal',sans-serif]">
-      <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col border border-slate-100 overflow-hidden text-right">
+      <div className="bg-white rounded-[32px] shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col border border-slate-100 overflow-hidden text-right">
         {/* Header */}
         <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
           <button
@@ -125,7 +125,7 @@ export const EditActivityModal: React.FC<Props> = ({
                 >
                   {isEmployeeMode ? 'مقدم الطلب • استيفاء الملاحظات' : 'صلاحية التدقيق'}
                 </span>
-                <h3 className="text-sm sm:text-base font-extrabold text-[#1b4332]">
+                <h3 className="text-sm sm:text-base font-extrabold text-[#46523B]">
                   {isEmployeeMode ? 'تعديل بيانات الاستمارة المسترجعة' : 'تعديل ومراجعة حقول الاستمارة'}
                 </h3>
               </div>
@@ -135,7 +135,7 @@ export const EditActivityModal: React.FC<Props> = ({
                   : 'تعديل وتصحيح بيانات النشاط قبل الاعتماد والتحويل لمنصة ارتقاء'}
               </p>
             </div>
-            <div className="w-9 h-9 rounded-2xl bg-[#1b4332] text-[#e6c566] flex items-center justify-center shadow-md shadow-[#1b4332]/20">
+            <div className="w-9 h-9 rounded-2xl bg-[#46523B] text-[#C4B688] flex items-center justify-center shadow-md shadow-[#46523B]/20">
               <Edit3 className="w-4 h-4" />
             </div>
           </div>
@@ -168,8 +168,8 @@ export const EditActivityModal: React.FC<Props> = ({
 
           {/* Group 1: Basic Information */}
           <div className="space-y-3 bg-slate-50/70 p-3.5 rounded-2xl border border-slate-200/70">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-[#1b4332]">
-              <FileText className="w-4 h-4 text-[#c59b27]" />
+            <div className="flex items-center gap-1.5 text-xs font-bold text-[#46523B]">
+              <FileText className="w-4 h-4 text-[#A08D52]" />
               <span>1. البيانات الأساسية ونوع النشاط</span>
             </div>
 
@@ -183,7 +183,7 @@ export const EditActivityModal: React.FC<Props> = ({
                   value={formData.name}
                   onChange={(e) => handleChange('name', e.target.value)}
                   required
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] outline-none"
+                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] outline-none"
                 />
               </div>
 
@@ -194,7 +194,7 @@ export const EditActivityModal: React.FC<Props> = ({
                 <select
                   value={formData.type}
                   onChange={(e) => handleChange('type', e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] outline-none cursor-pointer"
+                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] outline-none cursor-pointer"
                 >
                   {ACTIVITY_TYPES.map((t) => (
                     <option key={t} value={t}>
@@ -213,7 +213,7 @@ export const EditActivityModal: React.FC<Props> = ({
                   value={formData.presenter}
                   onChange={(e) => handleChange('presenter', e.target.value)}
                   required
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] outline-none"
+                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] outline-none"
                 />
               </div>
 
@@ -226,7 +226,7 @@ export const EditActivityModal: React.FC<Props> = ({
                   value={formData.coordinatorName}
                   onChange={(e) => handleChange('coordinatorName', e.target.value)}
                   required
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] outline-none"
+                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] outline-none"
                 />
               </div>
 
@@ -237,7 +237,7 @@ export const EditActivityModal: React.FC<Props> = ({
                 <select
                   value={formData.unit}
                   onChange={(e) => handleChange('unit', e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] outline-none cursor-pointer"
+                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] outline-none cursor-pointer"
                 >
                   {UNITS.map((u) => (
                     <option key={u} value={u}>
@@ -254,7 +254,7 @@ export const EditActivityModal: React.FC<Props> = ({
                 <select
                   value={formData.branch}
                   onChange={(e) => handleChange('branch', e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] outline-none cursor-pointer"
+                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] outline-none cursor-pointer"
                 >
                   {BRANCHES.map((b) => (
                     <option key={b} value={b}>
@@ -268,8 +268,8 @@ export const EditActivityModal: React.FC<Props> = ({
 
           {/* Group 2: Schedule & Hours */}
           <div className="space-y-3 bg-slate-50/70 p-3.5 rounded-2xl border border-slate-200/70">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-[#1b4332]">
-              <Calendar className="w-4 h-4 text-[#c59b27]" />
+            <div className="flex items-center gap-1.5 text-xs font-bold text-[#46523B]">
+              <Calendar className="w-4 h-4 text-[#A08D52]" />
               <span>2. التوقيت والمواعيد والساعات التدريبية</span>
             </div>
 
@@ -283,7 +283,7 @@ export const EditActivityModal: React.FC<Props> = ({
                   value={formData.startDate}
                   onChange={(e) => handleChange('startDate', e.target.value)}
                   required
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] outline-none"
+                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] outline-none"
                 />
               </div>
 
@@ -296,7 +296,7 @@ export const EditActivityModal: React.FC<Props> = ({
                   value={formData.endDate}
                   onChange={(e) => handleChange('endDate', e.target.value)}
                   required
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] outline-none"
+                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] outline-none"
                 />
               </div>
 
@@ -310,7 +310,7 @@ export const EditActivityModal: React.FC<Props> = ({
                   onChange={(e) => handleChange('startTime', e.target.value)}
                   placeholder="مثال: 10:00 ص"
                   required
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] outline-none"
+                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] outline-none"
                 />
               </div>
 
@@ -325,7 +325,7 @@ export const EditActivityModal: React.FC<Props> = ({
                   value={formData.hours}
                   onChange={(e) => handleChange('hours', e.target.value)}
                   required
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] outline-none"
+                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] outline-none"
                 />
               </div>
             </div>
@@ -333,8 +333,8 @@ export const EditActivityModal: React.FC<Props> = ({
 
           {/* Group 3: Execution Mode & Target */}
           <div className="space-y-3 bg-slate-50/70 p-3.5 rounded-2xl border border-slate-200/70">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-[#1b4332]">
-              <Users className="w-4 h-4 text-[#c59b27]" />
+            <div className="flex items-center gap-1.5 text-xs font-bold text-[#46523B]">
+              <Users className="w-4 h-4 text-[#A08D52]" />
               <span>3. المستهدفون وحالة التنفيذ</span>
             </div>
 
@@ -347,7 +347,7 @@ export const EditActivityModal: React.FC<Props> = ({
                   type="text"
                   value={formData.targetAudience}
                   onChange={(e) => handleChange('targetAudience', e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] outline-none"
+                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] outline-none"
                 />
               </div>
 
@@ -358,7 +358,7 @@ export const EditActivityModal: React.FC<Props> = ({
                 <select
                   value={formData.targetGender}
                   onChange={(e) => handleChange('targetGender', e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] outline-none cursor-pointer"
+                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] outline-none cursor-pointer"
                 >
                   <option value="الجنسين (ذكر وأنثى)">الجنسين (ذكر وأنثى)</option>
                   <option value="ذكر (شطر الطلاب)">ذكر (شطر الطلاب)</option>
@@ -375,7 +375,7 @@ export const EditActivityModal: React.FC<Props> = ({
                   onChange={(e) =>
                     handleChange('deliveryMode', e.target.value as 'عن بعد' | 'حضوري')
                   }
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] outline-none cursor-pointer"
+                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] outline-none cursor-pointer"
                 >
                   <option value="عن بعد">عن بعد</option>
                   <option value="حضوري">حضوري</option>
@@ -393,7 +393,7 @@ export const EditActivityModal: React.FC<Props> = ({
                   value={formData.meetingUrl || ''}
                   onChange={(e) => handleChange('meetingUrl', e.target.value)}
                   placeholder="https://..."
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] outline-none font-mono text-left"
+                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] outline-none font-mono text-left"
                 />
               </div>
             ) : (
@@ -406,7 +406,7 @@ export const EditActivityModal: React.FC<Props> = ({
                   value={formData.physicalLocation || ''}
                   onChange={(e) => handleChange('physicalLocation', e.target.value)}
                   placeholder="مثال: مدرج الكلية التطبيقية الرئيسي"
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] outline-none"
+                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] outline-none"
                 />
               </div>
             )}
@@ -414,8 +414,8 @@ export const EditActivityModal: React.FC<Props> = ({
 
           {/* Group 4: Administrative Details & Summary */}
           <div className="space-y-3 bg-slate-50/70 p-3.5 rounded-2xl border border-slate-200/70">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-[#1b4332]">
-              <Briefcase className="w-4 h-4 text-[#c59b27]" />
+            <div className="flex items-center gap-1.5 text-xs font-bold text-[#46523B]">
+              <Briefcase className="w-4 h-4 text-[#A08D52]" />
               <span>4. الشراكات والملخص</span>
             </div>
 
@@ -432,7 +432,7 @@ export const EditActivityModal: React.FC<Props> = ({
                       e.target.value as 'لا تحتاج إلى موافقة' | 'تتطلب موافقة'
                     )
                   }
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] outline-none cursor-pointer"
+                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] outline-none cursor-pointer"
                 >
                   <option value="لا تحتاج إلى موافقة">لا تحتاج إلى موافقة</option>
                   <option value="تتطلب موافقة">تتطلب موافقة</option>
@@ -448,7 +448,7 @@ export const EditActivityModal: React.FC<Props> = ({
                   value={formData.transactionNumber || ''}
                   onChange={(e) => handleChange('transactionNumber', e.target.value)}
                   placeholder="مثال: 44-0982-م"
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] outline-none font-mono"
+                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] outline-none font-mono"
                 />
               </div>
             </div>
@@ -461,7 +461,7 @@ export const EditActivityModal: React.FC<Props> = ({
                 value={formData.summary}
                 onChange={(e) => handleChange('summary', e.target.value)}
                 rows={3}
-                className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] outline-none"
+                className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] outline-none"
               />
             </div>
           </div>
@@ -470,9 +470,9 @@ export const EditActivityModal: React.FC<Props> = ({
           <div className="pt-3 flex items-center gap-2 border-t border-slate-100">
             <button
               type="submit"
-              className="flex-1 bg-gradient-to-r from-[#1b4332] via-[#143728] to-[#081c15] text-[#e6c566] font-bold py-3 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#1b4332]/25 active:scale-95 transition-all duration-150 cursor-pointer border border-[#c59b27]/30"
+              className="flex-1 bg-gradient-to-r from-[#46523B] via-[#384230] to-[#2A3324] text-[#C4B688] font-bold py-3 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#46523B]/25 active:scale-95 transition-all duration-150 cursor-pointer border border-[#A08D52]/30"
             >
-              <Save className="w-4 h-4 text-[#e6c566]" />
+              <Save className="w-4 h-4 text-[#C4B688]" />
               <span>حفظ التعديلات في الاستمارة</span>
             </button>
 

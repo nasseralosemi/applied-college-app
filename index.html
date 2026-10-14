@@ -9,7 +9,7 @@
     <meta property="og:description" content="تطبيق جوال تفاعلي لإدارة واعتماد الأنشطة والدورات والرفع لمنصة ارتقاء بالكلية التطبيقية" />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="theme-color" content="#1b4332" />
+    <meta name="theme-color" content="#46523B" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -21,9 +21,38 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    <script>
+      // Immediate cleanup of any stale service workers or caches
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(regs) {
+          for (var i = 0; i < regs.length; i++) {
+            regs[i].unregister();
+          }
+        }).catch(function() {});
+      }
+      if (typeof caches !== 'undefined') {
+        caches.keys().then(function(keys) {
+          for (var i = 0; i < keys.length; i++) {
+            caches.delete(keys[i]);
+          }
+        }).catch(function() {});
+      }
+    </script>
   </head>
-  <body class="bg-[#f8fafc] font-['Tajawal',sans-serif] antialiased">
-    <div id="root"></div>
+  <body class="bg-[#FAF9F6] font-['Tajawal',sans-serif] antialiased">
+    <div id="root">
+      <div style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #FAF9F6; font-family: 'Tajawal', system-ui, sans-serif; direction: rtl; text-align: center; padding: 24px;">
+        <div style="width: 72px; height: 72px; border-radius: 20px; background-color: #46523B; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(70,82,59,0.25); margin-bottom: 16px;">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#A08D52" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <h1 style="color: #46523B; font-size: 18px; font-weight: 800; margin: 0 0 6px 0;">جامعة المجمعة - الكلية التطبيقية</h1>
+        <p style="color: #A08D52; font-size: 13px; font-weight: 700; margin: 0 0 14px 0;">منظومة توثيق واعتماد الأنشطة والفعاليات</p>
+        <div style="width: 36px; height: 36px; border: 3px solid rgba(70,82,59,0.15); border-top-color: #46523B; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+        <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -47,11 +47,11 @@ export const AttendancePreviewModal: React.FC<Props> = ({
       aria-modal="true"
       className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200"
     >
-      <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl border border-slate-200 max-h-[92vh] flex flex-col overflow-hidden text-right font-['Tajawal',sans-serif] animate-fade-slide-up">
+      <div className="bg-white w-full max-w-2xl rounded-[32px] shadow-2xl border border-slate-200 max-h-[92vh] flex flex-col overflow-hidden text-right font-['Tajawal',sans-serif] animate-fade-slide-up">
         {/* Header */}
-        <div className="bg-gradient-to-r from-[#1b4332] via-[#143728] to-[#081c15] text-white p-4 sm:p-5 flex items-center justify-between border-b border-[#c59b27]/30">
+        <div className="bg-gradient-to-r from-[#46523B] via-[#384230] to-[#2A3324] text-white p-4 sm:p-5 flex items-center justify-between border-b border-[#A08D52]/30">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#c59b27]/20 border border-[#c59b27]/50 flex items-center justify-center text-[#e6c566] shadow-sm">
+            <div className="w-10 h-10 rounded-2xl bg-[#A08D52]/20 border border-[#A08D52]/50 flex items-center justify-center text-[#C4B688] shadow-sm">
               <FileCheck2 className="w-5 h-5" />
             </div>
             <div>
@@ -59,7 +59,7 @@ export const AttendancePreviewModal: React.FC<Props> = ({
                 <h3 className="text-sm sm:text-base font-extrabold leading-tight">
                   معاينة كشف الحضور الختامي الرسمي
                 </h3>
-                <span className="text-[10px] bg-[#c59b27] text-slate-950 font-bold px-2 py-0.5 rounded-full">
+                <span className="text-[10px] bg-[#A08D52] text-slate-950 font-bold px-2 py-0.5 rounded-full">
                   منصة ارتقاء
                 </span>
               </div>
@@ -123,26 +123,26 @@ export const AttendancePreviewModal: React.FC<Props> = ({
         {/* Scrollable Document Area */}
         <div className="p-5 space-y-4 overflow-y-auto custom-scrollbar flex-1 text-xs">
           {/* Official University Letterhead Preview Card */}
-          <div className="bg-white border-2 border-slate-200 rounded-3xl p-5 shadow-sm space-y-4 relative overflow-hidden">
+          <div className="bg-white border-2 border-slate-200 rounded-[32px] p-5 shadow-sm space-y-4 relative overflow-hidden">
             {/* Watermark / Digital Seal */}
             <div className="absolute top-4 left-4 pointer-events-none opacity-15">
-              <div className="w-24 h-24 rounded-full border-4 border-[#1b4332] flex flex-col items-center justify-center rotate-12">
-                <span className="text-[8px] font-bold text-[#1b4332]">جامعة المجمعة</span>
-                <span className="text-[10px] font-extrabold text-[#1b4332]">معتمد ارتقاء</span>
-                <span className="text-[8px] font-bold text-[#c59b27]">الكلية التطبيقية</span>
+              <div className="w-24 h-24 rounded-full border-4 border-[#46523B] flex flex-col items-center justify-center rotate-12">
+                <span className="text-[8px] font-bold text-[#46523B]">جامعة المجمعة</span>
+                <span className="text-[10px] font-extrabold text-[#46523B]">معتمد ارتقاء</span>
+                <span className="text-[8px] font-bold text-[#A08D52]">الكلية التطبيقية</span>
               </div>
             </div>
 
             {/* Header in doc */}
             <div className="border-b border-slate-200 pb-3 flex items-center justify-between">
               <div>
-                <h4 className="text-xs font-bold text-[#1b4332]">المملكة العربية السعودية</h4>
+                <h4 className="text-xs font-bold text-[#46523B]">المملكة العربية السعودية</h4>
                 <p className="text-[10px] text-slate-500 font-semibold">جامعة المجمعة • الكلية التطبيقية</p>
                 <p className="text-[10px] text-slate-400">وحدة التوثيق ومنصة ارتقاء الوطنية</p>
               </div>
               <div className="text-left">
                 <span className="text-[10px] font-bold text-slate-400 block">رقم النشاط / المعاملة:</span>
-                <span className="text-xs font-mono font-bold text-[#1b4332]">
+                <span className="text-xs font-mono font-bold text-[#46523B]">
                   #{request.id} {request.transactionNumber ? `• ${request.transactionNumber}` : ''}
                 </span>
               </div>
@@ -164,7 +164,7 @@ export const AttendancePreviewModal: React.FC<Props> = ({
               </div>
               <div>
                 <span className="text-slate-400 block text-[10px]">الساعات التدريبية:</span>
-                <strong className="text-[#1b4332] block font-bold">{request.hours} ساعات معتمدة</strong>
+                <strong className="text-[#46523B] block font-bold">{request.hours} ساعات معتمدة</strong>
               </div>
             </div>
 
@@ -190,7 +190,7 @@ export const AttendancePreviewModal: React.FC<Props> = ({
             <div>
               <div className="flex items-center justify-between mb-2">
                 <h5 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                  <Users className="w-3.5 h-3.5 text-[#c59b27]" />
+                  <Users className="w-3.5 h-3.5 text-[#A08D52]" />
                   <span>سجل الحضور المرصود للنشاط ({SAMPLE_ATTENDEES.length} مسجلين):</span>
                 </h5>
                 <span className="text-[10px] text-slate-400">مستوفون لضوابط السجل المهاري</span>
@@ -255,7 +255,7 @@ export const AttendancePreviewModal: React.FC<Props> = ({
             <button
               type="button"
               onClick={handleDownload}
-              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-[#1b4332] hover:bg-[#143728] text-[#e6c566] text-xs font-bold shadow-md shadow-[#1b4332]/20 active:scale-95 transition-all cursor-pointer border border-[#c59b27]/30"
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-[#46523B] hover:bg-[#384230] text-[#C4B688] text-xs font-bold shadow-md shadow-[#46523B]/20 active:scale-95 transition-all cursor-pointer border border-[#A08D52]/30"
             >
               <Download className="w-3.5 h-3.5" />
               <span>تحميل كشف الحضور (الملف الرسمي)</span>

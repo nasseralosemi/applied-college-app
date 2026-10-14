@@ -129,15 +129,15 @@ export const ExportReportModal: React.FC<Props> = ({
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150 font-['Tajawal',sans-serif]">
-      <div className="bg-white rounded-3xl w-full max-w-2xl p-5 sm:p-6 shadow-2xl border border-slate-100 text-right max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-[32px] w-full max-w-2xl p-5 sm:p-6 shadow-2xl border border-slate-100 text-right max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 mb-4">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#1b4332] to-[#081c15] text-[#e6c566] flex items-center justify-center font-bold shadow-md shadow-[#1b4332]/20">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#46523B] to-[#2A3324] text-[#C4B688] flex items-center justify-center font-bold shadow-md shadow-[#46523B]/20">
               <Download className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-sm font-extrabold text-[#1b4332]">
+              <h3 className="text-sm font-extrabold text-[#46523B]">
                 تصدير التقرير النهائي لسير العمل
               </h3>
               <p className="text-[11px] text-slate-500">
@@ -161,11 +161,11 @@ export const ExportReportModal: React.FC<Props> = ({
             onClick={() => setFormat('excel')}
             className={`py-2 px-3 rounded-xl flex items-center justify-center gap-2 transition cursor-pointer ${
               format === 'excel'
-                ? 'bg-[#1b4332] text-[#e6c566] shadow-sm'
+                ? 'bg-[#46523B] text-[#C4B688] shadow-sm'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
             }`}
           >
-            <FileSpreadsheet className="w-4 h-4 text-[#c59b27]" />
+            <FileSpreadsheet className="w-4 h-4 text-[#A08D52]" />
             <span>تقرير إكسل متكامل (Excel / CSV)</span>
           </button>
           <button
@@ -173,11 +173,11 @@ export const ExportReportModal: React.FC<Props> = ({
             onClick={() => setFormat('pdf')}
             className={`py-2 px-3 rounded-xl flex items-center justify-center gap-2 transition cursor-pointer ${
               format === 'pdf'
-                ? 'bg-[#1b4332] text-[#e6c566] shadow-sm'
+                ? 'bg-[#46523B] text-[#C4B688] shadow-sm'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
             }`}
           >
-            <Printer className="w-4 h-4 text-[#c59b27]" />
+            <Printer className="w-4 h-4 text-[#A08D52]" />
             <span>طباعة التقرير / حفظ PDF</span>
           </button>
         </div>
@@ -186,7 +186,7 @@ export const ExportReportModal: React.FC<Props> = ({
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
           <div className="bg-slate-50 p-2.5 rounded-2xl border border-slate-200/70 text-right">
             <span className="text-[10px] text-slate-400 block font-bold">إجمالي الأنشطة</span>
-            <span className="text-base font-extrabold text-[#1b4332]">{total} نشاط</span>
+            <span className="text-base font-extrabold text-[#46523B]">{total} نشاط</span>
           </div>
           <div className="bg-emerald-50 p-2.5 rounded-2xl border border-emerald-200/70 text-right">
             <span className="text-[10px] text-emerald-700 block font-bold">موثقة بارتقاء</span>
@@ -214,33 +214,33 @@ export const ExportReportModal: React.FC<Props> = ({
         {/* Format Specific Details */}
         {format === 'excel' ? (
           <div className="space-y-3 bg-slate-50/80 p-4 rounded-2xl border border-slate-200/80 mb-4 text-xs text-slate-700">
-            <div className="flex items-center gap-2 text-[#1b4332] font-bold">
-              <FileSpreadsheet className="w-4 h-4 text-[#c59b27]" />
+            <div className="flex items-center gap-2 text-[#46523B] font-bold">
+              <FileSpreadsheet className="w-4 h-4 text-[#A08D52]" />
               <span>محتويات ملف Excel المصدّر:</span>
             </div>
             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[11px] text-slate-600 pr-2">
               <li className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#1b4332]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#46523B]" />
                 <span>أرقام المعاملات وسجلات الأنشطة</span>
               </li>
               <li className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#1b4332]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#46523B]" />
                 <span>الجهات المقدمة والوحدات والفروع</span>
               </li>
               <li className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#1b4332]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#46523B]" />
                 <span>عدد الساعات ومواعيد وتواريخ الانعقاد</span>
               </li>
               <li className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#1b4332]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#46523B]" />
                 <span>حالة اعتماد رئيس الكلية والمدقق</span>
               </li>
               <li className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#1b4332]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#46523B]" />
                 <span>الموظف المكلف بالرفع لمنصة ارتقاء</span>
               </li>
               <li className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#1b4332]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#46523B]" />
                 <span>حالة طلب النشر الإعلامي عبر منصة X</span>
               </li>
             </ul>
@@ -250,8 +250,8 @@ export const ExportReportModal: React.FC<Props> = ({
           </div>
         ) : (
           <div className="space-y-3 bg-slate-50/80 p-4 rounded-2xl border border-slate-200/80 mb-4 text-xs text-slate-700">
-            <div className="flex items-center gap-2 text-[#1b4332] font-bold">
-              <Printer className="w-4 h-4 text-[#c59b27]" />
+            <div className="flex items-center gap-2 text-[#46523B] font-bold">
+              <Printer className="w-4 h-4 text-[#A08D52]" />
               <span>معاينة الطباعة وتصدير PDF:</span>
             </div>
             <p className="text-[11px] text-slate-600 leading-relaxed">
@@ -306,18 +306,18 @@ export const ExportReportModal: React.FC<Props> = ({
             <button
               type="button"
               onClick={handleExportCSV}
-              className="flex-1 bg-gradient-to-r from-[#1b4332] to-[#143728] hover:from-[#143728] hover:to-[#081c15] text-[#e6c566] font-extrabold py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-md shadow-[#1b4332]/25 cursor-pointer active:scale-95"
+              className="flex-1 bg-gradient-to-r from-[#46523B] to-[#384230] hover:from-[#384230] hover:to-[#2A3324] text-[#C4B688] font-extrabold py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-md shadow-[#46523B]/25 cursor-pointer active:scale-95"
             >
-              <Download className="w-4 h-4 text-[#e6c566]" />
+              <Download className="w-4 h-4 text-[#C4B688]" />
               <span>تحميل ملف Excel (.CSV) الآن</span>
             </button>
           ) : (
             <button
               type="button"
               onClick={handlePrintPDF}
-              className="flex-1 bg-gradient-to-r from-[#1b4332] to-[#143728] hover:from-[#143728] hover:to-[#081c15] text-[#e6c566] font-extrabold py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-md shadow-[#1b4332]/25 cursor-pointer active:scale-95"
+              className="flex-1 bg-gradient-to-r from-[#46523B] to-[#384230] hover:from-[#384230] hover:to-[#2A3324] text-[#C4B688] font-extrabold py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-md shadow-[#46523B]/25 cursor-pointer active:scale-95"
             >
-              <Printer className="w-4 h-4 text-[#e6c566]" />
+              <Printer className="w-4 h-4 text-[#C4B688]" />
               <span>فتح نافذة الطباعة / حفظ PDF</span>
             </button>
           )}

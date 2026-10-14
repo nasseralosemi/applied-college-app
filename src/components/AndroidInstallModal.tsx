@@ -90,19 +90,19 @@ cd android && ./gradlew assembleDebug
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/60 backdrop-blur-xs animate-in fade-in" dir="rtl">
-      <div className="bg-white rounded-3xl shadow-2xl max-w-xl w-full max-h-[92vh] flex flex-col border border-gray-100 overflow-hidden text-right">
+      <div className="bg-white rounded-[32px] shadow-2xl max-w-xl w-full max-h-[92vh] flex flex-col border border-gray-100 overflow-hidden text-right">
         
         {/* Header */}
-        <div className="px-6 py-4 bg-[#1b4332] text-white flex items-center justify-between shrink-0">
+        <div className="px-6 py-4 bg-[#46523B] text-white flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#c59b27] rounded-xl flex items-center justify-center text-[#1b4332] shadow-sm">
+            <div className="w-10 h-10 bg-[#A08D52] rounded-xl flex items-center justify-center text-[#46523B] shadow-sm">
               <Smartphone className="w-6 h-6" />
             </div>
             <div>
               <h3 className="font-extrabold text-base sm:text-lg text-white">
                 تثبيت التطبيق على هاتف أندرويد (Android)
               </h3>
-              <p className="text-xs text-[#e6c566]">
+              <p className="text-xs text-[#C4B688]">
                 تثبيت مباشر وفوري (WebAPK / Native Experience)
               </p>
             </div>
@@ -123,11 +123,11 @@ cd android && ./gradlew assembleDebug
             onClick={() => setActiveTab('instant')}
             className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition border-b-2 flex items-center gap-1.5 cursor-pointer ${
               activeTab === 'instant'
-                ? 'bg-white border-[#1b4332] text-[#1b4332] shadow-xs'
+                ? 'bg-white border-[#46523B] text-[#46523B] shadow-xs'
                 : 'border-transparent text-gray-500 hover:text-gray-800'
             }`}
           >
-            <Sparkles className="w-4 h-4 text-[#c59b27]" />
+            <Sparkles className="w-4 h-4 text-[#A08D52]" />
             <span>التثبيت الفوري والمباشر (موصى به)</span>
           </button>
 
@@ -136,7 +136,7 @@ cd android && ./gradlew assembleDebug
             onClick={() => setActiveTab('apk')}
             className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition border-b-2 flex items-center gap-1.5 cursor-pointer ${
               activeTab === 'apk'
-                ? 'bg-white border-[#1b4332] text-[#1b4332] shadow-xs'
+                ? 'bg-white border-[#46523B] text-[#46523B] shadow-xs'
                 : 'border-transparent text-gray-500 hover:text-gray-800'
             }`}
           >
@@ -170,7 +170,7 @@ cd android && ./gradlew assembleDebug
                     includeMargin={false}
                   />
                   <span className="text-[10px] text-gray-500 font-bold mt-1.5 flex items-center gap-1">
-                    <QrCode className="w-3 h-3 text-[#c59b27]" />
+                    <QrCode className="w-3 h-3 text-[#A08D52]" />
                     امسح بكاميرا الجوال
                   </span>
                 </div>
@@ -205,7 +205,7 @@ cd android && ./gradlew assembleDebug
                     <button
                       type="button"
                       onClick={handleInstallClick}
-                      className="px-4 py-2 bg-[#1b4332] hover:bg-[#143728] text-[#e6c566] font-extrabold rounded-xl text-xs flex items-center gap-1.5 transition cursor-pointer shadow-sm"
+                      className="px-4 py-2 bg-[#46523B] hover:bg-[#384230] text-[#C4B688] font-extrabold rounded-xl text-xs flex items-center gap-1.5 transition cursor-pointer shadow-sm"
                     >
                       <Download className="w-4 h-4" />
                       <span>{isInstalled ? 'التطبيق مثبت بالفعل' : 'تثبيت التطبيق الآن'}</span>
@@ -216,14 +216,14 @@ cd android && ./gradlew assembleDebug
 
               {/* 3 Step Visual Guide */}
               <div className="bg-white p-4 rounded-2xl border border-gray-200 space-y-2.5">
-                <h4 className="font-bold text-[#1b4332] text-xs flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-[#c59b27]" />
+                <h4 className="font-bold text-[#46523B] text-xs flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-[#A08D52]" />
                   <span>خطوات التثبيت السريع على هاتف أندرويد (30 ثانية):</span>
                 </h4>
 
                 <div className="space-y-2 text-xs text-gray-700">
                   <div className="flex items-start gap-2.5 p-2 bg-gray-50 rounded-xl">
-                    <span className="w-5 h-5 rounded-full bg-[#1b4332] text-[#e6c566] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+                    <span className="w-5 h-5 rounded-full bg-[#46523B] text-[#C4B688] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
                       1
                     </span>
                     <p className="leading-relaxed">
@@ -232,7 +232,7 @@ cd android && ./gradlew assembleDebug
                   </div>
 
                   <div className="flex items-start gap-2.5 p-2 bg-gray-50 rounded-xl">
-                    <span className="w-5 h-5 rounded-full bg-[#1b4332] text-[#e6c566] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+                    <span className="w-5 h-5 rounded-full bg-[#46523B] text-[#C4B688] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
                       2
                     </span>
                     <p className="leading-relaxed">
@@ -241,7 +241,7 @@ cd android && ./gradlew assembleDebug
                   </div>
 
                   <div className="flex items-start gap-2.5 p-2 bg-gray-50 rounded-xl">
-                    <span className="w-5 h-5 rounded-full bg-[#1b4332] text-[#e6c566] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+                    <span className="w-5 h-5 rounded-full bg-[#46523B] text-[#C4B688] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
                       3
                     </span>
                     <p className="leading-relaxed">
@@ -273,7 +273,7 @@ cd android && ./gradlew assembleDebug
                       setCopied(true);
                       setTimeout(() => setCopied(false), 2000);
                     }}
-                    className="text-[11px] text-[#1b4332] font-bold flex items-center gap-1 hover:underline cursor-pointer"
+                    className="text-[11px] text-[#46523B] font-bold flex items-center gap-1 hover:underline cursor-pointer"
                   >
                     {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                     <span>{copied ? 'تم النسخ' : 'نسخ الأوامر'}</span>
@@ -303,7 +303,7 @@ cd android && ./gradlew assembleDebug
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2 bg-[#1b4332] hover:bg-[#143728] text-[#e6c566] font-bold rounded-xl text-xs transition shadow-sm cursor-pointer"
+            className="px-5 py-2 bg-[#46523B] hover:bg-[#384230] text-[#C4B688] font-bold rounded-xl text-xs transition shadow-sm cursor-pointer"
           >
             إغلاق
           </button>

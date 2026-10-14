@@ -82,99 +82,155 @@ export const UploaderView: React.FC<Props> = ({
 
   return (
     <div className="space-y-4 pb-8 font-['Tajawal',sans-serif] text-right">
-      {/* Title Bar */}
-      <div className="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-2 h-full bg-gradient-to-b from-[#1b4332] via-[#c59b27] to-[#1b4332]" />
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-[#1b4332]/10 text-[#1b4332] flex items-center justify-center shrink-0 border border-[#1b4332]/20">
-            <CloudUpload className="w-5 h-5 text-[#c59b27]" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-50 text-teal-900 border border-teal-200">
-                بوابة ارتقاء
-              </span>
-              <h2 className="text-sm sm:text-base font-extrabold text-[#1b4332]">
-                أخذ البيانات والرفع لمنصة ارتقاء الرسمية
-              </h2>
+      {/* Bento Grid Header & Interactive Filter Tiles */}
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+        {/* Bento Hero Tile: Spans 2 cols on mobile, 4 cols on desktop */}
+        <div className="col-span-2 md:col-span-4 lg:col-span-4 bg-white/90 backdrop-blur-md rounded-[32px] p-4 sm:p-5 border border-[#46523B]/12 shadow-[0_8px_24px_rgba(70,82,59,0.04)] relative overflow-hidden flex flex-col justify-between">
+          <div className="absolute top-0 right-0 w-2 h-full bg-gradient-to-b from-[#46523B] via-[#A08D52] to-[#46523B]" />
+          
+          <div className="flex items-center justify-between gap-3 mb-2">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-2xl bg-[#46523B] text-[#A08D52] flex items-center justify-center shrink-0 border border-[#A08D52]/40 shadow-xs">
+                <CloudUpload className="w-5 h-5 text-[#A08D52]" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-[#46523B]/10 text-[#46523B] border border-[#46523B]/20">
+                    بوابة منصة ارتقاء
+                  </span>
+                  <span className="text-[10px] font-bold text-[#A08D52]">
+                    المزامنة والسجل المهاري
+                  </span>
+                </div>
+                <h2 className="text-sm sm:text-base font-black text-[#46523B] mt-0.5">
+                  رفع وتوثيق الأنشطة المعتمدة في منصة ارتقاء
+                </h2>
+              </div>
             </div>
-            <p className="text-xs text-slate-500 mt-0.5">
-              مزامنة ساعات الأنشطة المعتمدة في السجل المهاري للجامعة وفق توجيهات التدقيق
-            </p>
+
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-[#FAF9F6] border border-[#46523B]/10 text-xs font-bold text-[#46523B]">
+              <Layers className="w-3.5 h-3.5 text-[#A08D52]" />
+              <span>إجمالي الأنشطة: {requests.length}</span>
+            </div>
+          </div>
+
+          <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+            <span className="text-slate-500 font-medium">حالة التوثيق في ارتقاء:</span>
+            <div className="flex items-center gap-3">
+              <span className="text-amber-700 font-bold flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                {pendingUploadRequests.length} بانتظار الرفع
+              </span>
+              <span className="text-emerald-700 font-bold flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                {completedDocumentedRequests.length} مكتملة وموثقة
+              </span>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Unified 4-Card KPI Metrics Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
-        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+        {/* Bento Interactive Tile 1: جاهز للرفع */}
+        <button
+          type="button"
+          onClick={() => setActiveTab('ready')}
+          className={`col-span-1 p-3.5 rounded-[28px] text-right flex flex-col justify-between transition-all cursor-pointer select-none border group ${
+            activeTab === 'ready'
+              ? 'bg-[#46523B] text-white border-[#A08D52] shadow-md ring-2 ring-[#A08D52]/30'
+              : 'bg-white text-slate-700 border-[#46523B]/10 shadow-[0_4px_16px_rgba(70,82,59,0.03)] hover:border-amber-400'
+          }`}
+        >
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">جاهز للرفع</span>
-            <div className="w-7 h-7 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
+            <span className={`text-[11px] font-bold ${activeTab === 'ready' ? 'text-amber-200' : 'text-slate-500'}`}>
+              جاهز للرفع
+            </span>
+            <div className={`w-7 h-7 rounded-xl flex items-center justify-center ${activeTab === 'ready' ? 'bg-white/20 text-[#A08D52]' : 'bg-amber-50 text-amber-700'}`}>
               <CloudUpload className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-xl sm:text-2xl font-black text-amber-700 mt-1">{pendingUploadRequests.length}</div>
-          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">بانتظار الإدخال لارتقاء</div>
-        </div>
+          <div className={`text-2xl font-black mt-2 ${activeTab === 'ready' ? 'text-white' : 'text-amber-700'}`}>
+            {pendingUploadRequests.length}
+          </div>
+          <span className={`text-[10px] mt-1 ${activeTab === 'ready' ? 'text-amber-200' : 'text-slate-400'}`}>
+            عرض المعاملات ←
+          </span>
+        </button>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+        {/* Bento Interactive Tile 2: مرفوعة (تنتظر الكشف) */}
+        <button
+          type="button"
+          onClick={() => setActiveTab('uploaded')}
+          className={`col-span-1 p-3.5 rounded-[28px] text-right flex flex-col justify-between transition-all cursor-pointer select-none border group ${
+            activeTab === 'uploaded'
+              ? 'bg-[#46523B] text-white border-[#A08D52] shadow-md ring-2 ring-[#A08D52]/30'
+              : 'bg-white text-slate-700 border-[#46523B]/10 shadow-[0_4px_16px_rgba(70,82,59,0.03)] hover:border-blue-400'
+          }`}
+        >
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">مرفوعة (تنتظر الكشف)</span>
-            <div className="w-7 h-7 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
+            <span className={`text-[11px] font-bold ${activeTab === 'uploaded' ? 'text-blue-200' : 'text-slate-500'}`}>
+              مرفوعة (تنتظر الكشف)
+            </span>
+            <div className={`w-7 h-7 rounded-xl flex items-center justify-center ${activeTab === 'uploaded' ? 'bg-white/20 text-blue-300' : 'bg-blue-50 text-blue-700'}`}>
               <CloudCheck className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-xl sm:text-2xl font-black text-amber-700 mt-1">{uploadedAwaitingAttendance.length}</div>
-          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">تنتظر كشف الحضور والغياب</div>
-        </div>
+          <div className={`text-2xl font-black mt-2 ${activeTab === 'uploaded' ? 'text-white' : 'text-blue-700'}`}>
+            {uploadedAwaitingAttendance.length}
+          </div>
+          <span className={`text-[10px] mt-1 ${activeTab === 'uploaded' ? 'text-blue-200' : 'text-slate-400'}`}>
+            بانتظار الحضور ←
+          </span>
+        </button>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+        {/* Bento Interactive Tile 3: السجل الكامل */}
+        <button
+          type="button"
+          onClick={() => setActiveTab('all')}
+          className={`col-span-1 p-3.5 rounded-[28px] text-right flex flex-col justify-between transition-all cursor-pointer select-none border group ${
+            activeTab === 'all'
+              ? 'bg-[#46523B] text-white border-[#A08D52] shadow-md ring-2 ring-[#A08D52]/30'
+              : 'bg-white text-slate-700 border-[#46523B]/10 shadow-[0_4px_16px_rgba(70,82,59,0.03)] hover:border-emerald-400'
+          }`}
+        >
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">السجل الكامل</span>
-            <div className="w-7 h-7 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+            <span className={`text-[11px] font-bold ${activeTab === 'all' ? 'text-emerald-200' : 'text-slate-500'}`}>
+              السجل المكتمل
+            </span>
+            <div className={`w-7 h-7 rounded-xl flex items-center justify-center ${activeTab === 'all' ? 'bg-white/20 text-emerald-300' : 'bg-emerald-50 text-emerald-700'}`}>
               <ShieldCheck className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-xl sm:text-2xl font-black text-emerald-700 mt-1">{completedDocumentedRequests.length}</div>
-          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">كشف حضور معتمد ومغلق</div>
-        </div>
-
-        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">إجمالي الأنشطة</span>
-            <div className="w-7 h-7 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center">
-              <Layers className="w-3.5 h-3.5" />
-            </div>
+          <div className={`text-2xl font-black mt-2 ${activeTab === 'all' ? 'text-white' : 'text-emerald-700'}`}>
+            {completedDocumentedRequests.length}
           </div>
-          <div className="text-xl sm:text-2xl font-black text-slate-900 mt-1">{requests.length}</div>
-          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">كافة مسارات المنظومة</div>
-        </div>
+          <span className={`text-[10px] mt-1 ${activeTab === 'all' ? 'text-emerald-200' : 'text-slate-400'}`}>
+            أرشيف ارتقاء ←
+          </span>
+        </button>
       </div>
 
       {/* Interactive Tabs */}
-      <div className="grid grid-cols-3 gap-1.5 p-1.5 bg-slate-200/70 rounded-2xl border border-slate-200 shadow-inner">
+      <div className="grid grid-cols-3 gap-1.5 p-1.5 bg-white/80 backdrop-blur-md rounded-2xl border border-[#46523B]/10 shadow-xs">
         {/* Tab 1: جاهز للرفع */}
         <button
           type="button"
           onClick={() => setActiveTab('ready')}
           className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-bold active:scale-95 transition-all duration-150 cursor-pointer ${
             activeTab === 'ready'
-              ? 'bg-[#1b4332] text-[#e6c566] shadow-md shadow-[#1b4332]/25'
-              : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
+              ? 'bg-[#46523B] text-white shadow-xs font-black'
+              : 'text-slate-700 hover:text-[#46523B] hover:bg-slate-50'
           }`}
         >
           <div className="flex items-center gap-1">
-            <CloudUpload className="w-3.5 h-3.5 text-[#e6c566]" />
+            <CloudUpload className={`w-3.5 h-3.5 ${activeTab === 'ready' ? 'text-[#A08D52]' : 'text-slate-400'}`} />
             <span className="whitespace-nowrap">جاهز للرفع</span>
           </div>
           <span
             className={`text-[10px] px-2 py-0.5 rounded-full font-bold leading-none ${
               activeTab === 'ready'
-                ? 'bg-[#c59b27] text-slate-950'
+                ? 'bg-[#A08D52] text-white'
                 : pendingUploadRequests.length > 0
                 ? 'bg-amber-100 text-amber-900 font-bold'
-                : 'bg-slate-300 text-slate-700'
+                : 'bg-slate-200 text-slate-700'
             }`}
           >
             {pendingUploadRequests.length}
@@ -187,18 +243,18 @@ export const UploaderView: React.FC<Props> = ({
           onClick={() => setActiveTab('uploaded')}
           className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-bold active:scale-95 transition-all duration-150 cursor-pointer ${
             activeTab === 'uploaded'
-              ? 'bg-[#1b4332] text-[#e6c566] shadow-md shadow-[#1b4332]/25'
+              ? 'bg-[#46523B] text-[#C4B688] shadow-md shadow-[#46523B]/25'
               : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
           }`}
         >
           <div className="flex items-center gap-1">
-            <CloudCheck className="w-3.5 h-3.5 text-[#e6c566]" />
+            <CloudCheck className="w-3.5 h-3.5 text-[#C4B688]" />
             <span className="whitespace-nowrap">مرفوعة</span>
           </div>
           <span
             className={`text-[10px] px-2 py-0.5 rounded-full font-bold leading-none ${
               activeTab === 'uploaded'
-                ? 'bg-[#c59b27] text-slate-950'
+                ? 'bg-[#A08D52] text-slate-950'
                 : uploadedAwaitingAttendance.length > 0
                 ? 'bg-amber-100 text-amber-900'
                 : 'bg-slate-300 text-slate-700'
@@ -214,18 +270,18 @@ export const UploaderView: React.FC<Props> = ({
           onClick={() => setActiveTab('all')}
           className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-bold active:scale-95 transition-all duration-150 cursor-pointer ${
             activeTab === 'all'
-              ? 'bg-[#1b4332] text-[#e6c566] shadow-md shadow-[#1b4332]/25'
+              ? 'bg-[#46523B] text-[#C4B688] shadow-md shadow-[#46523B]/25'
               : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
           }`}
         >
           <div className="flex items-center gap-1">
-            <Layers className="w-3.5 h-3.5 text-[#e6c566]" />
+            <Layers className="w-3.5 h-3.5 text-[#C4B688]" />
             <span className="whitespace-nowrap">السجل الكامل</span>
           </div>
           <span
             className={`text-[10px] px-2 py-0.5 rounded-full font-bold leading-none ${
               activeTab === 'all'
-                ? 'bg-[#c59b27] text-slate-950'
+                ? 'bg-[#A08D52] text-slate-950'
                 : completedDocumentedRequests.length > 0
                 ? 'bg-emerald-100 text-emerald-900'
                 : 'bg-slate-300 text-slate-700'
@@ -239,12 +295,12 @@ export const UploaderView: React.FC<Props> = ({
       {/* Main Request List */}
       <div className="space-y-3">
         {displayedRequests.length === 0 ? (
-          <div className="bg-white rounded-3xl p-8 text-center border border-slate-100 shadow-sm">
+          <div className="bg-white rounded-[32px] p-8 text-center border border-slate-100 shadow-sm">
             <div className="w-12 h-12 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center mx-auto mb-2">
               {activeTab === 'ready' ? (
                 <CloudUpload className="w-6 h-6 text-amber-600" />
               ) : activeTab === 'uploaded' ? (
-                <FileCheck2 className="w-6 h-6 text-[#1b4332]" />
+                <FileCheck2 className="w-6 h-6 text-[#46523B]" />
               ) : (
                 <ShieldCheck className="w-6 h-6 text-emerald-600" />
               )}
@@ -270,8 +326,8 @@ export const UploaderView: React.FC<Props> = ({
             return (
               <div
                 key={r.id}
-                className={`bg-white rounded-3xl p-4 sm:p-5 shadow-md hover:shadow-xl transition-all duration-200 border border-slate-100 border-r-4 ${
-                  isUploaded ? 'border-r-[#1b4332]' : 'border-r-emerald-500'
+                className={`bg-white rounded-[32px] p-4 sm:p-5 shadow-md hover:shadow-xl transition-all duration-200 border border-slate-100 border-r-4 ${
+                  isUploaded ? 'border-r-[#46523B]' : 'border-r-emerald-500'
                 }`}
               >
                 <div className="flex items-start justify-between gap-2 mb-2.5">
@@ -299,7 +355,7 @@ export const UploaderView: React.FC<Props> = ({
                 {/* Directive & Dispatch Info Bar (مختصر وغير مزدحم) */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-50/80 p-2.5 rounded-2xl text-[11px] mb-3 border border-slate-200/80">
                   <div className="flex items-center gap-1.5">
-                    <UserCheck className="w-3.5 h-3.5 text-[#1b4332]" />
+                    <UserCheck className="w-3.5 h-3.5 text-[#46523B]" />
                     <span className="text-slate-500">المكلف بالرفع:</span>
                     <strong className="text-slate-900 truncate">
                       {r.assignedUploader || 'موظف الرفع العام لمنصة ارتقاء'}
@@ -307,7 +363,7 @@ export const UploaderView: React.FC<Props> = ({
                   </div>
 
                   <div className="flex items-center gap-1.5">
-                    <Share2 className="w-3.5 h-3.5 text-[#c59b27]" />
+                    <Share2 className="w-3.5 h-3.5 text-[#A08D52]" />
                     <span className="text-slate-500">حالة النشر الإعلامي:</span>
                     <MediaPublishBadge request={r} />
                   </div>
@@ -327,7 +383,7 @@ export const UploaderView: React.FC<Props> = ({
                     {r.deliveryMode === 'عن بعد' ? (
                       <Globe className="w-3.5 h-3.5 text-blue-500" />
                     ) : (
-                      <MapPin className="w-3.5 h-3.5 text-[#c59b27]" />
+                      <MapPin className="w-3.5 h-3.5 text-[#A08D52]" />
                     )}
                     <span>
                       {r.deliveryMode === 'عن بعد'
@@ -348,9 +404,9 @@ export const UploaderView: React.FC<Props> = ({
                   <button
                     type="button"
                     onClick={() => setSelectedRequest(r)}
-                    className="text-[11px] text-[#1b4332] hover:text-[#c59b27] font-bold flex items-center gap-1.5 active:scale-95 transition-all duration-150 cursor-pointer bg-slate-50 hover:bg-amber-50/60 px-3 py-1.5 rounded-xl border border-slate-200"
+                    className="text-[11px] text-[#46523B] hover:text-[#A08D52] font-bold flex items-center gap-1.5 active:scale-95 transition-all duration-150 cursor-pointer bg-slate-50 hover:bg-amber-50/60 px-3 py-1.5 rounded-xl border border-slate-200"
                   >
-                    <FileSearch className="w-3.5 h-3.5 text-[#c59b27]" />
+                    <FileSearch className="w-3.5 h-3.5 text-[#A08D52]" />
                     <span>عرض الاستمارة ومطابقة كشف الحضور</span>
                   </button>
 
@@ -366,9 +422,9 @@ export const UploaderView: React.FC<Props> = ({
                   <button
                     type="button"
                     onClick={() => setAccreditationUploadRequest(r)}
-                    className="w-full bg-gradient-to-r from-[#1b4332] via-[#143728] to-[#081c15] text-[#e6c566] font-bold py-3 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md shadow-[#1b4332]/20 active:scale-95 transition-all duration-150 cursor-pointer border border-[#c59b27]/30"
+                    className="w-full bg-gradient-to-r from-[#46523B] via-[#384230] to-[#2A3324] text-[#C4B688] font-bold py-3 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md shadow-[#46523B]/20 active:scale-95 transition-all duration-150 cursor-pointer border border-[#A08D52]/30"
                   >
-                    <CloudUpload className="w-4 h-4 text-[#e6c566]" />
+                    <CloudUpload className="w-4 h-4 text-[#C4B688]" />
                     <span>تأكيد الرفع والمزامنة في منصة ارتقاء (إرفاق نموذج الاعتماد)</span>
                   </button>
                 ) : (
@@ -401,7 +457,7 @@ export const UploaderView: React.FC<Props> = ({
                           <button
                             type="button"
                             onClick={() => setAccreditationPreviewRequest(r)}
-                            className="px-2.5 py-1.5 rounded-xl bg-[#1b4332] text-[#e6c566] text-xs font-bold flex items-center gap-1 hover:bg-[#143728] active:scale-95 transition cursor-pointer"
+                            className="px-2.5 py-1.5 rounded-xl bg-[#46523B] text-[#C4B688] text-xs font-bold flex items-center gap-1 hover:bg-[#384230] active:scale-95 transition cursor-pointer"
                           >
                             <Eye className="w-3.5 h-3.5" />
                             <span>معاينة النموذج</span>
@@ -425,10 +481,10 @@ export const UploaderView: React.FC<Props> = ({
                     <div className="bg-slate-50/90 border border-slate-200 rounded-2xl p-3 space-y-2.5 shadow-xs">
                       <div className="flex items-center justify-between pb-2 border-b border-slate-200/70">
                         <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-lg bg-[#1b4332]/10 text-[#1b4332] flex items-center justify-center">
-                            <FileCheck2 className="w-3.5 h-3.5 text-[#c59b27]" />
+                          <div className="w-6 h-6 rounded-lg bg-[#46523B]/10 text-[#46523B] flex items-center justify-center">
+                            <FileCheck2 className="w-3.5 h-3.5 text-[#A08D52]" />
                           </div>
-                          <h5 className="text-xs font-bold text-[#1b4332]">
+                          <h5 className="text-xs font-bold text-[#46523B]">
                             كشف الحضور والغياب الختامي
                           </h5>
                         </div>
@@ -477,7 +533,7 @@ export const UploaderView: React.FC<Props> = ({
                               <button
                                 type="button"
                                 onClick={() => setPreviewModalRequest(r)}
-                                className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-[#1b4332] hover:bg-[#143728] text-[#e6c566] rounded-xl text-[11px] font-bold shadow-xs active:scale-95 transition-all cursor-pointer border border-[#c59b27]/30"
+                                className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-[#46523B] hover:bg-[#384230] text-[#C4B688] rounded-xl text-[11px] font-bold shadow-xs active:scale-95 transition-all cursor-pointer border border-[#A08D52]/30"
                               >
                                 <Eye className="w-3.5 h-3.5" />
                                 <span>معاينة</span>

@@ -67,99 +67,173 @@ export const ManagerView: React.FC<Props> = ({
 
   return (
     <div className="space-y-4 pb-8 font-['Tajawal',sans-serif] text-right">
-      {/* View Title & Context Banner */}
-      <div className="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-2 h-full bg-gradient-to-b from-[#1b4332] via-[#c59b27] to-[#1b4332]" />
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-[#1b4332]/10 text-[#1b4332] flex items-center justify-center shrink-0 border border-[#1b4332]/20">
-            <ClipboardCheck className="w-5 h-5 text-[#c59b27]" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-900 border border-indigo-200">
-                لوحة المدير المباشر
-              </span>
-              <h2 className="text-sm sm:text-base font-extrabold text-[#1b4332]">
-                مراجعة واعتماد طلبات أنشطة الوحدة
-              </h2>
+      {/* Bento Grid Header & Interactive Filter Tiles */}
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+        {/* Bento Hero Tile: Spans 2 cols on mobile, 4 cols on desktop */}
+        <div className="col-span-2 md:col-span-4 lg:col-span-4 bg-white/90 backdrop-blur-md rounded-[32px] p-4 sm:p-5 border border-[#46523B]/12 shadow-[0_8px_24px_rgba(70,82,59,0.04)] relative overflow-hidden flex flex-col justify-between">
+          <div className="absolute top-0 right-0 w-2 h-full bg-gradient-to-b from-[#46523B] via-[#A08D52] to-[#46523B]" />
+          
+          <div className="flex items-center justify-between gap-3 mb-2">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-2xl bg-[#46523B] text-[#A08D52] flex items-center justify-center shrink-0 border border-[#A08D52]/40 shadow-xs">
+                <ClipboardCheck className="w-5 h-5 text-[#A08D52]" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-[#46523B]/10 text-[#46523B] border border-[#46523B]/20">
+                    لوحة المدير المباشر
+                  </span>
+                  <span className="text-[10px] font-bold text-[#A08D52]">
+                    اعتماد خطط الأنشطة
+                  </span>
+                </div>
+                <h2 className="text-sm sm:text-base font-black text-[#46523B] mt-0.5">
+                  فحص ومراجعة طلبات أنشطة الوحدة
+                </h2>
+              </div>
             </div>
-            <p className="text-xs text-slate-500 mt-0.5">
-              اعتماد الأنشطة، التحقق من الجدوى، والإحالة لوحدة التدقيق والاعتماد الأكاديمي
-            </p>
+
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-[#FAF9F6] border border-[#46523B]/10 text-xs font-bold text-[#46523B]">
+              <span>إجمالي معاملات الوحدة:</span>
+              <span className="font-mono text-[#A08D52] font-black">{requests.length}</span>
+            </div>
+          </div>
+
+          <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+            <span className="text-slate-500 font-medium">حالة المعاملات الحالية:</span>
+            <div className="flex items-center gap-3">
+              <span className="text-amber-700 font-bold flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                {pendingRequests.length} بانتظار الموافقة
+              </span>
+              <span className="text-emerald-700 font-bold flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                {requests.filter((r) => r.status === 'approved_final' || r.status === 'uploaded_irtqaa').length} معتمدة
+              </span>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Unified 4-Card KPI Metrics Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
-        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+        {/* Bento Interactive Tile 1: بانتظار موافقتي */}
+        <button
+          type="button"
+          onClick={() => setActiveTab('pending')}
+          className={`col-span-1 p-3.5 rounded-[28px] text-right flex flex-col justify-between transition-all cursor-pointer select-none border group ${
+            activeTab === 'pending'
+              ? 'bg-[#46523B] text-white border-[#A08D52] shadow-md ring-2 ring-[#A08D52]/30'
+              : 'bg-white text-slate-700 border-[#46523B]/10 shadow-[0_4px_16px_rgba(70,82,59,0.03)] hover:border-amber-400'
+          }`}
+        >
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">بانتظار موافقتي</span>
-            <div className="w-7 h-7 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
+            <span className={`text-[11px] font-bold ${activeTab === 'pending' ? 'text-amber-200' : 'text-slate-500'}`}>
+              بانتظار موافقتي
+            </span>
+            <div className={`w-7 h-7 rounded-xl flex items-center justify-center ${activeTab === 'pending' ? 'bg-white/20 text-[#A08D52]' : 'bg-amber-50 text-amber-700'}`}>
               <ClipboardCheck className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-xl sm:text-2xl font-black text-amber-700 mt-1">{pendingRequests.length}</div>
-          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">طلبات جديدة ومُعادة</div>
-        </div>
+          <div className={`text-2xl font-black mt-2 ${activeTab === 'pending' ? 'text-white' : 'text-amber-700'}`}>
+            {pendingRequests.length}
+          </div>
+          <span className={`text-[10px] mt-1 ${activeTab === 'pending' ? 'text-amber-200' : 'text-slate-400'}`}>
+            عرض الطلبات ←
+          </span>
+        </button>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+        {/* Bento Interactive Tile 2: محالة للتدقيق */}
+        <button
+          type="button"
+          onClick={() => setActiveTab('referred')}
+          className={`col-span-1 p-3.5 rounded-[28px] text-right flex flex-col justify-between transition-all cursor-pointer select-none border group ${
+            activeTab === 'referred'
+              ? 'bg-[#46523B] text-white border-[#A08D52] shadow-md ring-2 ring-[#A08D52]/30'
+              : 'bg-white text-slate-700 border-[#46523B]/10 shadow-[0_4px_16px_rgba(70,82,59,0.03)] hover:border-blue-400'
+          }`}
+        >
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">محالة للتدقيق</span>
-            <div className="w-7 h-7 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
+            <span className={`text-[11px] font-bold ${activeTab === 'referred' ? 'text-blue-200' : 'text-slate-500'}`}>
+              محالة للتدقيق
+            </span>
+            <div className={`w-7 h-7 rounded-xl flex items-center justify-center ${activeTab === 'referred' ? 'bg-white/20 text-blue-300' : 'bg-blue-50 text-blue-700'}`}>
               <Send className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-xl sm:text-2xl font-black text-blue-700 mt-1">{requests.filter((r) => r.status === 'pending_auditor').length}</div>
-          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">قيد فحص الضوابط</div>
-        </div>
+          <div className={`text-2xl font-black mt-2 ${activeTab === 'referred' ? 'text-white' : 'text-blue-700'}`}>
+            {referredRequests.length}
+          </div>
+          <span className={`text-[10px] mt-1 ${activeTab === 'referred' ? 'text-blue-200' : 'text-slate-400'}`}>
+            قيد فحص الضوابط ←
+          </span>
+        </button>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+        {/* Bento Interactive Tile 3: معتمدة ومكتملة */}
+        <button
+          type="button"
+          onClick={() => setActiveTab('referred')}
+          className="col-span-1 bg-white rounded-[28px] p-3.5 border border-[#46523B]/10 shadow-[0_4px_16px_rgba(70,82,59,0.03)] text-right flex flex-col justify-between hover:border-emerald-400 transition-all cursor-pointer select-none group"
+        >
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-slate-500">معتمدة ومكتملة</span>
-            <div className="w-7 h-7 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+            <div className="w-7 h-7 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center group-hover:scale-105 transition-transform">
               <CheckCircle2 className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-xl sm:text-2xl font-black text-emerald-700 mt-1">{requests.filter((r) => r.status === 'approved_final' || r.status === 'uploaded_irtqaa').length}</div>
-          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">اعتماد نهائي وارتقاء</div>
-        </div>
+          <div className="text-2xl font-black text-emerald-700 mt-2">
+            {requests.filter((r) => r.status === 'approved_final' || r.status === 'uploaded_irtqaa').length}
+          </div>
+          <span className="text-[10px] text-slate-400 font-medium mt-1">اعتماد نهائي</span>
+        </button>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+        {/* Bento Interactive Tile 4: مسترجعة */}
+        <button
+          type="button"
+          onClick={() => setActiveTab('returned')}
+          className={`col-span-1 p-3.5 rounded-[28px] text-right flex flex-col justify-between transition-all cursor-pointer select-none border group ${
+            activeTab === 'returned'
+              ? 'bg-[#46523B] text-white border-[#A08D52] shadow-md ring-2 ring-[#A08D52]/30'
+              : 'bg-white text-slate-700 border-[#46523B]/10 shadow-[0_4px_16px_rgba(70,82,59,0.03)] hover:border-rose-400'
+          }`}
+        >
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">مسترجعة</span>
-            <div className="w-7 h-7 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center">
+            <span className={`text-[11px] font-bold ${activeTab === 'returned' ? 'text-rose-200' : 'text-slate-500'}`}>
+              مسترجعة
+            </span>
+            <div className={`w-7 h-7 rounded-xl flex items-center justify-center ${activeTab === 'returned' ? 'bg-white/20 text-rose-300' : 'bg-rose-50 text-rose-700'}`}>
               <RotateCcw className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-xl sm:text-2xl font-black text-rose-700 mt-1">{returnedRequests.length}</div>
-          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">ملاحظات ومراجعات</div>
-        </div>
+          <div className={`text-2xl font-black mt-2 ${activeTab === 'returned' ? 'text-white' : 'text-rose-700'}`}>
+            {returnedRequests.length}
+          </div>
+          <span className={`text-[10px] mt-1 ${activeTab === 'returned' ? 'text-rose-200' : 'text-slate-400'}`}>
+            ملاحظات وتعديل ←
+          </span>
+        </button>
       </div>
 
-      {/* 1. Interactive Status Tabs (نظام التبويبات التفاعلي) */}
-      <div className="grid grid-cols-3 gap-1.5 p-1.5 bg-slate-200/70 rounded-2xl border border-slate-200 shadow-inner">
+      {/* 1. Interactive Status Tabs Switcher */}
+      <div className="grid grid-cols-3 gap-1.5 p-1.5 bg-white/80 backdrop-blur-md rounded-2xl border border-[#46523B]/10 shadow-xs">
         {/* Tab 1: بانتظار موافقتي */}
         <button
           type="button"
           onClick={() => setActiveTab('pending')}
           className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-bold active:scale-95 transition-all duration-150 cursor-pointer ${
             activeTab === 'pending'
-              ? 'bg-[#1b4332] text-[#e6c566] shadow-md'
-              : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
+              ? 'bg-[#46523B] text-white shadow-xs font-black'
+              : 'text-slate-700 hover:text-[#46523B] hover:bg-slate-50'
           }`}
         >
           <div className="flex items-center gap-1">
-            <ClipboardCheck className="w-3.5 h-3.5 text-[#c59b27]" />
+            <ClipboardCheck className={`w-3.5 h-3.5 ${activeTab === 'pending' ? 'text-[#A08D52]' : 'text-slate-400'}`} />
             <span className="whitespace-nowrap">بانتظار موافقتي</span>
           </div>
           <span
             className={`text-[10px] px-2 py-0.5 rounded-full font-bold leading-none ${
               activeTab === 'pending'
-                ? 'bg-[#c59b27] text-slate-950'
+                ? 'bg-[#A08D52] text-white'
                 : pendingRequests.length > 0
                 ? 'bg-amber-100 text-amber-900 font-bold'
-                : 'bg-slate-300 text-slate-700'
+                : 'bg-slate-200 text-slate-700'
             }`}
           >
             {pendingRequests.length}
@@ -172,18 +246,18 @@ export const ManagerView: React.FC<Props> = ({
           onClick={() => setActiveTab('referred')}
           className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-bold active:scale-95 transition-all duration-150 cursor-pointer ${
             activeTab === 'referred'
-              ? 'bg-[#1b4332] text-[#e6c566] shadow-md'
+              ? 'bg-[#46523B] text-[#C4B688] shadow-md'
               : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
           }`}
         >
           <div className="flex items-center gap-1">
-            <Send className="w-3.5 h-3.5 text-[#e6c566]" />
+            <Send className="w-3.5 h-3.5 text-[#C4B688]" />
             <span className="whitespace-nowrap">تمت إحالتها</span>
           </div>
           <span
             className={`text-[10px] px-2 py-0.5 rounded-full font-bold leading-none ${
               activeTab === 'referred'
-                ? 'bg-[#c59b27] text-slate-950'
+                ? 'bg-[#A08D52] text-slate-950'
                 : 'bg-emerald-100 text-emerald-900'
             }`}
           >
@@ -197,7 +271,7 @@ export const ManagerView: React.FC<Props> = ({
           onClick={() => setActiveTab('returned')}
           className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-bold active:scale-95 transition-all duration-150 cursor-pointer ${
             activeTab === 'returned'
-              ? 'bg-[#1b4332] text-[#e6c566] shadow-md'
+              ? 'bg-[#46523B] text-[#C4B688] shadow-md'
               : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
           }`}
         >
@@ -223,8 +297,8 @@ export const ManagerView: React.FC<Props> = ({
       {activeTab === 'pending' && (
         <div className="space-y-3 animate-fade-slide-up">
           {pendingRequests.length === 0 ? (
-            <div className="bg-white rounded-3xl p-8 text-center border border-slate-100 shadow-sm">
-              <div className="w-12 h-12 bg-emerald-50 text-[#1b4332] rounded-2xl flex items-center justify-center mx-auto mb-2 shadow-xs">
+            <div className="bg-white rounded-[32px] p-8 text-center border border-slate-100 shadow-sm">
+              <div className="w-12 h-12 bg-emerald-50 text-[#46523B] rounded-2xl flex items-center justify-center mx-auto mb-2 shadow-xs">
                 <UserCheck className="w-6 h-6" />
               </div>
               <p className="text-xs font-bold text-slate-800 mb-1">
@@ -240,7 +314,7 @@ export const ManagerView: React.FC<Props> = ({
               return (
                 <div
                   key={r.id}
-                  className="bg-white rounded-3xl p-4 sm:p-5 shadow-md hover:shadow-xl transition-all duration-200 border border-slate-100 border-r-4 border-r-[#c59b27]"
+                  className="bg-white rounded-[32px] p-4 sm:p-5 shadow-md hover:shadow-xl transition-all duration-200 border border-slate-100 border-r-4 border-r-[#A08D52]"
                 >
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <div>
@@ -295,7 +369,7 @@ export const ManagerView: React.FC<Props> = ({
                       {r.deliveryMode === 'عن بعد' ? (
                         <Globe className="w-3.5 h-3.5 text-blue-500" />
                       ) : (
-                        <MapPin className="w-3.5 h-3.5 text-[#c59b27]" />
+                        <MapPin className="w-3.5 h-3.5 text-[#A08D52]" />
                       )}
                       <span>
                         {r.deliveryMode === 'عن بعد'
@@ -321,9 +395,9 @@ export const ManagerView: React.FC<Props> = ({
                     <button
                       type="button"
                       onClick={() => setSelectedRequest(r)}
-                      className="text-[11px] text-[#1b4332] hover:text-[#c59b27] font-bold flex items-center gap-1.5 active:scale-95 transition-all duration-150 cursor-pointer bg-slate-50 hover:bg-amber-50/60 px-3 py-1.5 rounded-xl border border-slate-200"
+                      className="text-[11px] text-[#46523B] hover:text-[#A08D52] font-bold flex items-center gap-1.5 active:scale-95 transition-all duration-150 cursor-pointer bg-slate-50 hover:bg-amber-50/60 px-3 py-1.5 rounded-xl border border-slate-200"
                     >
-                      <FileSearch className="w-3.5 h-3.5 text-[#c59b27]" />
+                      <FileSearch className="w-3.5 h-3.5 text-[#A08D52]" />
                       <span>عرض تفاصيل الطلب والتاريخ الإداري</span>
                     </button>
                     {r.transactionNumber && (
@@ -338,9 +412,9 @@ export const ManagerView: React.FC<Props> = ({
                     <button
                       type="button"
                       onClick={() => onApprove(r.id)}
-                      className="flex-1 bg-[#1b4332] hover:bg-[#143728] text-[#e6c566] font-bold py-2.5 px-3 rounded-2xl text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all duration-150 cursor-pointer"
+                      className="flex-1 bg-[#46523B] hover:bg-[#384230] text-[#C4B688] font-bold py-2.5 px-3 rounded-2xl text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all duration-150 cursor-pointer"
                     >
-                      <Check className="w-3.5 h-3.5 text-[#e6c566]" />
+                      <Check className="w-3.5 h-3.5 text-[#C4B688]" />
                       <span>اعتماد وتمرير للتدقيق</span>
                     </button>
 
@@ -364,7 +438,7 @@ export const ManagerView: React.FC<Props> = ({
       {activeTab === 'referred' && (
         <div className="space-y-3 animate-fade-slide-up">
           {referredRequests.length === 0 ? (
-            <div className="bg-white rounded-3xl p-8 text-center border border-slate-100 shadow-sm">
+            <div className="bg-white rounded-[32px] p-8 text-center border border-slate-100 shadow-sm">
               <div className="w-12 h-12 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center mx-auto mb-2">
                 <Send className="w-6 h-6" />
               </div>
@@ -385,7 +459,7 @@ export const ManagerView: React.FC<Props> = ({
                   key={r.id}
                   className={`bg-white rounded-2xl p-4 shadow-sm border border-slate-100 border-r-4 transition hover:shadow-md ${
                     isUploaded
-                      ? 'border-r-[#1b4332]'
+                      ? 'border-r-[#46523B]'
                       : isFinal
                       ? 'border-r-emerald-500'
                       : 'border-r-amber-500'
@@ -430,7 +504,7 @@ export const ManagerView: React.FC<Props> = ({
                       {r.deliveryMode === 'عن بعد' ? (
                         <Globe className="w-3.5 h-3.5 text-blue-500" />
                       ) : (
-                        <MapPin className="w-3.5 h-3.5 text-[#c59b27]" />
+                        <MapPin className="w-3.5 h-3.5 text-[#A08D52]" />
                       )}
                       <span>
                         {r.deliveryMode === 'عن بعد'
@@ -510,9 +584,9 @@ export const ManagerView: React.FC<Props> = ({
                         <button
                           type="button"
                           onClick={() => setPreviewSheetRequest(r)}
-                          className="text-[11px] text-[#1b4332] bg-white hover:bg-emerald-100/50 border border-slate-200 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1 active:scale-95 transition-all cursor-pointer shadow-xs shrink-0"
+                          className="text-[11px] text-[#46523B] bg-white hover:bg-emerald-100/50 border border-slate-200 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1 active:scale-95 transition-all cursor-pointer shadow-xs shrink-0"
                         >
-                          <Eye className="w-3.5 h-3.5 text-[#c59b27]" />
+                          <Eye className="w-3.5 h-3.5 text-[#A08D52]" />
                           <span>معاينة كشف الحضور</span>
                         </button>
                       </div>
@@ -564,9 +638,9 @@ export const ManagerView: React.FC<Props> = ({
                         <button
                           type="button"
                           onClick={() => setPreviewSheetRequest(r)}
-                          className="text-[11px] text-[#1b4332] bg-white hover:bg-amber-100/50 border border-slate-200 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1 active:scale-95 transition-all cursor-pointer shadow-xs shrink-0"
+                          className="text-[11px] text-[#46523B] bg-white hover:bg-amber-100/50 border border-slate-200 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1 active:scale-95 transition-all cursor-pointer shadow-xs shrink-0"
                         >
-                          <Eye className="w-3.5 h-3.5 text-[#c59b27]" />
+                          <Eye className="w-3.5 h-3.5 text-[#A08D52]" />
                           <span>معاينة الكشف</span>
                         </button>
                       </div>
@@ -591,9 +665,9 @@ export const ManagerView: React.FC<Props> = ({
                     <button
                       type="button"
                       onClick={() => setSelectedRequest(r)}
-                      className="w-full bg-[#1b4332] hover:bg-[#143728] text-[#e6c566] font-bold py-2.5 px-3 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md active:scale-95 transition-all duration-150 cursor-pointer"
+                      className="w-full bg-[#46523B] hover:bg-[#384230] text-[#C4B688] font-bold py-2.5 px-3 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md active:scale-95 transition-all duration-150 cursor-pointer"
                     >
-                      <FileSearch className="w-4 h-4 text-[#e6c566]" />
+                      <FileSearch className="w-4 h-4 text-[#C4B688]" />
                       <span>عرض تفاصيل الطلب والتاريخ الإداري</span>
                     </button>
                   </div>
@@ -608,7 +682,7 @@ export const ManagerView: React.FC<Props> = ({
       {activeTab === 'returned' && (
         <div className="space-y-3 animate-fade-slide-up">
           {returnedRequests.length === 0 ? (
-            <div className="bg-white rounded-3xl p-8 text-center border border-slate-100 shadow-sm">
+            <div className="bg-white rounded-[32px] p-8 text-center border border-slate-100 shadow-sm">
               <div className="w-12 h-12 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center mx-auto mb-2">
                 <RotateCcw className="w-6 h-6" />
               </div>
@@ -623,7 +697,7 @@ export const ManagerView: React.FC<Props> = ({
             returnedRequests.map((r) => (
               <div
                 key={r.id}
-                className="bg-white rounded-3xl p-4 sm:p-5 shadow-md hover:shadow-xl transition-all duration-200 border border-slate-100 border-r-4 border-r-rose-500"
+                className="bg-white rounded-[32px] p-4 sm:p-5 shadow-md hover:shadow-xl transition-all duration-200 border border-slate-100 border-r-4 border-r-rose-500"
               >
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <div>

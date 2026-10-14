@@ -46,7 +46,7 @@ export const ReturnNoteModal: React.FC<Props> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-slide-up font-['Tajawal',sans-serif]">
-      <div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-5 sm:p-6 border border-slate-100 text-right">
+      <div className="bg-white rounded-[32px] shadow-2xl max-w-sm w-full p-5 sm:p-6 border border-slate-100 text-right">
         {/* Modal Header */}
         <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
           <button
@@ -56,8 +56,8 @@ export const ReturnNoteModal: React.FC<Props> = ({
           >
             <X className="w-5 h-5" />
           </button>
-          <div className="flex items-center gap-2 text-[#1b4332] font-bold text-sm">
-            <AlertCircle className="w-5 h-5 text-[#c59b27]" />
+          <div className="flex items-center gap-2 text-[#46523B] font-bold text-sm">
+            <AlertCircle className="w-5 h-5 text-[#A08D52]" />
             <span>{title}</span>
           </div>
         </div>
@@ -74,7 +74,7 @@ export const ReturnNoteModal: React.FC<Props> = ({
                 onClick={() => setTargetRole('manager')}
                 className={`py-2 px-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all duration-150 cursor-pointer ${
                   targetRole === 'manager'
-                    ? 'bg-[#1b4332] text-[#e6c566] shadow-sm'
+                    ? 'bg-[#46523B] text-[#C4B688] shadow-sm'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -87,7 +87,7 @@ export const ReturnNoteModal: React.FC<Props> = ({
                 onClick={() => setTargetRole('emp')}
                 className={`py-2 px-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all duration-150 cursor-pointer ${
                   targetRole === 'emp'
-                    ? 'bg-[#1b4332] text-[#e6c566] shadow-sm'
+                    ? 'bg-[#46523B] text-[#C4B688] shadow-sm'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -110,7 +110,7 @@ export const ReturnNoteModal: React.FC<Props> = ({
             rows={3}
             required
             placeholder="اكتب سبب الإرجاع هنا بالتفصيل..."
-            className="w-full text-xs p-3 rounded-2xl border border-slate-200 focus:border-[#c59b27] outline-none transition bg-slate-50/70"
+            className="w-full text-xs p-3 rounded-2xl border border-slate-200 focus:border-[#A08D52] outline-none transition bg-slate-50/70"
             autoFocus
           />
 
@@ -134,9 +134,9 @@ export const ReturnNoteModal: React.FC<Props> = ({
             <button
               type="submit"
               disabled={!note.trim()}
-              className="flex-1 bg-gradient-to-r from-[#1b4332] via-[#143728] to-[#081c15] hover:opacity-95 disabled:opacity-50 text-[#e6c566] font-bold py-3 px-3 rounded-2xl text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all duration-150 cursor-pointer border border-[#c59b27]/30"
+              className="flex-1 bg-gradient-to-r from-[#46523B] via-[#384230] to-[#2A3324] hover:opacity-95 disabled:opacity-50 text-[#C4B688] font-bold py-3 px-3 rounded-2xl text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all duration-150 cursor-pointer border border-[#A08D52]/30"
             >
-              <Send className="w-3.5 h-3.5 text-[#e6c566]" />
+              <Send className="w-3.5 h-3.5 text-[#C4B688]" />
               <span>إرسال الملاحظة والإرجاع</span>
             </button>
             <button

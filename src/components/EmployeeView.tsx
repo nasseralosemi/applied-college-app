@@ -91,6 +91,7 @@ interface Props {
   onUpdateRequest?: (updatedReq: ActivityRequest) => void;
   onUploadAttendance?: (requestId: number, sheetData: AttendanceSheet) => void;
   currentUserEmpNumber?: string;
+  activeNavTab?: 'home' | 'activities';
 }
 
 export const EmployeeView: React.FC<Props> = ({
@@ -100,8 +101,17 @@ export const EmployeeView: React.FC<Props> = ({
   onUpdateRequest,
   onUploadAttendance,
   currentUserEmpNumber,
+  activeNavTab,
 }) => {
   const [activeTab, setActiveTab] = useState<'form' | 'tracking'>('form');
+
+  React.useEffect(() => {
+    if (activeNavTab === 'home') {
+      setActiveTab('form');
+    } else if (activeNavTab === 'activities') {
+      setActiveTab('tracking');
+    }
+  }, [activeNavTab]);
   const [selectedRequest, setSelectedRequest] = useState<ActivityRequest | null>(null);
   const [editingRequest, setEditingRequest] = useState<ActivityRequest | null>(null);
   const [unmodifiedWarningId, setUnmodifiedWarningId] = useState<number | null>(null);
@@ -253,125 +263,185 @@ export const EmployeeView: React.FC<Props> = ({
 
   return (
     <div className="space-y-4 pb-8 font-['Tajawal',sans-serif] text-right">
-      {/* View Title & Context Banner */}
-      <div className="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-2 h-full bg-gradient-to-b from-[#1b4332] via-[#c59b27] to-[#1b4332]" />
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-[#1b4332]/10 text-[#1b4332] flex items-center justify-center shrink-0 border border-[#1b4332]/20">
-            <FileText className="w-5 h-5 text-[#c59b27]" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-900 border border-emerald-200">
-                بوابة الموظف
-              </span>
-              <h2 className="text-sm sm:text-base font-extrabold text-[#1b4332]">
-                تقديم الأنشطة ومتابعة مسار الاعتماد
-              </h2>
+      {/* Bento Grid Header & Metrics */}
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+        {/* Bento Hero Tile: Spans 2 cols on mobile, 4 cols on desktop */}
+        <div className="col-span-2 md:col-span-4 lg:col-span-4 bg-white/90 backdrop-blur-md rounded-[32px] p-4 sm:p-5 border border-[#46523B]/12 shadow-[0_8px_24px_rgba(70,82,59,0.04)] relative overflow-hidden flex flex-col justify-between">
+          <div className="absolute top-0 right-0 w-2 h-full bg-gradient-to-b from-[#46523B] via-[#A08D52] to-[#46523B]" />
+          
+          <div className="flex items-center justify-between gap-3 mb-3">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-2xl bg-[#46523B] text-[#A08D52] flex items-center justify-center shrink-0 border border-[#A08D52]/40 shadow-xs">
+                <FileText className="w-5 h-5 text-[#A08D52]" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-[#46523B]/10 text-[#46523B] border border-[#46523B]/20">
+                    بوابة الموظف
+                  </span>
+                  <span className="text-[10px] font-bold text-[#A08D52]">
+                    الكلية التطبيقية
+                  </span>
+                </div>
+                <h2 className="text-sm sm:text-base font-black text-[#46523B] mt-0.5">
+                  منظومة رفع واعتماد الأنشطة والفعاليات
+                </h2>
+              </div>
             </div>
-            <p className="text-xs text-slate-500 mt-0.5">
-              رفع الفعاليات والبرامج التدريبية وتتبع الدورة المستندية حتى التوثيق النهائي
-            </p>
+
+            {/* Quick switcher buttons embedded inside the hero bento tile */}
+            <div className="hidden sm:flex items-center gap-1.5 p-1 bg-[#FAF9F6] rounded-2xl border border-[#46523B]/10">
+              <button
+                type="button"
+                onClick={() => setActiveTab('form')}
+                className={`flex items-center gap-1.5 py-1.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  activeTab === 'form'
+                    ? 'bg-[#46523B] text-white shadow-xs'
+                    : 'text-slate-600 hover:text-[#46523B]'
+                }`}
+              >
+                <PlusCircle className="w-3.5 h-3.5 text-[#A08D52]" />
+                <span>رفع نشاط</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('tracking')}
+                className={`flex items-center gap-1.5 py-1.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  activeTab === 'tracking'
+                    ? 'bg-[#46523B] text-white shadow-xs'
+                    : 'text-slate-600 hover:text-[#46523B]'
+                }`}
+              >
+                <History className="w-3.5 h-3.5 text-[#A08D52]" />
+                <span>سجل طلباتي ({myRequests.length})</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Progress tracking bar */}
+          <div className="mt-2 pt-2 border-t border-slate-100/80">
+            <div className="flex items-center justify-between text-[11px] mb-1.5">
+              <span className="text-slate-500 font-medium">معدل الإنجاز والاعتماد النهائي</span>
+              <span className="font-mono font-black text-[#46523B]">
+                {totalMyRequests > 0 ? Math.round((approvedCount / totalMyRequests) * 100) : 0}%
+              </span>
+            </div>
+            <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-[#46523B] to-[#A08D52] rounded-full transition-all duration-500"
+                style={{
+                  width: `${totalMyRequests > 0 ? Math.round((approvedCount / totalMyRequests) * 100) : 0}%`,
+                }}
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Unified 4-Card KPI Metrics Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
-        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+        {/* Bento Tile 1: إجمالي طلباتي */}
+        <button
+          type="button"
+          onClick={() => setActiveTab('tracking')}
+          className="col-span-1 bg-white rounded-[28px] p-3.5 border border-[#46523B]/10 shadow-[0_4px_16px_rgba(70,82,59,0.03)] text-right flex flex-col justify-between hover:border-[#A08D52]/40 transition-all cursor-pointer select-none group"
+        >
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">طلباتي المرفوعة</span>
-            <div className="w-7 h-7 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
+            <span className="text-[11px] font-bold text-slate-500">سجل الأنشطة</span>
+            <div className="w-7 h-7 rounded-xl bg-[#46523B]/10 text-[#46523B] flex items-center justify-center group-hover:scale-105 transition-transform">
               <History className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-xl sm:text-2xl font-black text-slate-900 mt-1">{totalMyRequests}</div>
-          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">سجل الأنشطة الكلي</div>
-        </div>
+          <div className="text-2xl font-black text-[#46523B] mt-2">{totalMyRequests}</div>
+          <span className="text-[10px] text-slate-400 font-medium mt-1">كافة الطلبات</span>
+        </button>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+        {/* Bento Tile 2: قيد المعالجة */}
+        <button
+          type="button"
+          onClick={() => setActiveTab('tracking')}
+          className="col-span-1 bg-white rounded-[28px] p-3.5 border border-[#46523B]/10 shadow-[0_4px_16px_rgba(70,82,59,0.03)] text-right flex flex-col justify-between hover:border-[#A08D52]/40 transition-all cursor-pointer select-none group"
+        >
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-slate-500">قيد المعالجة</span>
-            <div className="w-7 h-7 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
+            <div className="w-7 h-7 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center group-hover:scale-105 transition-transform">
               <Clock className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-xl sm:text-2xl font-black text-amber-700 mt-1">{inProgressCount}</div>
-          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">المدير المباشر والتدقيق</div>
-        </div>
+          <div className="text-2xl font-black text-amber-700 mt-2">{inProgressCount}</div>
+          <span className="text-[10px] text-slate-400 font-medium mt-1">مدير / تدقيق</span>
+        </button>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+        {/* Bento Tile 3: معتمدة وموثقة */}
+        <button
+          type="button"
+          onClick={() => setActiveTab('tracking')}
+          className="col-span-1 bg-white rounded-[28px] p-3.5 border border-[#46523B]/10 shadow-[0_4px_16px_rgba(70,82,59,0.03)] text-right flex flex-col justify-between hover:border-[#46523B]/40 transition-all cursor-pointer select-none group"
+        >
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-slate-500">معتمدة وموثقة</span>
-            <div className="w-7 h-7 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+            <div className="w-7 h-7 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center group-hover:scale-105 transition-transform">
               <CheckCircle2 className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-xl sm:text-2xl font-black text-emerald-700 mt-1">{approvedCount}</div>
-          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">جاهزة أو رُفعت لارتقاء</div>
-        </div>
+          <div className="text-2xl font-black text-emerald-700 mt-2">{approvedCount}</div>
+          <span className="text-[10px] text-slate-400 font-medium mt-1">جاهزة ومرفوعة</span>
+        </button>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+        {/* Bento Tile 4: تحتاج استكمال */}
+        <button
+          type="button"
+          onClick={() => setActiveTab('tracking')}
+          className="col-span-1 bg-white rounded-[28px] p-3.5 border border-[#46523B]/10 shadow-[0_4px_16px_rgba(70,82,59,0.03)] text-right flex flex-col justify-between hover:border-rose-300 transition-all cursor-pointer select-none group"
+        >
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">تحتاج استكمال</span>
-            <div className="w-7 h-7 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center">
+            <span className="text-[11px] font-bold text-slate-500">تحتاج تعديل</span>
+            <div className="w-7 h-7 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center group-hover:scale-105 transition-transform">
               <RotateCcw className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-xl sm:text-2xl font-black text-rose-700 mt-1">{returnedCount}</div>
-          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">ملاحظات تستدعي التعديل</div>
-        </div>
+          <div className="text-2xl font-black text-rose-700 mt-2">{returnedCount}</div>
+          <span className="text-[10px] text-slate-400 font-medium mt-1">ملاحظات ومراجعة</span>
+        </button>
       </div>
 
-      {/* Top Segmented Tabs: New Form vs Tracking */}
-      <div className="grid grid-cols-2 gap-2 p-1.5 bg-slate-200/70 rounded-2xl border border-slate-200 shadow-inner">
+      {/* Mobile Toggle Tabs Switcher (Visible on mobile screens) */}
+      <div className="sm:hidden grid grid-cols-2 gap-2 p-1 bg-white rounded-2xl border border-[#46523B]/10 shadow-xs">
         <button
           type="button"
           onClick={() => setActiveTab('form')}
-          className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-150 active:scale-95 cursor-pointer ${
+          className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             activeTab === 'form'
-              ? 'bg-[#1b4332] text-[#e6c566] shadow-md'
-              : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
+              ? 'bg-[#46523B] text-white shadow-xs font-black'
+              : 'text-slate-600 hover:text-[#46523B]'
           }`}
         >
-          <PlusCircle className="w-4 h-4" />
-          <span>استمارة رفع نشاط جديد</span>
+          <PlusCircle className="w-3.5 h-3.5 text-[#A08D52]" />
+          <span>استمارة نشاط جديد</span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab('tracking')}
-          className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-150 active:scale-95 cursor-pointer ${
+          className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             activeTab === 'tracking'
-              ? 'bg-[#1b4332] text-[#e6c566] shadow-md'
-              : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
+              ? 'bg-[#46523B] text-white shadow-xs font-black'
+              : 'text-slate-600 hover:text-[#46523B]'
           }`}
         >
-          <History className="w-4 h-4" />
-          <span>سجل طلباتي</span>
-          <span
-            className={`text-[10px] px-2 py-0.5 rounded-full font-bold leading-none ${
-              activeTab === 'tracking'
-                ? 'bg-[#c59b27] text-slate-950'
-                : 'bg-slate-300 text-slate-800'
-            }`}
-          >
-            {myRequests.length}
-          </span>
+          <History className="w-3.5 h-3.5 text-[#A08D52]" />
+          <span>سجل طلباتي ({myRequests.length})</span>
         </button>
       </div>
 
       {/* TAB 1: FORM VIEW */}
       {activeTab === 'form' && (
-        <div className="bg-white rounded-3xl p-4 sm:p-5 shadow-lg shadow-slate-200/60 border border-slate-200/90 animate-fade-slide-up">
+        <div className="bg-white rounded-[32px] p-4 sm:p-5 shadow-lg shadow-slate-200/60 border border-slate-200/90 animate-fade-slide-up">
           {/* Header */}
           <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-2xl bg-[#1b4332]/10 flex items-center justify-center text-[#1b4332] border border-[#1b4332]/20">
-                <PlusCircle className="w-5 h-5 text-[#c59b27]" />
+              <div className="w-9 h-9 rounded-2xl bg-[#46523B]/10 flex items-center justify-center text-[#46523B] border border-[#46523B]/20">
+                <PlusCircle className="w-5 h-5 text-[#A08D52]" />
               </div>
               <div>
-                <h2 className="text-xs sm:text-sm font-bold text-[#1b4332] leading-tight">
+                <h2 className="text-xs sm:text-sm font-bold text-[#46523B] leading-tight">
                   استمارة رفع النشاط الرسمية
                 </h2>
                 <p className="text-[10px] text-slate-500">
@@ -396,11 +466,11 @@ export const EmployeeView: React.FC<Props> = ({
             {/* GROUP 1: Basic Info & Activity Type */}
             <div className="border border-slate-200 rounded-2xl p-3.5 bg-slate-50/60 space-y-3 shadow-xs">
               <div className="flex items-center gap-2 pb-2 border-b border-slate-200/70">
-                <div className="w-5 h-5 rounded-lg bg-[#1b4332] text-white flex items-center justify-center text-[10px] font-bold">
+                <div className="w-5 h-5 rounded-lg bg-[#46523B] text-white flex items-center justify-center text-[10px] font-bold">
                   1
                 </div>
-                <h3 className="text-xs font-bold text-[#1b4332] flex items-center gap-1.5">
-                  <Building2 className="w-3.5 h-3.5 text-[#c59b27]" />
+                <h3 className="text-xs font-bold text-[#46523B] flex items-center gap-1.5">
+                  <Building2 className="w-3.5 h-3.5 text-[#A08D52]" />
                   <span>البيانات الأساسية ونوع النشاط</span>
                 </h3>
               </div>
@@ -415,7 +485,7 @@ export const EmployeeView: React.FC<Props> = ({
                     <select
                       value={type}
                       onChange={(e) => setType(e.target.value)}
-                      className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none appearance-none font-medium cursor-pointer shadow-xs"
+                      className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] focus:ring-1 focus:ring-[#A08D52] outline-none appearance-none font-medium cursor-pointer shadow-xs"
                     >
                       {ACTIVITY_TYPES.map((t) => (
                         <option key={t} value={t}>
@@ -438,7 +508,7 @@ export const EmployeeView: React.FC<Props> = ({
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="مثال: دورة أمن المعلومات والأمن السيبراني"
-                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none font-medium shadow-xs"
+                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] focus:ring-1 focus:ring-[#A08D52] outline-none font-medium shadow-xs"
                   />
                 </div>
 
@@ -453,7 +523,7 @@ export const EmployeeView: React.FC<Props> = ({
                     value={presenter}
                     onChange={(e) => setPresenter(e.target.value)}
                     placeholder="مثال: د. محمد بن عبد الله الشمري"
-                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none font-medium shadow-xs"
+                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] focus:ring-1 focus:ring-[#A08D52] outline-none font-medium shadow-xs"
                   />
                 </div>
 
@@ -466,7 +536,7 @@ export const EmployeeView: React.FC<Props> = ({
                     <select
                       value={unit}
                       onChange={(e) => setUnit(e.target.value)}
-                      className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none appearance-none font-medium cursor-pointer shadow-xs"
+                      className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] focus:ring-1 focus:ring-[#A08D52] outline-none appearance-none font-medium cursor-pointer shadow-xs"
                     >
                       {SUPERVISING_UNITS.map((u) => (
                         <option key={u} value={u}>
@@ -487,7 +557,7 @@ export const EmployeeView: React.FC<Props> = ({
                     <select
                       value={branch}
                       onChange={(e) => setBranch(e.target.value)}
-                      className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none appearance-none font-medium cursor-pointer shadow-xs"
+                      className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] focus:ring-1 focus:ring-[#A08D52] outline-none appearance-none font-medium cursor-pointer shadow-xs"
                     >
                       {COLLEGE_BRANCHES.map((b) => (
                         <option key={b} value={b}>
@@ -504,11 +574,11 @@ export const EmployeeView: React.FC<Props> = ({
             {/* GROUP 2: Schedule & Timing */}
             <div className="border border-slate-200 rounded-2xl p-3.5 bg-slate-50/60 space-y-3 shadow-xs">
               <div className="flex items-center gap-2 pb-2 border-b border-slate-200/70">
-                <div className="w-5 h-5 rounded-lg bg-[#1b4332] text-white flex items-center justify-center text-[10px] font-bold">
+                <div className="w-5 h-5 rounded-lg bg-[#46523B] text-white flex items-center justify-center text-[10px] font-bold">
                   2
                 </div>
-                <h3 className="text-xs font-bold text-[#1b4332] flex items-center gap-1.5">
-                  <Calendar className="w-3.5 h-3.5 text-[#c59b27]" />
+                <h3 className="text-xs font-bold text-[#46523B] flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5 text-[#A08D52]" />
                   <span>التوقيت والمواعيد والساعات التدريبية</span>
                 </h3>
               </div>
@@ -524,7 +594,7 @@ export const EmployeeView: React.FC<Props> = ({
                     required
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none font-medium shadow-xs"
+                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] focus:ring-1 focus:ring-[#A08D52] outline-none font-medium shadow-xs"
                   />
                 </div>
 
@@ -538,7 +608,7 @@ export const EmployeeView: React.FC<Props> = ({
                     required
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none font-medium shadow-xs"
+                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] focus:ring-1 focus:ring-[#A08D52] outline-none font-medium shadow-xs"
                   />
                 </div>
 
@@ -553,7 +623,7 @@ export const EmployeeView: React.FC<Props> = ({
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
                     placeholder="مثال: 10:00 ص أو 01:00 م"
-                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none font-medium shadow-xs"
+                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] focus:ring-1 focus:ring-[#A08D52] outline-none font-medium shadow-xs"
                   />
                 </div>
 
@@ -569,7 +639,7 @@ export const EmployeeView: React.FC<Props> = ({
                     required
                     value={hours}
                     onChange={(e) => setHours(e.target.value)}
-                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none font-medium shadow-xs"
+                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] focus:ring-1 focus:ring-[#A08D52] outline-none font-medium shadow-xs"
                   />
                 </div>
               </div>
@@ -578,11 +648,11 @@ export const EmployeeView: React.FC<Props> = ({
             {/* GROUP 3: Target Audience & Delivery Mode */}
             <div className="border border-slate-200 rounded-2xl p-3.5 bg-slate-50/60 space-y-3 shadow-xs">
               <div className="flex items-center gap-2 pb-2 border-b border-slate-200/70">
-                <div className="w-5 h-5 rounded-lg bg-[#1b4332] text-white flex items-center justify-center text-[10px] font-bold">
+                <div className="w-5 h-5 rounded-lg bg-[#46523B] text-white flex items-center justify-center text-[10px] font-bold">
                   3
                 </div>
-                <h3 className="text-xs font-bold text-[#1b4332] flex items-center gap-1.5">
-                  <Users className="w-3.5 h-3.5 text-[#c59b27]" />
+                <h3 className="text-xs font-bold text-[#46523B] flex items-center gap-1.5">
+                  <Users className="w-3.5 h-3.5 text-[#A08D52]" />
                   <span>المستهدفون وحالة وطريقة التنفيذ</span>
                 </h3>
               </div>
@@ -597,7 +667,7 @@ export const EmployeeView: React.FC<Props> = ({
                     <select
                       value={targetAudience}
                       onChange={(e) => setTargetAudience(e.target.value)}
-                      className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none appearance-none font-medium cursor-pointer shadow-xs"
+                      className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] focus:ring-1 focus:ring-[#A08D52] outline-none appearance-none font-medium cursor-pointer shadow-xs"
                     >
                       {TARGET_AUDIENCES.map((aud) => (
                         <option key={aud} value={aud}>
@@ -618,7 +688,7 @@ export const EmployeeView: React.FC<Props> = ({
                     <select
                       value={targetGender}
                       onChange={(e) => setTargetGender(e.target.value)}
-                      className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none appearance-none font-medium cursor-pointer shadow-xs"
+                      className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] focus:ring-1 focus:ring-[#A08D52] outline-none appearance-none font-medium cursor-pointer shadow-xs"
                     >
                       {GENDER_OPTIONS.map((g) => (
                         <option key={g} value={g}>
@@ -642,11 +712,11 @@ export const EmployeeView: React.FC<Props> = ({
                     onClick={() => setDeliveryMode('عن بعد')}
                     className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-bold transition-all duration-150 active:scale-95 cursor-pointer ${
                       deliveryMode === 'عن بعد'
-                        ? 'bg-[#1b4332] text-white shadow-sm'
+                        ? 'bg-[#46523B] text-white shadow-sm'
                         : 'text-slate-700 hover:text-slate-900'
                     }`}
                   >
-                    <Globe className="w-3.5 h-3.5 text-[#e6c566]" />
+                    <Globe className="w-3.5 h-3.5 text-[#C4B688]" />
                     <span>عن بعد (Online)</span>
                   </button>
 
@@ -655,11 +725,11 @@ export const EmployeeView: React.FC<Props> = ({
                     onClick={() => setDeliveryMode('حضوري')}
                     className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-bold transition-all duration-150 active:scale-95 cursor-pointer ${
                       deliveryMode === 'حضوري'
-                        ? 'bg-[#1b4332] text-white shadow-sm'
+                        ? 'bg-[#46523B] text-white shadow-sm'
                         : 'text-slate-700 hover:text-slate-900'
                     }`}
                   >
-                    <MapPin className="w-3.5 h-3.5 text-[#c59b27]" />
+                    <MapPin className="w-3.5 h-3.5 text-[#A08D52]" />
                     <span>حضوري (On-Campus)</span>
                   </button>
                 </div>
@@ -677,7 +747,7 @@ export const EmployeeView: React.FC<Props> = ({
                     value={meetingUrl}
                     onChange={(e) => setMeetingUrl(e.target.value)}
                     placeholder="https://blackboard.mu.edu.sa/... أو رابط Microsoft Teams"
-                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none font-medium text-left ltr shadow-xs"
+                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] focus:ring-1 focus:ring-[#A08D52] outline-none font-medium text-left ltr shadow-xs"
                   />
                 </div>
               ) : (
@@ -691,7 +761,7 @@ export const EmployeeView: React.FC<Props> = ({
                     value={physicalLocation}
                     onChange={(e) => setPhysicalLocation(e.target.value)}
                     placeholder="مثال: مدرج الكلية التطبيقية الرئيسي أو قاعة التدريب 104"
-                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none font-medium shadow-xs"
+                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] focus:ring-1 focus:ring-[#A08D52] outline-none font-medium shadow-xs"
                   />
                 </div>
               )}
@@ -700,11 +770,11 @@ export const EmployeeView: React.FC<Props> = ({
             {/* GROUP 4: Administrative Approvals & Coordinator */}
             <div className="border border-slate-200 rounded-2xl p-3.5 bg-slate-50/60 space-y-3 shadow-xs">
               <div className="flex items-center gap-2 pb-2 border-b border-slate-200/70">
-                <div className="w-5 h-5 rounded-lg bg-[#1b4332] text-white flex items-center justify-center text-[10px] font-bold">
+                <div className="w-5 h-5 rounded-lg bg-[#46523B] text-white flex items-center justify-center text-[10px] font-bold">
                   4
                 </div>
-                <h3 className="text-xs font-bold text-[#1b4332] flex items-center gap-1.5">
-                  <FileCheck2 className="w-3.5 h-3.5 text-[#c59b27]" />
+                <h3 className="text-xs font-bold text-[#46523B] flex items-center gap-1.5">
+                  <FileCheck2 className="w-3.5 h-3.5 text-[#A08D52]" />
                   <span>الموافقات والارتباطات الإدارية وملخص النشاط</span>
                 </h3>
               </div>
@@ -723,7 +793,7 @@ export const EmployeeView: React.FC<Props> = ({
                           e.target.value as 'لا تحتاج إلى موافقة' | 'تتطلب موافقة'
                         )
                       }
-                      className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none appearance-none font-medium cursor-pointer shadow-xs"
+                      className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] focus:ring-1 focus:ring-[#A08D52] outline-none appearance-none font-medium cursor-pointer shadow-xs"
                     >
                       <option value="لا تحتاج إلى موافقة">لا تحتاج إلى موافقة</option>
                       <option value="تتطلب موافقة">تتطلب موافقة مركز التعاون والشراكات</option>
@@ -748,7 +818,7 @@ export const EmployeeView: React.FC<Props> = ({
                     value={transactionNumber}
                     onChange={(e) => setTransactionNumber(e.target.value)}
                     placeholder="مثال: 44-0982-م"
-                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none font-medium font-mono shadow-xs"
+                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] focus:ring-1 focus:ring-[#A08D52] outline-none font-medium font-mono shadow-xs"
                   />
                 </div>
 
@@ -763,7 +833,7 @@ export const EmployeeView: React.FC<Props> = ({
                     value={coordinatorName}
                     onChange={(e) => setCoordinatorName(e.target.value)}
                     placeholder="الاسم الثلاثي لمنسق الفعالية"
-                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none font-medium shadow-xs"
+                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] focus:ring-1 focus:ring-[#A08D52] outline-none font-medium shadow-xs"
                   />
                 </div>
 
@@ -778,7 +848,7 @@ export const EmployeeView: React.FC<Props> = ({
                     value={summary}
                     onChange={(e) => setSummary(e.target.value)}
                     placeholder="اكتب نبذة مختصرة عن أهداف النشاط ومخرجاته التعليمية والمهارية للطلاب..."
-                    className="w-full text-xs p-3 rounded-xl border border-slate-200 bg-white focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] outline-none resize-none font-medium shadow-xs leading-relaxed"
+                    className="w-full text-xs p-3 rounded-xl border border-slate-200 bg-white focus:border-[#A08D52] focus:ring-1 focus:ring-[#A08D52] outline-none resize-none font-medium shadow-xs leading-relaxed"
                   />
                 </div>
               </div>
@@ -787,9 +857,9 @@ export const EmployeeView: React.FC<Props> = ({
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-[#1b4332] via-[#143728] to-[#0d281e] hover:from-[#143728] hover:to-[#081c15] text-[#e6c566] font-bold py-3.5 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#1b4332]/25 active:scale-95 transition-all duration-150 cursor-pointer border border-[#c59b27]/30"
+              className="w-full bg-gradient-to-r from-[#46523B] via-[#384230] to-[#0d281e] hover:from-[#384230] hover:to-[#2A3324] text-[#C4B688] font-bold py-3.5 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#46523B]/25 active:scale-95 transition-all duration-150 cursor-pointer border border-[#A08D52]/30"
             >
-              <Send className="w-4 h-4 text-[#e6c566]" />
+              <Send className="w-4 h-4 text-[#C4B688]" />
               <span>إرسال استمارة النشاط للمدير المباشر للاعتماد</span>
             </button>
           </form>
@@ -800,17 +870,17 @@ export const EmployeeView: React.FC<Props> = ({
       {activeTab === 'tracking' && (
         <div className="space-y-3 animate-fade-slide-up">
           <div className="flex items-center justify-between px-1">
-            <h2 className="text-xs font-bold text-[#1b4332] flex items-center gap-1.5">
-              <History className="w-4 h-4 text-[#c59b27]" />
+            <h2 className="text-xs font-bold text-[#46523B] flex items-center gap-1.5">
+              <History className="w-4 h-4 text-[#A08D52]" />
               <span>طلباتي ومتابعة سير المعاملات ({myRequests.length})</span>
             </h2>
-            <span className="text-[11px] text-[#c59b27] font-bold bg-[#c59b27]/10 px-2 py-0.5 rounded-full border border-[#c59b27]/20">
+            <span className="text-[11px] text-[#A08D52] font-bold bg-[#A08D52]/10 px-2 py-0.5 rounded-full border border-[#A08D52]/20">
               تحديث فوري
             </span>
           </div>
 
           {myRequests.length === 0 ? (
-            <div className="bg-white rounded-3xl p-8 text-center border border-slate-100 shadow-sm">
+            <div className="bg-white rounded-[32px] p-8 text-center border border-slate-100 shadow-sm">
               <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-2">
                 <FileText className="w-6 h-6" />
               </div>
@@ -823,7 +893,7 @@ export const EmployeeView: React.FC<Props> = ({
               <button
                 type="button"
                 onClick={() => setActiveTab('form')}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#1b4332] text-[#e6c566] text-xs font-bold shadow-md active:scale-95 transition-all cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#46523B] text-[#C4B688] text-xs font-bold shadow-md active:scale-95 transition-all cursor-pointer"
               >
                 <PlusCircle className="w-3.5 h-3.5" />
                 <span>رفع نشاط جديد الآن</span>
@@ -834,17 +904,17 @@ export const EmployeeView: React.FC<Props> = ({
               {myRequests.map((r) => {
                 const borderAccentColor =
                   r.status === 'uploaded_irtqaa'
-                    ? 'border-r-[#1b4332]'
+                    ? 'border-r-[#46523B]'
                     : r.status === 'approved_final' || r.status === 'pending_auditor'
                     ? 'border-r-emerald-500'
                     : r.status === 'returned_emp' || r.status === 'returned_manager'
                     ? 'border-r-rose-500'
-                    : 'border-r-[#c59b27]';
+                    : 'border-r-[#A08D52]';
 
                 return (
                   <div
                     key={r.id}
-                    className={`bg-white p-4 sm:p-5 rounded-3xl shadow-md hover:shadow-xl transition-all duration-200 border border-slate-100 border-r-4 ${borderAccentColor}`}
+                    className={`bg-white p-4 sm:p-5 rounded-[32px] shadow-md hover:shadow-xl transition-all duration-200 border border-slate-100 border-r-4 ${borderAccentColor}`}
                   >
                     <div className="flex items-start justify-between gap-2 mb-2.5">
                       <div>
@@ -881,7 +951,7 @@ export const EmployeeView: React.FC<Props> = ({
                         {r.deliveryMode === 'عن بعد' ? (
                           <Globe className="w-3.5 h-3.5 text-blue-500" />
                         ) : (
-                          <MapPin className="w-3.5 h-3.5 text-[#c59b27]" />
+                          <MapPin className="w-3.5 h-3.5 text-[#A08D52]" />
                         )}
                         <span>{r.deliveryMode === 'عن بعد' ? 'عن بعد' : (r.physicalLocation || r.location || 'حضوري')}</span>
                       </span>
@@ -960,9 +1030,9 @@ export const EmployeeView: React.FC<Props> = ({
                               setUnmodifiedWarningId(null);
                               setEditingRequest(r);
                             }}
-                            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#1b4332] via-[#143728] to-[#081c15] text-[#e6c566] text-xs font-bold shadow-md shadow-[#1b4332]/25 active:scale-95 transition-all cursor-pointer border border-[#c59b27]/40"
+                            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#46523B] via-[#384230] to-[#2A3324] text-[#C4B688] text-xs font-bold shadow-md shadow-[#46523B]/25 active:scale-95 transition-all cursor-pointer border border-[#A08D52]/40"
                           >
-                            <Edit3 className="w-3.5 h-3.5 text-[#e6c566]" />
+                            <Edit3 className="w-3.5 h-3.5 text-[#C4B688]" />
                             <span>تعديل بيانات الاستمارة</span>
                           </button>
 
@@ -972,7 +1042,7 @@ export const EmployeeView: React.FC<Props> = ({
                               onClick={() => handleAttemptResubmit(r)}
                               className={`inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-black shadow-md active:scale-95 transition-all cursor-pointer ${
                                 r.editedAfterReturn
-                                  ? 'bg-[#c59b27] hover:bg-[#b0881e] text-[#081c15] ring-2 ring-emerald-500/50'
+                                  ? 'bg-[#A08D52] hover:bg-[#b0881e] text-[#2A3324] ring-2 ring-emerald-500/50'
                                   : 'bg-slate-200 hover:bg-slate-300 text-slate-700 border border-slate-300'
                               }`}
                             >
@@ -1023,7 +1093,7 @@ export const EmployeeView: React.FC<Props> = ({
                                 النشاط منتهي • خانة الرفع مفعلة
                               </span>
                             </div>
-                            <h5 className="text-xs font-bold text-[#1b4332]">
+                            <h5 className="text-xs font-bold text-[#46523B]">
                               مرحلة كشف الحضور الختامية (منصة ارتقاء)
                             </h5>
                             <p className="text-[10px] text-slate-600 mt-0.5">
@@ -1033,9 +1103,9 @@ export const EmployeeView: React.FC<Props> = ({
                           <button
                             type="button"
                             onClick={() => setUploadModalRequest(r)}
-                            className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#1b4332] via-[#143728] to-[#081c15] text-[#e6c566] text-xs font-bold shadow-md shadow-[#1b4332]/25 active:scale-95 transition-all cursor-pointer border border-[#c59b27]/40 shrink-0"
+                            className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#46523B] via-[#384230] to-[#2A3324] text-[#C4B688] text-xs font-bold shadow-md shadow-[#46523B]/25 active:scale-95 transition-all cursor-pointer border border-[#A08D52]/40 shrink-0"
                           >
-                            <UploadCloud className="w-4 h-4 text-[#e6c566]" />
+                            <UploadCloud className="w-4 h-4 text-[#C4B688]" />
                             <span>رفع كشف الحضور</span>
                           </button>
                         </div>
@@ -1121,9 +1191,9 @@ export const EmployeeView: React.FC<Props> = ({
                             <button
                               type="button"
                               onClick={() => setPreviewModalRequest(r)}
-                              className="text-[11px] text-[#1b4332] bg-white hover:bg-emerald-100/50 border border-slate-200 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1 active:scale-95 transition-all cursor-pointer shadow-xs"
+                              className="text-[11px] text-[#46523B] bg-white hover:bg-emerald-100/50 border border-slate-200 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1 active:scale-95 transition-all cursor-pointer shadow-xs"
                             >
-                              <Eye className="w-3.5 h-3.5 text-[#c59b27]" />
+                              <Eye className="w-3.5 h-3.5 text-[#A08D52]" />
                               <span>معاينة الكشف</span>
                             </button>
                             <button
@@ -1159,9 +1229,9 @@ export const EmployeeView: React.FC<Props> = ({
                             <button
                               type="button"
                               onClick={() => setPreviewModalRequest(r)}
-                              className="text-[11px] text-[#1b4332] bg-white hover:bg-amber-100/50 border border-slate-200 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1 active:scale-95 transition-all cursor-pointer shadow-xs"
+                              className="text-[11px] text-[#46523B] bg-white hover:bg-amber-100/50 border border-slate-200 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1 active:scale-95 transition-all cursor-pointer shadow-xs"
                             >
-                              <Eye className="w-3.5 h-3.5 text-[#c59b27]" />
+                              <Eye className="w-3.5 h-3.5 text-[#A08D52]" />
                               <span>معاينة</span>
                             </button>
                             <button
@@ -1189,9 +1259,9 @@ export const EmployeeView: React.FC<Props> = ({
                       <button
                         type="button"
                         onClick={() => setSelectedRequest(r)}
-                        className="text-[11px] text-[#1b4332] hover:text-[#c59b27] font-bold flex items-center gap-1.5 active:scale-95 transition-all duration-150 cursor-pointer bg-slate-50 hover:bg-amber-50/50 px-3 py-1.5 rounded-xl border border-slate-200"
+                        className="text-[11px] text-[#46523B] hover:text-[#A08D52] font-bold flex items-center gap-1.5 active:scale-95 transition-all duration-150 cursor-pointer bg-slate-50 hover:bg-amber-50/50 px-3 py-1.5 rounded-xl border border-slate-200"
                       >
-                        <ExternalLink className="w-3.5 h-3.5 text-[#c59b27]" />
+                        <ExternalLink className="w-3.5 h-3.5 text-[#A08D52]" />
                         <span>عرض تفاصيل الاستمارة والتاريخ الإداري</span>
                       </button>
                     </div>

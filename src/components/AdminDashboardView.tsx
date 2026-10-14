@@ -53,7 +53,7 @@ const ROLE_LABELS: Record<Exclude<UserRole, 'login'>, { label: string; bg: strin
   pr: { label: 'وحدة العلاقات العامة (منصة X)', bg: 'bg-sky-50 border-sky-200', text: 'text-sky-800' },
   dean: { label: 'سعادة رئيس الكلية (Executive)', bg: 'bg-amber-100/60 border-amber-300', text: 'text-amber-950' },
   accreditation: { label: 'مسؤول الاعتمادات (بيان الطيار)', bg: 'bg-teal-50 border-teal-200', text: 'text-teal-800' },
-  admin: { label: 'مدير النظام (Admin)', bg: 'bg-slate-900 border-slate-700', text: 'text-[#e6c566]' },
+  admin: { label: 'مدير النظام (Admin)', bg: 'bg-slate-900 border-slate-700', text: 'text-[#C4B688]' },
 };
 
 export const AdminDashboardView: React.FC<Props> = ({
@@ -149,18 +149,18 @@ export const AdminDashboardView: React.FC<Props> = ({
   return (
     <div className="space-y-4 pb-6 font-['Tajawal',sans-serif] text-right">
       {/* Admin Title Card */}
-      <div className="bg-gradient-to-l from-[#1b4332] via-[#143728] to-[#081c15] text-white rounded-3xl p-4 sm:p-5 shadow-lg flex items-center justify-between border border-[#1b4332] relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-2 h-full bg-[#c59b27]" />
+      <div className="bg-gradient-to-l from-[#46523B] via-[#384230] to-[#2A3324] text-white rounded-[32px] p-4 sm:p-5 shadow-lg flex items-center justify-between border border-[#46523B] relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-2 h-full bg-[#A08D52]" />
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#c59b27] to-[#e6c566] text-[#081c15] flex items-center justify-center font-bold shadow-md">
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#A08D52] to-[#C4B688] text-[#2A3324] flex items-center justify-center font-bold shadow-md">
             <Shield className="w-6 h-6" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#c59b27]/20 text-[#e6c566] border border-[#c59b27]/40">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#A08D52]/20 text-[#C4B688] border border-[#A08D52]/40">
                 الإدارة المركزية
               </span>
-              <h2 className="text-sm sm:text-base font-extrabold text-[#e6c566] leading-none">
+              <h2 className="text-sm sm:text-base font-extrabold text-[#C4B688] leading-none">
                 لوحة تحكم مدير النظام العام (System Admin)
               </h2>
             </div>
@@ -173,7 +173,7 @@ export const AdminDashboardView: React.FC<Props> = ({
         <button
           type="button"
           onClick={() => setIsAddModalOpen(true)}
-          className="bg-gradient-to-r from-[#c59b27] to-[#e6c566] hover:from-[#d8ab2e] hover:to-[#f3d37a] text-slate-950 font-black px-3.5 py-2.5 rounded-xl text-xs flex items-center gap-1.5 transition shadow-md cursor-pointer active:scale-95"
+          className="bg-gradient-to-r from-[#A08D52] to-[#C4B688] hover:from-[#d8ab2e] hover:to-[#f3d37a] text-slate-950 font-black px-3.5 py-2.5 rounded-xl text-xs flex items-center gap-1.5 transition shadow-md cursor-pointer active:scale-95"
         >
           <UserPlus className="w-4 h-4 text-slate-950" />
           <span className="hidden sm:inline">إنشاء حساب جديد</span>
@@ -188,11 +188,11 @@ export const AdminDashboardView: React.FC<Props> = ({
           onClick={() => setActiveTab('users')}
           className={`flex-1 py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 ${
             activeTab === 'users'
-              ? 'bg-[#1b4332] text-[#e6c566] shadow-md shadow-[#1b4332]/25'
+              ? 'bg-[#46523B] text-[#C4B688] shadow-md shadow-[#46523B]/25'
               : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
           }`}
         >
-          <Users className="w-4 h-4 text-[#c59b27]" />
+          <Users className="w-4 h-4 text-[#A08D52]" />
           <span>إدارة المستخدمين والصلاحيات ({users.length})</span>
         </button>
         <button
@@ -200,11 +200,11 @@ export const AdminDashboardView: React.FC<Props> = ({
           onClick={() => setActiveTab('metrics')}
           className={`flex-1 py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 ${
             activeTab === 'metrics'
-              ? 'bg-[#1b4332] text-[#e6c566] shadow-md shadow-[#1b4332]/25'
+              ? 'bg-[#46523B] text-[#C4B688] shadow-md shadow-[#46523B]/25'
               : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
           }`}
         >
-          <Activity className="w-4 h-4 text-[#c59b27]" />
+          <Activity className="w-4 h-4 text-[#A08D52]" />
           <span>متابعة سير العمل العام ({totalRequests})</span>
         </button>
       </div>
@@ -213,14 +213,14 @@ export const AdminDashboardView: React.FC<Props> = ({
       {activeTab === 'users' && (
         <div className="space-y-3">
           {/* Search & Filter Bar */}
-          <div className="bg-white p-3 sm:p-4 rounded-3xl border border-slate-100 shadow-sm space-y-2.5">
+          <div className="bg-white p-3 sm:p-4 rounded-[32px] border border-slate-100 shadow-sm space-y-2.5">
             <div className="relative">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="ابحث بالاسم، الرقم الوظيفي، البريد، الفرع، أو القسم..."
-                className="w-full pl-4 pr-10 py-2.5 text-xs rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#c59b27] focus:ring-2 focus:ring-[#c59b27]/20 outline-none transition font-medium"
+                className="w-full pl-4 pr-10 py-2.5 text-xs rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#A08D52] focus:ring-2 focus:ring-[#A08D52]/20 outline-none transition font-medium"
               />
               <Search className="w-4 h-4 text-slate-400 absolute right-3.5 top-3" />
             </div>
@@ -298,7 +298,7 @@ export const AdminDashboardView: React.FC<Props> = ({
                 onClick={() => setSelectedRoleFilter('dean')}
                 className={`px-3 py-1.5 rounded-xl transition whitespace-nowrap cursor-pointer ${
                   selectedRoleFilter === 'dean'
-                    ? 'bg-[#c59b27] text-slate-950 font-black shadow-xs'
+                    ? 'bg-[#A08D52] text-slate-950 font-black shadow-xs'
                     : 'bg-amber-50 text-amber-900 hover:bg-amber-100'
                 }`}
               >
@@ -321,7 +321,7 @@ export const AdminDashboardView: React.FC<Props> = ({
           {/* User Cards List */}
           <div className="space-y-3">
             {filteredUsers.length === 0 ? (
-              <div className="bg-white rounded-3xl p-8 text-center border border-slate-100 text-slate-400 text-xs shadow-sm">
+              <div className="bg-white rounded-[32px] p-8 text-center border border-slate-100 text-slate-400 text-xs shadow-sm">
                 لا يوجد مستخدمون مطابقون لمعايير البحث الحالية
               </div>
             ) : (
@@ -330,7 +330,7 @@ export const AdminDashboardView: React.FC<Props> = ({
                 return (
                   <div
                     key={u.id}
-                    className={`bg-white rounded-3xl p-4 sm:p-5 border transition-all duration-200 shadow-sm hover:shadow-md ${
+                    className={`bg-white rounded-[32px] p-4 sm:p-5 border transition-all duration-200 shadow-sm hover:shadow-md ${
                       u.isActive
                         ? 'border-slate-200 hover:border-slate-300'
                         : 'border-rose-200 bg-rose-50/20'
@@ -342,8 +342,8 @@ export const AdminDashboardView: React.FC<Props> = ({
                         <div
                           className={`w-10 h-10 rounded-2xl flex items-center justify-center font-extrabold text-xs shrink-0 shadow-xs ${
                             u.role === 'admin'
-                              ? 'bg-[#1b4332] text-[#e6c566]'
-                              : 'bg-slate-100 text-[#1b4332]'
+                              ? 'bg-[#46523B] text-[#C4B688]'
+                              : 'bg-slate-100 text-[#46523B]'
                           }`}
                         >
                           {u.name.substring(0, 2)}
@@ -372,7 +372,7 @@ export const AdminDashboardView: React.FC<Props> = ({
                               <>
                                 <span>•</span>
                                 <span className="flex items-center gap-1 text-slate-500">
-                                  <MapPin className="w-3 h-3 text-[#c59b27]" />
+                                  <MapPin className="w-3 h-3 text-[#A08D52]" />
                                   <span>{u.branch}</span>
                                 </span>
                               </>
@@ -409,7 +409,7 @@ export const AdminDashboardView: React.FC<Props> = ({
                           onChange={(e) =>
                             onUpdateUserRole(u.id, e.target.value as Exclude<UserRole, 'login'>)
                           }
-                          className="flex-1 px-2.5 py-1.5 rounded-xl border border-slate-200 text-xs font-bold bg-slate-50 focus:bg-white focus:border-[#c59b27] outline-none transition"
+                          className="flex-1 px-2.5 py-1.5 rounded-xl border border-slate-200 text-xs font-bold bg-slate-50 focus:bg-white focus:border-[#A08D52] outline-none transition"
                         >
                           <option value="emp">موظف (مقدم الطلب)</option>
                           <option value="manager">المدير المباشر</option>
@@ -429,9 +429,9 @@ export const AdminDashboardView: React.FC<Props> = ({
                           type="button"
                           onClick={() => setEditingUser(u)}
                           title="تعديل بيانات المستخدم (الاسم، الرقم، البريد، القسم، الفرع)"
-                          className="text-[10px] font-bold px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:bg-[#1b4332] hover:text-[#e6c566] hover:border-[#1b4332] flex items-center gap-1.5 transition cursor-pointer active:scale-95 shadow-xs"
+                          className="text-[10px] font-bold px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:bg-[#46523B] hover:text-[#C4B688] hover:border-[#46523B] flex items-center gap-1.5 transition cursor-pointer active:scale-95 shadow-xs"
                         >
-                          <UserPen className="w-3.5 h-3.5 text-[#c59b27]" />
+                          <UserPen className="w-3.5 h-3.5 text-[#A08D52]" />
                           <span>تعديل</span>
                         </button>
 
@@ -499,14 +499,14 @@ export const AdminDashboardView: React.FC<Props> = ({
       {activeTab === 'metrics' && (
         <div className="space-y-4">
           {/* Header Action Bar: Export Final Report */}
-          <div className="bg-gradient-to-r from-slate-900 via-[#1b4332] to-slate-900 text-white p-4 sm:p-5 rounded-3xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg border border-slate-700 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-2 h-full bg-[#c59b27]" />
+          <div className="bg-gradient-to-r from-slate-900 via-[#46523B] to-slate-900 text-white p-4 sm:p-5 rounded-[32px] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg border border-slate-700 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-2 h-full bg-[#A08D52]" />
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#c59b27]/20 text-[#e6c566] border border-[#c59b27]/40">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#A08D52]/20 text-[#C4B688] border border-[#A08D52]/40">
                   الحوكمة والأرشفة
                 </span>
-                <h3 className="text-xs sm:text-sm font-extrabold text-[#e6c566]">
+                <h3 className="text-xs sm:text-sm font-extrabold text-[#C4B688]">
                   متابعة وتقارير سير العمل العام
                 </h3>
               </div>
@@ -518,7 +518,7 @@ export const AdminDashboardView: React.FC<Props> = ({
             <button
               type="button"
               onClick={() => setIsExportModalOpen(true)}
-              className="bg-gradient-to-r from-[#c59b27] to-[#e6c566] hover:from-[#d8ab2e] hover:to-[#f3d37a] text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-md cursor-pointer active:scale-95 shrink-0"
+              className="bg-gradient-to-r from-[#A08D52] to-[#C4B688] hover:from-[#d8ab2e] hover:to-[#f3d37a] text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-md cursor-pointer active:scale-95 shrink-0"
             >
               <Download className="w-4 h-4 text-slate-950" />
               <span>تصدير التقرير النهائي (Excel / PDF)</span>
@@ -526,18 +526,18 @@ export const AdminDashboardView: React.FC<Props> = ({
           </div>
 
           {/* Progress Overview */}
-          <div className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-100 shadow-sm">
+          <div className="bg-white rounded-[32px] p-4 sm:p-5 border border-slate-100 shadow-sm">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-bold text-[#1b4332]">
+              <span className="text-xs font-bold text-[#46523B]">
                 معدل إنجاز وتوثيق الأنشطة في منصة ارتقاء
               </span>
-              <span className="text-xs font-extrabold text-[#c59b27]">
+              <span className="text-xs font-extrabold text-[#A08D52]">
                 {completionRate}% تم التوثيق بنجاح
               </span>
             </div>
             <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden flex shadow-inner">
               <div
-                className="bg-gradient-to-r from-[#1b4332] to-[#c59b27] h-full transition-all duration-500 rounded-full"
+                className="bg-gradient-to-r from-[#46523B] to-[#A08D52] h-full transition-all duration-500 rounded-full"
                 style={{ width: `${completionRate}%` }}
               />
             </div>
@@ -573,7 +573,7 @@ export const AdminDashboardView: React.FC<Props> = ({
               <span className="text-[10px] text-slate-400 font-bold block mb-1">
                 رُفعت لمنصة ارتقاء
               </span>
-              <span className="text-lg font-black text-[#1b4332]">{uploadedCount}</span>
+              <span className="text-lg font-black text-[#46523B]">{uploadedCount}</span>
               <span className="text-[10px] text-slate-500 block">موثقة نهائياً</span>
             </div>
 
@@ -597,9 +597,9 @@ export const AdminDashboardView: React.FC<Props> = ({
           </div>
 
           {/* All Requests Activity Feed */}
-          <div className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-100 shadow-sm">
-            <h3 className="text-xs font-bold text-[#1b4332] mb-3 flex items-center gap-1.5">
-              <Layers className="w-4 h-4 text-[#c59b27]" />
+          <div className="bg-white rounded-[32px] p-4 sm:p-5 border border-slate-100 shadow-sm">
+            <h3 className="text-xs font-bold text-[#46523B] mb-3 flex items-center gap-1.5">
+              <Layers className="w-4 h-4 text-[#A08D52]" />
               <span>متابعة حالة كافة أنشطة النظام الحالية</span>
             </h3>
 
@@ -615,7 +615,7 @@ export const AdminDashboardView: React.FC<Props> = ({
                   <div
                     key={req.id}
                     onClick={() => setSelectedRequest(req)}
-                    className="p-3 rounded-2xl border border-slate-100 bg-slate-50/60 hover:bg-amber-50/40 hover:border-[#c59b27]/40 flex items-center justify-between gap-2 transition cursor-pointer"
+                    className="p-3 rounded-2xl border border-slate-100 bg-slate-50/60 hover:bg-amber-50/40 hover:border-[#A08D52]/40 flex items-center justify-between gap-2 transition cursor-pointer"
                   >
                   <div className="text-right">
                     <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
@@ -649,7 +649,7 @@ export const AdminDashboardView: React.FC<Props> = ({
                       </span>
                     )}
                     {req.status === 'uploaded_irtqaa' && (
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-900 text-[#e6c566] border border-slate-700">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-900 text-[#C4B688] border border-slate-700">
                         منصة ارتقاء
                       </span>
                     )}
@@ -679,14 +679,14 @@ export const AdminDashboardView: React.FC<Props> = ({
       {/* MODAL 1: ADD NEW USER */}
       {isAddModalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
-          <div className="bg-white rounded-3xl w-full max-w-md p-5 shadow-2xl border border-slate-100 text-right">
+          <div className="bg-white rounded-[32px] w-full max-w-md p-5 shadow-2xl border border-slate-100 text-right">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-[#1b4332] text-[#e6c566] flex items-center justify-center">
+                <div className="w-8 h-8 rounded-xl bg-[#46523B] text-[#C4B688] flex items-center justify-center">
                   <UserPlus className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-xs font-extrabold text-[#1b4332]">إنشاء حساب مستخدم جديد</h3>
+                  <h3 className="text-xs font-extrabold text-[#46523B]">إنشاء حساب مستخدم جديد</h3>
                   <p className="text-[10px] text-slate-400">إضافة عضو وتعيين الصلاحيات الأولية</p>
                 </div>
               </div>
@@ -715,7 +715,7 @@ export const AdminDashboardView: React.FC<Props> = ({
                   onChange={(e) => setNewName(e.target.value)}
                   placeholder="مثال: د. محمد بن عبد الله الشمري"
                   required
-                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#c59b27] outline-none transition"
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#A08D52] outline-none transition"
                 />
               </div>
 
@@ -728,7 +728,7 @@ export const AdminDashboardView: React.FC<Props> = ({
                     onChange={(e) => setNewEmpNum(e.target.value)}
                     placeholder="4412099"
                     required
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#c59b27] outline-none transition font-mono font-bold"
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#A08D52] outline-none transition font-mono font-bold"
                   />
                 </div>
 
@@ -740,7 +740,7 @@ export const AdminDashboardView: React.FC<Props> = ({
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="••••••"
                     required
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#c59b27] outline-none transition"
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#A08D52] outline-none transition"
                   />
                 </div>
               </div>
@@ -752,7 +752,7 @@ export const AdminDashboardView: React.FC<Props> = ({
                   value={newEmail}
                   onChange={(e) => setNewEmail(e.target.value)}
                   placeholder="emp@mu.edu.sa"
-                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#c59b27] outline-none transition font-mono text-left"
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#A08D52] outline-none transition font-mono text-left"
                   dir="ltr"
                 />
               </div>
@@ -764,7 +764,7 @@ export const AdminDashboardView: React.FC<Props> = ({
                 <select
                   value={newRole}
                   onChange={(e) => setNewRole(e.target.value as Exclude<UserRole, 'login'>)}
-                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#c59b27] outline-none transition font-bold"
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#A08D52] outline-none transition font-bold"
                 >
                   <option value="emp">1. موظف (مقدم الطلب - رفع الأنشطة ومتابعتها)</option>
                   <option value="manager">2. المدير المباشر (المراجعة الأولية والاعتماد)</option>
@@ -786,7 +786,7 @@ export const AdminDashboardView: React.FC<Props> = ({
                     onChange={(e) => setNewDepartment(e.target.value)}
                     placeholder="قسم تقنية المعلومات"
                     required
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#c59b27] outline-none transition"
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#A08D52] outline-none transition"
                   />
                 </div>
 
@@ -795,7 +795,7 @@ export const AdminDashboardView: React.FC<Props> = ({
                   <select
                     value={newBranch}
                     onChange={(e) => setNewBranch(e.target.value)}
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#c59b27] outline-none transition"
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#A08D52] outline-none transition"
                   >
                     <option value="فرع الزلفي - شطر الطلاب">فرع الزلفي - شطر الطلاب</option>
                     <option value="فرع الزلفي - شطر الطالبات">فرع الزلفي - شطر الطالبات</option>
@@ -810,7 +810,7 @@ export const AdminDashboardView: React.FC<Props> = ({
               <div className="flex items-center gap-2 pt-2">
                 <button
                   type="submit"
-                  className="flex-1 bg-[#1b4332] hover:bg-[#143728] text-[#e6c566] font-bold py-2.5 px-4 rounded-xl text-xs flex items-center justify-center gap-1.5 transition cursor-pointer shadow-sm active:scale-95"
+                  className="flex-1 bg-[#46523B] hover:bg-[#384230] text-[#C4B688] font-bold py-2.5 px-4 rounded-xl text-xs flex items-center justify-center gap-1.5 transition cursor-pointer shadow-sm active:scale-95"
                 >
                   <Check className="w-4 h-4" />
                   <span>تأكيد إنشاء الحساب</span>

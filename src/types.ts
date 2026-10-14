@@ -5,7 +5,9 @@ export type RequestStatus =
   | 'returned_manager'
   | 'approved_final'
   | 'uploaded_irtqaa'
-  | 'rejected';
+  | 'rejected'
+  | 'attendance_submitted'
+  | 'attendance_returned';
 
 export type UserRole =
   | 'login'
@@ -112,6 +114,9 @@ export interface ActivityRequest {
   // توثيق واعتماد منصة ارتقاء (بيان الطيار)
   accreditationDocument?: AccreditationDocument;
   // Backwards compatibility fallbacks
+  managerApprovalDate?: string;
+  irtqaaAccreditationNumber?: string;
+  uploadedAt?: string;
   date?: string;
   location?: string;
 }

@@ -1,72 +1,128 @@
 @import "tailwindcss";
 
 :root {
-  --primary-green: #1b4332;
-  --dark-green: #081c15;
-  --accent-gold: #c59b27;
-  --gold-light: #e6c566;
-  --bg-light: #f2f7f4;
-  --card-bg: rgba(236, 246, 240, 0.55);
-  --card-border: rgba(27, 67, 50, 0.12);
-  --text-main: #143728;
-  --text-muted: #4a6758;
+  --primary-green: #46523B;
+  --primary-dark: #353F2D;
+  --accent-gold: #A08D52;
+  --gold-light: #C4B688;
+  --gold-hover: #8D7B43;
+  --bg-main: #FAF9F6;
+  --card-bg: #FFFFFF;
+  --card-border: rgba(70, 82, 59, 0.1);
+  --text-main: #1F281B;
+  --text-muted: #5C6753;
 }
 
 body {
   font-family: 'Tajawal', system-ui, -apple-system, sans-serif;
   -webkit-tap-highlight-color: transparent;
-  background-color: #f2f7f4;
+  background-color: #FAF9F6;
+  color: #1F281B;
+  overflow-x: hidden;
 }
 
-/* Glassmorphism Soft Emerald Utility Classes */
-.glass-card {
-  background-color: rgba(236, 246, 240, 0.55);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(27, 67, 50, 0.12);
-  box-shadow: 0 4px 20px -2px rgba(27, 67, 50, 0.04);
+/* Luxury Institutional Brand Utilities */
+.bg-sage-primary {
+  background-color: #46523B;
 }
 
-.glass-card-hover {
+.text-sage-primary {
+  color: #46523B;
+}
+
+.border-sage-primary {
+  border-color: #46523B;
+}
+
+.bg-gold-accent {
+  background-color: #A08D52;
+}
+
+.text-gold-accent {
+  color: #A08D52;
+}
+
+.border-gold-accent {
+  border-color: #A08D52;
+}
+
+/* Bento Grid & Liquid Glass Styling */
+.bento-container {
+  display: grid;
+  gap: 0.875rem;
+}
+
+.liquid-card {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 32px;
+  border: 1px solid rgba(70, 82, 59, 0.1);
+  box-shadow: 0 10px 30px -4px rgba(70, 82, 59, 0.05), 0 2px 8px rgba(0, 0, 0, 0.02);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.liquid-card:hover {
+  border-color: rgba(70, 82, 59, 0.2);
+  box-shadow: 0 16px 36px -4px rgba(70, 82, 59, 0.08), 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.bento-tile {
+  background: #FFFFFF;
+  border-radius: 28px;
+  border: 1px solid rgba(70, 82, 59, 0.09);
+  padding: 1.125rem;
+  box-shadow: 0 6px 20px -2px rgba(70, 82, 59, 0.04);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.glass-card-hover:hover {
-  background-color: rgba(236, 246, 240, 0.8);
-  border-color: rgba(27, 67, 50, 0.22);
+  position: relative;
+  overflow: hidden;
 }
 
-.glass-input {
-  background-color: rgba(240, 248, 243, 0.65);
-  border: 1px solid rgba(27, 67, 50, 0.16);
-  transition: all 0.15s ease-in-out;
+.bento-tile:hover {
+  border-color: rgba(160, 141, 82, 0.3);
+  box-shadow: 0 10px 28px -2px rgba(70, 82, 59, 0.07);
 }
-.glass-input:focus {
-  background-color: #ffffff;
-  border-color: #1b4332;
-  box-shadow: 0 0 0 3px rgba(27, 67, 50, 0.1);
+
+/* Mobile-First Curved Floating Navigation Bar */
+.curved-floating-dock {
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 32px;
+  border: 1px solid rgba(70, 82, 59, 0.12);
+  box-shadow: 0 16px 40px -6px rgba(70, 82, 59, 0.16), 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+/* Hide scrollbars for clean horizontal sliding */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* Custom subtle scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(27, 67, 50, 0.2);
+  background: rgba(70, 82, 59, 0.2);
   border-radius: 9999px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(27, 67, 50, 0.4);
+  background: rgba(70, 82, 59, 0.4);
 }
 
-/* Smooth micro-interaction animations */
+/* Micro-interaction animation */
 @keyframes fadeSlideUp {
   0% {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px);
   }
   100% {
     opacity: 1;
@@ -75,20 +131,5 @@ body {
 }
 
 .animate-fade-slide-up {
-  animation: fadeSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes pulseGlow {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.05);
-  }
-}
-
-.animate-pulse-glow {
-  animation: pulseGlow 2s ease-in-out infinite;
+  animation: fadeSlideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

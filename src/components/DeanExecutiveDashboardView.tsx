@@ -91,96 +91,103 @@ export const DeanExecutiveDashboardView: React.FC<Props> = ({ requests }) => {
 
   return (
     <div className="space-y-4 pb-8 font-['Tajawal',sans-serif] text-right">
-      {/* Title Bar */}
-      <div className="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-2 h-full bg-gradient-to-b from-[#1b4332] via-[#c59b27] to-[#1b4332]" />
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-[#1b4332]/10 text-[#1b4332] flex items-center justify-center shrink-0 border border-[#1b4332]/20">
-            <Crown className="w-5 h-5 text-[#c59b27]" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-900 border border-amber-200">
-                الرئاسة والقيادة
-              </span>
-              <h2 className="text-sm sm:text-base font-extrabold text-[#1b4332]">
-                لوحة المتابعة التنفيذية - سعادة رئيس الكلية
-              </h2>
+      {/* Bento Grid Header & Executive KPI Metrics */}
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+        {/* Bento Hero Tile: Spans 2 cols on mobile, 4 cols on desktop */}
+        <div className="col-span-2 md:col-span-4 lg:col-span-4 bg-white/90 backdrop-blur-md rounded-[32px] p-4 sm:p-5 border border-[#46523B]/12 shadow-[0_8px_24px_rgba(70,82,59,0.04)] relative overflow-hidden flex flex-col justify-between">
+          <div className="absolute top-0 right-0 w-2 h-full bg-gradient-to-b from-[#46523B] via-[#A08D52] to-[#46523B]" />
+          
+          <div className="flex items-center justify-between gap-3 mb-2">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-2xl bg-[#46523B] text-[#A08D52] flex items-center justify-center shrink-0 border border-[#A08D52]/40 shadow-xs">
+                <Crown className="w-5 h-5 text-[#A08D52]" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-[#A08D52]/15 text-[#A08D52] border border-[#A08D52]/30">
+                    القيادة والرئاسة
+                  </span>
+                  <span className="text-[10px] font-bold text-[#46523B]">
+                    سعادة رئيس الكلية التطبيقية
+                  </span>
+                </div>
+                <h2 className="text-sm sm:text-base font-black text-[#46523B] mt-0.5">
+                  لوحة المتابعة التنفيذية ومؤشرات الأداء
+                </h2>
+              </div>
             </div>
-            <p className="text-xs text-slate-500 mt-0.5">
-              متابعة مؤشرات الأداء، مسارات الأنشطة، والتوثيق الرسمي في منصة ارتقاء
-            </p>
+
+            <button
+              type="button"
+              onClick={() => setIsExportModalOpen(true)}
+              className="px-3 py-1.5 rounded-2xl bg-[#A08D52] hover:bg-[#8D7B43] text-white text-xs font-black flex items-center gap-1.5 shadow-xs active:scale-95 transition-all cursor-pointer shrink-0 self-start sm:self-center"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5 text-white" />
+              <span>تصدير التقرير (CSV)</span>
+            </button>
+          </div>
+
+          <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+            <span className="text-slate-500 font-medium">معدل الإنجاز والاعتماد التنفيذي الكلي:</span>
+            <div className="flex items-center gap-2">
+              <span className="font-mono font-black text-[#46523B]">
+                {totalActivities > 0 ? Math.round((approvedFinal / totalActivities) * 100) : 0}%
+              </span>
+              <span className="text-slate-400">({approvedFinal} من {totalActivities})</span>
+            </div>
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setIsExportModalOpen(true)}
-          className="px-3 py-2 rounded-xl bg-[#c59b27] hover:bg-[#d4ab37] text-slate-950 text-xs font-bold flex items-center gap-1.5 shadow-xs active:scale-95 transition-all cursor-pointer shrink-0 self-start sm:self-center"
-        >
-          <FileSpreadsheet className="w-4 h-4 text-slate-950" />
-          <span>تصدير التقرير التنفيذي (CSV)</span>
-        </button>
-      </div>
-
-      {/* Unified 4-Card KPI Metrics Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
-        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+        {/* Bento Tile 1: إجمالي الأنشطة */}
+        <div className="col-span-1 bg-white rounded-[28px] p-3.5 border border-[#46523B]/10 shadow-[0_4px_16px_rgba(70,82,59,0.03)] text-right flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-slate-500">إجمالي الأنشطة</span>
             <div className="w-7 h-7 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
               <Layers className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-xl sm:text-2xl font-black text-slate-900 mt-1">{totalActivities}</div>
-          <div className="flex items-center gap-1 mt-0.5 text-[10px] text-slate-500 font-medium">
-            <span className="font-bold text-emerald-700">{approvedFinal} معتمد</span>
-            <span>•</span>
-            <span className="text-amber-700 font-bold">{inWorkflow} تدقيق</span>
-          </div>
+          <div className="text-2xl font-black text-slate-900 mt-2">{totalActivities}</div>
+          <span className="text-[10px] text-slate-400 font-medium mt-1">كافة الفروع</span>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+        {/* Bento Tile 2: الساعات التدريبية */}
+        <div className="col-span-1 bg-white rounded-[28px] p-3.5 border border-[#46523B]/10 shadow-[0_4px_16px_rgba(70,82,59,0.03)] text-right flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">الساعات التدريبية</span>
-            <div className="w-7 h-7 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+            <span className="text-[11px] font-bold text-slate-500">الساعات</span>
+            <div className="w-7 h-7 rounded-xl bg-[#46523B]/10 text-[#46523B] flex items-center justify-center">
               <Clock className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-xl sm:text-2xl font-black text-[#1b4332] mt-1">
-            {totalTrainingHours} <span className="text-[10px] font-normal text-slate-400">ساعة</span>
+          <div className="text-2xl font-black text-[#46523B] mt-2">
+            {totalTrainingHours} <span className="text-xs font-normal text-slate-400">ساعة</span>
           </div>
-          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">
-            متوسط {(totalActivities > 0 ? totalTrainingHours / totalActivities : 0).toFixed(1)} س / نشاط
-          </div>
+          <span className="text-[10px] text-slate-400 font-medium mt-1">
+            معدل {(totalActivities > 0 ? totalTrainingHours / totalActivities : 0).toFixed(1)} س/نشاط
+          </span>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+        {/* Bento Tile 3: موثقة بارتقاء */}
+        <div className="col-span-1 bg-white rounded-[28px] p-3.5 border border-[#46523B]/10 shadow-[0_4px_16px_rgba(70,82,59,0.03)] text-right flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-emerald-800">موثقة بارتقاء</span>
-            <div className="w-7 h-7 rounded-xl bg-[#1b4332] text-[#e6c566] flex items-center justify-center">
+            <div className="w-7 h-7 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
               <ShieldCheck className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-xl sm:text-2xl font-black text-emerald-700 mt-1">{uploadedToIrtqaa}</div>
-          <div className="text-[10px] text-emerald-800 mt-0.5 font-bold truncate">
-            سجل مهاري وطني
-          </div>
+          <div className="text-2xl font-black text-emerald-700 mt-2">{uploadedToIrtqaa}</div>
+          <span className="text-[10px] text-emerald-800 font-bold mt-1">سجل مهاري معتمد</span>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs relative overflow-hidden">
+        {/* Bento Tile 4: اعتماد الرئاسة */}
+        <div className="col-span-1 bg-white rounded-[28px] p-3.5 border border-[#46523B]/10 shadow-[0_4px_16px_rgba(70,82,59,0.03)] text-right flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">الإنجاز الكلي</span>
+            <span className="text-[11px] font-bold text-amber-800">اعتماد الرئاسة</span>
             <div className="w-7 h-7 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
               <Award className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-xl sm:text-2xl font-black text-amber-700 mt-1">
-            {totalActivities > 0 ? Math.round((approvedFinal / totalActivities) * 100) : 0}%
-          </div>
-          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">
-            {deanApprovedCount} اعتماد رئاسة
-          </div>
+          <div className="text-2xl font-black text-amber-700 mt-2">{deanApprovedCount}</div>
+          <span className="text-[10px] text-amber-800 font-bold mt-1">ختم رسمي</span>
         </div>
       </div>
 
@@ -191,7 +198,7 @@ export const DeanExecutiveDashboardView: React.FC<Props> = ({ requests }) => {
           onClick={() => setActiveTab('overview')}
           className={`flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-all duration-150 active:scale-95 cursor-pointer ${
             activeTab === 'overview'
-              ? 'bg-[#1b4332] text-[#e6c566] shadow-sm'
+              ? 'bg-[#46523B] text-[#C4B688] shadow-sm'
               : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
           }`}
         >
@@ -204,7 +211,7 @@ export const DeanExecutiveDashboardView: React.FC<Props> = ({ requests }) => {
           onClick={() => setActiveTab('analytics')}
           className={`flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-all duration-150 active:scale-95 cursor-pointer ${
             activeTab === 'analytics'
-              ? 'bg-[#1b4332] text-[#e6c566] shadow-sm'
+              ? 'bg-[#46523B] text-[#C4B688] shadow-sm'
               : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
           }`}
         >
@@ -223,8 +230,8 @@ export const DeanExecutiveDashboardView: React.FC<Props> = ({ requests }) => {
             {/* Status Breakdown */}
             <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-2.5">
               <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-                <h3 className="text-xs font-bold text-[#1b4332] flex items-center gap-1.5">
-                  <Activity className="w-3.5 h-3.5 text-[#c59b27]" />
+                <h3 className="text-xs font-bold text-[#46523B] flex items-center gap-1.5">
+                  <Activity className="w-3.5 h-3.5 text-[#A08D52]" />
                   <span>حالة المعاملات الحالية</span>
                 </h3>
                 <span className="text-[10px] text-slate-400">تحديث فوري</span>
@@ -257,7 +264,7 @@ export const DeanExecutiveDashboardView: React.FC<Props> = ({ requests }) => {
             {/* Attendance & Closing Status */}
             <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-2.5">
               <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-                <h3 className="text-xs font-bold text-[#1b4332] flex items-center gap-1.5">
+                <h3 className="text-xs font-bold text-[#46523B] flex items-center gap-1.5">
                   <FileCheck2 className="w-3.5 h-3.5 text-emerald-600" />
                   <span>مرحلة كشوف الحضور والإغلاق</span>
                 </h3>
@@ -287,8 +294,8 @@ export const DeanExecutiveDashboardView: React.FC<Props> = ({ requests }) => {
           <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-3">
             <div className="flex items-center justify-between pb-2 border-b border-slate-100">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-xl bg-[#1b4332]/10 text-[#1b4332] flex items-center justify-center">
-                  <Building2 className="w-4 h-4 text-[#c59b27]" />
+                <div className="w-7 h-7 rounded-xl bg-[#46523B]/10 text-[#46523B] flex items-center justify-center">
+                  <Building2 className="w-4 h-4 text-[#A08D52]" />
                 </div>
                 <div>
                   <h3 className="text-xs font-bold text-slate-900">مؤشرات الأداء لفروع الكلية التطبيقية</h3>
@@ -315,7 +322,7 @@ export const DeanExecutiveDashboardView: React.FC<Props> = ({ requests }) => {
                     >
                       <div className="flex items-center justify-between mb-1.5">
                         <span className="text-xs font-bold text-slate-800 truncate">{branchName}</span>
-                        <span className="text-[10px] font-bold text-[#1b4332] bg-white px-2 py-0.5 rounded border border-slate-200">
+                        <span className="text-[10px] font-bold text-[#46523B] bg-white px-2 py-0.5 rounded border border-slate-200">
                           {percent}%
                         </span>
                       </div>
@@ -328,7 +335,7 @@ export const DeanExecutiveDashboardView: React.FC<Props> = ({ requests }) => {
                       {/* Progress bar */}
                       <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-gradient-to-r from-[#1b4332] to-[#c59b27] rounded-full transition-all duration-300"
+                          className="h-full bg-gradient-to-r from-[#46523B] to-[#A08D52] rounded-full transition-all duration-300"
                           style={{ width: `${percent}%` }}
                         />
                       </div>
@@ -401,7 +408,7 @@ export const DeanExecutiveDashboardView: React.FC<Props> = ({ requests }) => {
           {/* Analytics Filter Header */}
           <div className="bg-white rounded-2xl p-3 sm:p-4 border border-slate-200 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#1b4332] to-[#081c15] text-[#e6c566] flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#46523B] to-[#2A3324] text-[#C4B688] flex items-center justify-center shrink-0">
                 <BarChart3 className="w-4 h-4" />
               </div>
               <div>
@@ -419,7 +426,7 @@ export const DeanExecutiveDashboardView: React.FC<Props> = ({ requests }) => {
               <select
                 value={analyticsBranchFilter}
                 onChange={(e) => setAnalyticsBranchFilter(e.target.value)}
-                className="w-full sm:w-auto px-2.5 py-1.5 rounded-xl border border-slate-200 text-xs font-bold bg-slate-50 text-slate-800 outline-none focus:border-[#c59b27] cursor-pointer"
+                className="w-full sm:w-auto px-2.5 py-1.5 rounded-xl border border-slate-200 text-xs font-bold bg-slate-50 text-slate-800 outline-none focus:border-[#A08D52] cursor-pointer"
               >
                 <option value="all">كافة الفروع والمقرات ({requests.length})</option>
                 {allBranches.map((b) => (
@@ -437,12 +444,12 @@ export const DeanExecutiveDashboardView: React.FC<Props> = ({ requests }) => {
             <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-3">
               <div className="flex items-center justify-between pb-2 border-b border-slate-100">
                 <div className="flex items-center gap-1.5">
-                  <BarChart3 className="w-3.5 h-3.5 text-[#1b4332]" />
+                  <BarChart3 className="w-3.5 h-3.5 text-[#46523B]" />
                   <h4 className="text-xs font-bold text-slate-900">
                     توزيع الأنشطة حسب المسارات والأنواع
                   </h4>
                 </div>
-                <span className="text-[10px] font-bold text-[#1b4332] bg-[#1b4332]/5 px-2 py-0.5 rounded-lg">
+                <span className="text-[10px] font-bold text-[#46523B] bg-[#46523B]/5 px-2 py-0.5 rounded-lg">
                   {Object.keys(typeCounts).length} مسارات
                 </span>
               </div>
@@ -461,14 +468,14 @@ export const DeanExecutiveDashboardView: React.FC<Props> = ({ requests }) => {
                           <span className="font-bold text-slate-800 text-[11px]">{type}</span>
                           <div className="flex items-center gap-1.5">
                             <span className="text-slate-400 font-mono text-[10px]">{percentage}%</span>
-                            <span className="font-bold text-[#1b4332] bg-emerald-50 px-1.5 py-0.5 rounded text-[10px] border border-emerald-100">
+                            <span className="font-bold text-[#46523B] bg-emerald-50 px-1.5 py-0.5 rounded text-[10px] border border-emerald-100">
                               {count}
                             </span>
                           </div>
                         </div>
                         <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
                           <div
-                            className="bg-gradient-to-r from-[#1b4332] to-[#c59b27] h-full rounded-full transition-all duration-500"
+                            className="bg-gradient-to-r from-[#46523B] to-[#A08D52] h-full rounded-full transition-all duration-500"
                             style={{ width: `${percentage}%` }}
                           />
                         </div>
@@ -515,7 +522,7 @@ export const DeanExecutiveDashboardView: React.FC<Props> = ({ requests }) => {
                         </div>
                         <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
                           <div
-                            className="bg-gradient-to-r from-amber-600 via-[#c59b27] to-amber-300 h-full rounded-full transition-all duration-500"
+                            className="bg-gradient-to-r from-amber-600 via-[#A08D52] to-amber-300 h-full rounded-full transition-all duration-500"
                             style={{ width: `${percentage}%` }}
                           />
                         </div>
@@ -557,7 +564,7 @@ export const DeanExecutiveDashboardView: React.FC<Props> = ({ requests }) => {
             <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-2.5">
               <div className="flex items-center justify-between pb-2 border-b border-slate-100">
                 <div className="flex items-center gap-1.5">
-                  <TrendingUp className="w-3.5 h-3.5 text-[#1b4332]" />
+                  <TrendingUp className="w-3.5 h-3.5 text-[#46523B]" />
                   <h4 className="text-xs font-bold text-slate-800">قمع التدفق المؤسسي (ارتقاء)</h4>
                 </div>
                 <span className="text-[10px] text-slate-400">مراحل المعاملة</span>
