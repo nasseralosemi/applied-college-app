@@ -28,6 +28,8 @@ import {
   Layers,
 } from 'lucide-react';
 
+import { NavTabKey } from './BottomNav';
+
 export interface AuditorApprovalPayload {
   requestId: number;
   assignedUploader: string;
@@ -41,7 +43,7 @@ interface Props {
   onDeanApprove: (id: number) => void;
   onFinalApproveWithDispatch: (payload: AuditorApprovalPayload) => void;
   onReturnClick: (id: number, targetRole: 'manager' | 'emp', note: string) => void;
-  activeNavTab?: 'home' | 'activities';
+  activeNavTab?: NavTabKey;
 }
 
 export const AuditorView: React.FC<Props> = ({
@@ -55,7 +57,9 @@ export const AuditorView: React.FC<Props> = ({
   const [activeTab, setActiveTab] = useState<'pending' | 'approved' | 'returned'>('pending');
 
   React.useEffect(() => {
-    if (activeNavTab === 'activities') {
+    if (activeNavTab === 'pending' || activeNavTab === 'approved' || activeNavTab === 'returned') {
+      setActiveTab(activeNavTab);
+    } else if (activeNavTab === 'activities' || activeNavTab === 'home') {
       setActiveTab('pending');
     }
   }, [activeNavTab]);

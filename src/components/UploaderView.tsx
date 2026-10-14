@@ -36,11 +36,14 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 
+import { NavTabKey } from './BottomNav';
+
 interface Props {
   requests: ActivityRequest[];
   onConfirmUpload: (id: number, document?: AccreditationDocument) => void;
   onApproveAttendance?: (id: number) => void;
   onReturnAttendance?: (id: number, note: string) => void;
+  activeNavTab?: NavTabKey;
 }
 
 export const UploaderView: React.FC<Props> = ({
@@ -48,8 +51,19 @@ export const UploaderView: React.FC<Props> = ({
   onConfirmUpload,
   onApproveAttendance,
   onReturnAttendance,
+  activeNavTab,
 }) => {
   const [activeTab, setActiveTab] = useState<'ready' | 'uploaded' | 'all'>('ready');
+
+  React.useEffect(() => {
+    if (activeNavTab === 'pending') {
+      setActiveTab('ready');
+    } else if (activeNavTab === 'approved') {
+      setActiveTab('uploaded');
+    } else if (activeNavTab === 'activities' || activeNavTab === 'returned') {
+      setActiveTab('all');
+    }
+  }, [activeNavTab]);
   const [selectedRequest, setSelectedRequest] = useState<ActivityRequest | null>(null);
   const [returnModalRequest, setReturnModalRequest] = useState<ActivityRequest | null>(null);
   const [previewModalRequest, setPreviewModalRequest] = useState<ActivityRequest | null>(null);

@@ -1,7 +1,9 @@
 import React from 'react';
 import {
-  Home,
   FileCheck2,
+  Clock,
+  CheckCircle2,
+  RotateCcw,
   Bell,
   User,
   LogOut,
@@ -46,18 +48,51 @@ export const SidebarNav: React.FC<Props> = ({
       ? requests.filter((r) => r.xPlatformPublish && r.prStatus !== 'published_pr').length
       : requests.filter((r) => r.status === 'returned_emp' || r.attendanceSheet?.status === 'returned').length;
 
+  const approvedCount = requests.filter(
+    (r) => r.status === 'approved_final' || r.status === 'uploaded_irtqaa'
+  ).length;
+
+  const returnedCount = requests.filter(
+    (r) => r.status === 'returned_emp' || r.status === 'returned_manager'
+  ).length;
+
+  const activitiesLabel =
+    currentRole === 'auditor'
+      ? 'قائمة التدقيق الإداري'
+      : currentRole === 'manager'
+      ? 'معاملات الوحدة'
+      : currentRole === 'emp'
+      ? 'الأنشطة والطلبات'
+      : 'لوحة الأنشطة والتدقيق';
+
   const navItems: {
     key: NavTabKey;
     label: string;
     icon: React.ElementType;
     badgeCount?: number;
   }[] = [
-    { key: 'home', label: 'الرئيسية (لوحة التحكم)', icon: Home },
     {
       key: 'activities',
-      label: currentRole === 'auditor' ? 'قائمة التدقيق الإداري' : 'الأنشطة والطلبات',
+      label: activitiesLabel,
       icon: FileCheck2,
+    },
+    {
+      key: 'pending',
+      label: 'بانتظار التدقيق والموافقة',
+      icon: Clock,
       badgeCount: pendingCount > 0 ? pendingCount : undefined,
+    },
+    {
+      key: 'approved',
+      label: 'المعتمدة نهائياً',
+      icon: CheckCircle2,
+      badgeCount: approvedCount > 0 ? approvedCount : undefined,
+    },
+    {
+      key: 'returned',
+      label: 'المسترجعة للتعديل',
+      icon: RotateCcw,
+      badgeCount: returnedCount > 0 ? returnedCount : undefined,
     },
     {
       key: 'notifications',

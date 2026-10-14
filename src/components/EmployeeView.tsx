@@ -84,6 +84,8 @@ const GENDER_OPTIONS = [
   'أنثى (شطر الطالبات)',
 ];
 
+import { NavTabKey } from './BottomNav';
+
 interface Props {
   requests: ActivityRequest[];
   onSubmitRequest: (newReq: Omit<ActivityRequest, 'id' | 'status' | 'note'>) => void;
@@ -91,7 +93,7 @@ interface Props {
   onUpdateRequest?: (updatedReq: ActivityRequest) => void;
   onUploadAttendance?: (requestId: number, sheetData: AttendanceSheet) => void;
   currentUserEmpNumber?: string;
-  activeNavTab?: 'home' | 'activities';
+  activeNavTab?: NavTabKey;
 }
 
 export const EmployeeView: React.FC<Props> = ({
@@ -104,12 +106,23 @@ export const EmployeeView: React.FC<Props> = ({
   activeNavTab,
 }) => {
   const [activeTab, setActiveTab] = useState<'form' | 'tracking'>('form');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'approved' | 'returned'>('all');
 
   React.useEffect(() => {
-    if (activeNavTab === 'home') {
-      setActiveTab('form');
+    if (activeNavTab === 'pending') {
+      setActiveTab('tracking');
+      setStatusFilter('pending');
+    } else if (activeNavTab === 'approved') {
+      setActiveTab('tracking');
+      setStatusFilter('approved');
+    } else if (activeNavTab === 'returned') {
+      setActiveTab('tracking');
+      setStatusFilter('returned');
     } else if (activeNavTab === 'activities') {
       setActiveTab('tracking');
+      setStatusFilter('all');
+    } else if (activeNavTab === 'home') {
+      setActiveTab('form');
     }
   }, [activeNavTab]);
   const [selectedRequest, setSelectedRequest] = useState<ActivityRequest | null>(null);
@@ -160,13 +173,30 @@ export const EmployeeView: React.FC<Props> = ({
   const [formError, setFormError] = useState<string>('');
 
   // Filter requests to show this employee's submitted requests
-  const myRequests = currentUserEmpNumber
+  const myAllRequests = currentUserEmpNumber
     ? requests.filter(
         (r) =>
           r.submittedByEmpNumber === currentUserEmpNumber ||
           !r.submittedByEmpNumber
       )
     : requests;
+
+  const myRequests = myAllRequests.filter((r) => {
+    if (statusFilter === 'pending') {
+      return r.status === 'pending_manager' || r.status === 'pending_auditor';
+    }
+    if (statusFilter === 'approved') {
+      return r.status === 'approved_final' || r.status === 'uploaded_irtqaa';
+    }
+    if (statusFilter === 'returned') {
+      return (
+        r.status === 'returned_emp' ||
+        r.status === 'returned_manager' ||
+        r.attendanceSheet?.status === 'returned'
+      );
+    }
+    return true;
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -252,14 +282,19 @@ export const EmployeeView: React.FC<Props> = ({
     setActiveTab('tracking');
   };
 
-  const totalMyRequests = myRequests.length;
-  const inProgressCount = myRequests.filter(
+  const totalMyRequests = myAllRequests.length;
+  const inProgressCount = myAllRequests.filter(
     (r) => r.status === 'pending_manager' || r.status === 'pending_auditor'
   ).length;
-  const approvedCount = myRequests.filter(
+  const approvedCount = myAllRequests.filter(
     (r) => r.status === 'approved_final' || r.status === 'uploaded_irtqaa'
   ).length;
-  const returnedCount = myRequests.filter((r) => r.status === 'returned_emp').length;
+  const returnedCount = myAllRequests.filter(
+    (r) =>
+      r.status === 'returned_emp' ||
+      r.status === 'returned_manager' ||
+      r.attendanceSheet?.status === 'returned'
+  ).length;
 
   return (
     <div className="space-y-4 pb-8 font-['Tajawal',sans-serif] text-right">

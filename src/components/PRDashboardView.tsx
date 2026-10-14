@@ -24,6 +24,7 @@ import {
   ExternalLink,
   Link2,
 } from 'lucide-react';
+import { NavTabKey } from './BottomNav';
 
 interface Props {
   requests: ActivityRequest[];
@@ -36,6 +37,7 @@ interface Props {
   ) => void;
   isAdminViewing?: boolean;
   onReturnToAdmin?: () => void;
+  activeNavTab?: NavTabKey;
 }
 
 export const PRDashboardView: React.FC<Props> = ({
@@ -43,9 +45,20 @@ export const PRDashboardView: React.FC<Props> = ({
   onUpdatePrStatus,
   isAdminViewing,
   onReturnToAdmin,
+  activeNavTab,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatusFilter, setSelectedStatusFilter] = useState<'all' | 'pending' | 'published'>('all');
+
+  React.useEffect(() => {
+    if (activeNavTab === 'pending') {
+      setSelectedStatusFilter('pending');
+    } else if (activeNavTab === 'approved') {
+      setSelectedStatusFilter('published');
+    } else if (activeNavTab === 'activities' || activeNavTab === 'returned') {
+      setSelectedStatusFilter('all');
+    }
+  }, [activeNavTab]);
   const [selectedTypeFilter, setSelectedTypeFilter] = useState<string>('all');
   const [activeRequestForDetails, setActiveRequestForDetails] = useState<ActivityRequest | null>(null);
 

@@ -128,7 +128,7 @@ export default function App() {
   const [isStoreModalOpen, setIsStoreModalOpen] = useState<boolean>(false);
   const [isAndroidModalOpen, setIsAndroidModalOpen] = useState<boolean>(false);
   const [isExportReportOpen, setIsExportReportOpen] = useState<boolean>(false);
-  const [currentNavTab, setCurrentNavTab] = useState<NavTabKey>('home');
+  const [currentNavTab, setCurrentNavTab] = useState<NavTabKey>('pending');
 
   const unreadNotificationCount = requests.filter((r) => {
     if (currentRole === 'emp') {
@@ -936,6 +936,7 @@ export default function App() {
                         requests={requests}
                         onApprove={handleManagerApprove}
                         onReturnClick={handleManagerReturnClick}
+                        activeNavTab={currentNavTab}
                       />
                     )}
 
@@ -956,6 +957,7 @@ export default function App() {
                         onConfirmUpload={handleConfirmUpload}
                         onApproveAttendance={handleApproveAttendance}
                         onReturnAttendance={handleReturnAttendance}
+                        activeNavTab={currentNavTab}
                       />
                     )}
 
@@ -964,6 +966,7 @@ export default function App() {
                       <PRDashboardView
                         requests={requests}
                         onUpdatePrStatus={handleUpdatePrStatus}
+                        activeNavTab={currentNavTab}
                       />
                     )}
 
@@ -971,6 +974,7 @@ export default function App() {
                     {currentRole === 'dean' && (
                       <DeanExecutiveDashboardView
                         requests={requests}
+                        activeNavTab={currentNavTab}
                       />
                     )}
 
@@ -978,6 +982,7 @@ export default function App() {
                     {currentRole === 'accreditation' && (
                       <AccreditationView
                         requests={requests}
+                        activeNavTab={currentNavTab}
                       />
                     )}
 
@@ -1003,7 +1008,7 @@ export default function App() {
                         onDeanApprove={handleDeanApprove}
                         onFinalApproveWithDispatch={handleAuditorFinalApproveWithDispatch}
                         onReturnClick={handleAuditorReturn}
-                        activeNavTab={currentNavTab === 'activities' ? 'activities' : 'home'}
+                        activeNavTab={currentNavTab === 'activities' ? 'activities' : 'pending'}
                       />
                     )}
                   </>
@@ -1018,6 +1023,7 @@ export default function App() {
               currentRole={currentRole}
               requests={requests}
               unreadNotificationCount={unreadNotificationCount}
+              currentUserEmpNumber={currentUser?.employeeNumber}
             />
           </div>
         </div>

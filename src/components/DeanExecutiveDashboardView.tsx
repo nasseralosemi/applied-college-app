@@ -22,11 +22,14 @@ import {
   Share2,
 } from 'lucide-react';
 
+import { NavTabKey } from './BottomNav';
+
 interface Props {
   requests: ActivityRequest[];
+  activeNavTab?: NavTabKey;
 }
 
-export const DeanExecutiveDashboardView: React.FC<Props> = ({ requests }) => {
+export const DeanExecutiveDashboardView: React.FC<Props> = ({ requests, activeNavTab }) => {
   const [analyticsBranchFilter, setAnalyticsBranchFilter] = useState('all');
   const [activeRequestForDetails, setActiveRequestForDetails] = useState<ActivityRequest | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'analytics'>('overview');

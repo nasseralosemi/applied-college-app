@@ -31,11 +31,13 @@ import {
 
 import { WorkflowStepper } from './WorkflowStepper';
 import { MediaPublishBadge } from './MediaPublishBadge';
+import { NavTabKey } from './BottomNav';
 
 interface Props {
   requests: ActivityRequest[];
   onApprove: (id: number) => void;
   onReturnClick: (id: number) => void;
+  activeNavTab?: NavTabKey;
 }
 
 type TabType = 'pending' | 'referred' | 'returned';
@@ -44,8 +46,21 @@ export const ManagerView: React.FC<Props> = ({
   requests,
   onApprove,
   onReturnClick,
+  activeNavTab,
 }) => {
   const [activeTab, setActiveTab] = useState<TabType>('pending');
+
+  React.useEffect(() => {
+    if (activeNavTab === 'pending') {
+      setActiveTab('pending');
+    } else if (activeNavTab === 'approved') {
+      setActiveTab('referred');
+    } else if (activeNavTab === 'returned') {
+      setActiveTab('returned');
+    } else if (activeNavTab === 'activities') {
+      setActiveTab('pending');
+    }
+  }, [activeNavTab]);
   const [selectedRequest, setSelectedRequest] = useState<ActivityRequest | null>(null);
   const [previewSheetRequest, setPreviewSheetRequest] = useState<ActivityRequest | null>(null);
 

@@ -23,12 +23,14 @@ import {
   Layers,
   FileImage,
 } from 'lucide-react';
+import { NavTabKey } from './BottomNav';
 
 interface Props {
   requests: ActivityRequest[];
+  activeNavTab?: NavTabKey;
 }
 
-export const AccreditationView: React.FC<Props> = ({ requests }) => {
+export const AccreditationView: React.FC<Props> = ({ requests, activeNavTab }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedBranch, setSelectedBranch] = useState('all');
   const [activeRequestDetails, setActiveRequestDetails] = useState<ActivityRequest | null>(null);
